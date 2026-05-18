@@ -30,6 +30,7 @@ def seed():
         existing_hospital = db.query(Hospital).filter(Hospital.id == "hospital-001").first()
         if existing_hospital:
             password_updates = {
+                "ceo@medguardian.org": "master123",
                 "admin@stmarys.org": "admin123",
                 "thomas@stmarys.org": "doctor123",
                 "priya@stmarys.org": "nurse123",
@@ -73,6 +74,7 @@ def seed():
         
         # === STAFF ===
         staff_members = [
+            Staff(id="staff-000", hospital_id="hospital-001", employee_id="SUPER001", name="CEO Master Admin", role=UserRole.SUPER_ADMIN, department="HQ Governance", email="ceo@medguardian.org", phone="+91-9999999999", hashed_password=hash_password("master123"), qualification="MedGuardian Executive Founder", is_active=True),
             Staff(id="staff-001", hospital_id="hospital-001", employee_id="EMP001", name="Dr. Sarah Chen", role=UserRole.HOSPITAL_ADMIN, department="Administration", email="admin@stmarys.org", phone="+91-9487000001", hashed_password=hash_password("admin123"), qualification="MBBS, MD (Hospital Administration)", is_active=True),
             Staff(id="staff-002", hospital_id="hospital-001", employee_id="EMP002", name="Dr. Thomas Mathew", role=UserRole.DOCTOR, department="General Medicine", email="thomas@stmarys.org", phone="+91-9487000002", hashed_password=hash_password("doctor123"), qualification="MBBS, MD (General Medicine)", registration_number="KMC/2015/4521", is_active=True),
             Staff(id="staff-003", hospital_id="hospital-001", employee_id="EMP003", name="Nurse Priya Joseph", role=UserRole.NURSE, department="Surgery", email="priya@stmarys.org", phone="+91-9487000003", hashed_password=hash_password("nurse123"), qualification="B.Sc Nursing", registration_number="KNR/2018/7832", is_active=True),
