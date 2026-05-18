@@ -36,9 +36,23 @@ async def lifespan(app: FastAPI):
     logger.info(f"🔒 DPDP Compliance: Active")
     logger.info(f"💰 FCRA Guardian: Active")
     
-    if settings.DEBUG:
-        # Development-only fallback. Production schema changes must use Alembic.
-        Base.metadata.create_all(bind=engine)
+    # Ensure database schema is created on startup
+    Base.metadata.create_all(bind=engine)
+    
+    # Automatically seed database if empty for instant cloud demo readiness
+    from app.core.database import SessionLocal
+    from app.models.database import Staff
+    db = SessionLocal()
+    try:
+        staff_count = db.query(Staff).count()
+        if staff_count == 0:
+            logger.info("🗄️ Database empty. Triggering automated seed...")
+            from scripts.seed_data import seed
+            seed()
+    except Exception as e:
+        logger.error(f"Failed to auto-seed database: {e}")
+    finally:
+        db.close()
     
     # Initialize ChromaDB collections
     from app.services.vector_store import init_chromadb
