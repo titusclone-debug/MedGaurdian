@@ -1,0 +1,33 @@
+# Python local files & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node/Vite local files & builds
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+
+# Logs and system files
+*.log
+.DS_Store
+Thumbs.db
+
+# Environmental secrets
+.env
+.env.local
+.env.production

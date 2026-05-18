@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand: 14 165 233;
+    --color-risk-critical: 220 38 38;
+    --color-risk-high: 234 88 12;
+    --color-risk-medium: 217 119 6;
+    --color-risk-low: 101 163 13;
+    --color-risk-minimal: 22 163 74;
+  }
+  
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm;
+  }
+  
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-md hover:border-slate-300;
+  }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 text-white font-medium rounded-lg 
+           hover:bg-brand-700 active:bg-brand-800 transition-colors duration-150 
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-slate-700 font-medium rounded-lg 
+           border border-slate-300 hover:bg-slate-50 active:bg-slate-100 transition-colors duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-critical {
+    @apply badge bg-red-100 text-red-800;
+  }
+  
+  .badge-high {
+    @apply badge bg-orange-100 text-orange-800;
+  }
+  
+  .badge-medium {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+  
+  .badge-low {
+    @apply badge bg-green-100 text-green-800;
+  }
+  
+  .badge-minimal {
+    @apply badge bg-emerald-100 text-emerald-800;
+  }
+  
+  .stat-card {
+    @apply card p-6;
+  }
+  
+  .stat-value {
+    @apply text-3xl font-bold tracking-tight;
+  }
+  
+  .stat-label {
+    @apply text-sm font-medium text-slate-500 mt-1;
+  }
+  
+  .input-field {
+    @apply block w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm
+           placeholder:text-slate-400 
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500
+           disabled:bg-slate-50 disabled:text-slate-500;
+  }
+  
+  .table-header {
+    @apply px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider;
+  }
+  
+  .table-cell {
+    @apply px-4 py-3 text-sm text-slate-700;
+  }
+  
+  .nav-link {
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-lg
+           hover:bg-slate-100 hover:text-slate-900 transition-colors duration-150;
+  }
+  
+  .nav-link-active {
+    @apply nav-link bg-brand-50 text-brand-700;
+  }
+}
+
+/* Risk Weather Animation */
+@keyframes weatherPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.risk-weather-pulse {
+  animation: weatherPulse 2s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .card {
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+  }
+}

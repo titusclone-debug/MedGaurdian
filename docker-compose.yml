@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Cluster
+  postgres:
+    image: postgres:15-alpine
+    container_name: medguardian_db
+    restart: always
+    environment:
+      POSTGRES_USER: medguardian_admin
+      POSTGRES_PASSWORD: secure_db_password_change_me
+      POSTGRES_DB: medguardian
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. FastAPI Modular Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medguardian_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://medguardian_admin:secure_db_password_change_me@postgres:5432/medguardian
+      - JWT_SECRET_KEY=highly_secure_jwt_secret_change_me_in_prod
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  # 3. Nginx-backed Client Frontend SPA
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: medguardian_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
