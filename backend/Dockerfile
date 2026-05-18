@@ -27,5 +27,5 @@ COPY . .
 # Expose port 8000 for the app
 EXPOSE 8000
 
-# Start Gunicorn with 4 uvicorn workers for asynchronous high-performance multi-processing
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
+# Start Gunicorn with 1 uvicorn worker to prevent DB lock contentions on single-core Free Tier containers
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
