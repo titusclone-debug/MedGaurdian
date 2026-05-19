@@ -444,7 +444,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.entries(dashboard.domain_scores || {}).map(([domain, data]: any) => {
           const Icon = getDomainIcon(domain)
-          const label = domain.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          const label = domain.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
           
           return (
             <Link key={domain} to={`/${domain.split('_')[0]}`} className="card-hover p-5">
