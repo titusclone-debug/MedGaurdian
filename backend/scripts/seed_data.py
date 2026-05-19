@@ -69,6 +69,7 @@ def seed():
             risk_level=RiskLevel.MEDIUM,
             last_audit_date=datetime(2025, 6, 15),
             next_audit_date=datetime(2026, 6, 15),
+            onboarding_stage="completed",
         )
         db.add(hospital)
         

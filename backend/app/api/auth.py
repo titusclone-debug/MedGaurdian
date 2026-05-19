@@ -44,6 +44,32 @@ class HospitalOnboard(BaseModel):
     admin_password: str
 
 
+class ResetPasswordSchema(BaseModel):
+    target_email: str
+    new_password: str
+
+
+class HospitalOnboardUpdate(BaseModel):
+    onboarding_stage: str
+    bed_count: Optional[int] = None
+    hospital_type: Optional[str] = None
+    has_emergency: Optional[bool] = None
+    has_icu: Optional[bool] = None
+    has_operation_theatre: Optional[bool] = None
+    fcra_number: Optional[str] = None
+
+
+class StaffCreateSchema(BaseModel):
+    name: str
+    email: str
+    phone: str
+    role: str
+    department: str
+    employee_id: str
+    qualification: Optional[str] = None
+    password: str
+
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
@@ -258,3 +284,175 @@ async def onboard_hospital(
             "role": new_admin.role.value
         }
     }
+
+
+@router.get("/hospitals")
+async def get_hospitals(
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN])),
+):
+    """Fetch all onboarded hospitals. Super Admin only."""
+    hospitals = db.query(Hospital).all()
+    result = []
+    for h in hospitals:
+        # Find primary administrator
+        admin = db.query(Staff).filter(
+            Staff.hospital_id == h.id, 
+            Staff.role == UserRole.HOSPITAL_ADMIN
+        ).first()
+        
+        result.append({
+            "id": h.id,
+            "name": h.name,
+            "registration_number": h.registration_number,
+            "state": h.state,
+            "district": h.district,
+            "onboarding_stage": h.onboarding_stage,
+            "created_at": h.created_at,
+            "admin_email": admin.email if admin else "N/A",
+            "admin_name": admin.name if admin else "N/A"
+        })
+    return result
+
+
+@router.post("/reset-staff-password")
+async def reset_staff_password(
+    data: ResetPasswordSchema,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user),
+):
+    """
+    Secure password reset endpoint.
+    - Super Admin can reset ANY account's password.
+    - Hospital Admin can reset staff passwords within their own hospital.
+    """
+    target = db.query(Staff).filter(Staff.email == data.target_email).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Target user not found.")
+        
+    # Security gates
+    if current_user.role == UserRole.SUPER_ADMIN:
+        # Super Admin has global override authority
+        pass
+    elif current_user.role == UserRole.HOSPITAL_ADMIN:
+        # Hospital Admin can only override within their tenant, and cannot reset other admins or super admins
+        if target.hospital_id != current_user.hospital_id:
+            raise HTTPException(status_code=403, detail="Access denied: Different tenant.")
+        if target.role in [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN]:
+            raise HTTPException(status_code=403, detail="Access denied: Cannot reset administrative roles.")
+    else:
+        raise HTTPException(status_code=403, detail="Access denied.")
+        
+    target.hashed_password = hash_password(data.new_password)
+    db.commit()
+    return {"status": "success", "message": f"Password for {data.target_email} updated successfully."}
+
+
+@router.put("/hospitals/onboard")
+async def update_onboarding_wizard(
+    data: HospitalOnboardUpdate,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.HOSPITAL_ADMIN])),
+):
+    """Update onboarding stage and metadata settings for the admin's hospital."""
+    hospital = db.query(Hospital).filter(Hospital.id == current_user.hospital_id).first()
+    if not hospital:
+        raise HTTPException(status_code=404, detail="Hospital tenant not found.")
+        
+    hospital.onboarding_stage = data.onboarding_stage
+    
+    if data.bed_count is not None:
+        hospital.bed_count = data.bed_count
+    if data.hospital_type is not None:
+        hospital.hospital_type = data.hospital_type
+    if data.has_emergency is not None:
+        hospital.has_emergency = data.has_emergency
+    if data.has_icu is not None:
+        hospital.has_icu = data.has_icu
+    if data.has_operation_theatre is not None:
+        hospital.has_operation_theatre = data.has_operation_theatre
+    if data.fcra_number is not None:
+        hospital.fcra_number = data.fcra_number
+        
+    db.commit()
+    db.refresh(hospital)
+    return {
+        "status": "success",
+        "onboarding_stage": hospital.onboarding_stage,
+        "bed_count": hospital.bed_count,
+        "fcra_number": hospital.fcra_number
+    }
+
+
+@router.get("/staff")
+async def list_hospital_staff(
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.HOSPITAL_ADMIN, UserRole.SUPER_ADMIN])),
+):
+    """Get all staff members registered in the current administrator's hospital."""
+    # Scope check
+    staff_members = db.query(Staff).filter(Staff.hospital_id == current_user.hospital_id).all()
+    return [{
+        "id": s.id,
+        "name": s.name,
+        "email": s.email,
+        "phone": s.phone,
+        "role": s.role.value,
+        "department": s.department,
+        "employee_id": s.employee_id,
+        "qualification": s.qualification,
+        "is_active": s.is_active
+    } for s in staff_members]
+
+
+@router.post("/staff", status_code=status.HTTP_201_CREATED)
+async def create_hospital_staff(
+    data: StaffCreateSchema,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.HOSPITAL_ADMIN])),
+):
+    """Create a new staff member (doctor, nurse, etc.) scoped to the admin's hospital."""
+    # Check if email is already taken
+    existing_email = db.query(Staff).filter(Staff.email == data.email).first()
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already registered.")
+        
+    # Check role eligibility
+    try:
+        assigned_role = UserRole(data.role)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid staff role specified.")
+        
+    if assigned_role in [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN]:
+        raise HTTPException(status_code=403, detail="Cannot assign administrative roles.")
+        
+    import uuid
+    new_staff = Staff(
+        id=f"staff-{uuid.uuid4().hex[:6]}",
+        hospital_id=current_user.hospital_id,
+        employee_id=data.employee_id,
+        name=data.name,
+        email=data.email,
+        phone=data.phone,
+        role=assigned_role,
+        department=data.department,
+        qualification=data.qualification,
+        hashed_password=hash_password(data.password),
+        is_active=True
+    )
+    
+    db.add(new_staff)
+    db.commit()
+    db.refresh(new_staff)
+    
+    return {
+        "status": "success",
+        "message": f"Staff member '{new_staff.name}' created successfully.",
+        "staff": {
+            "id": new_staff.id,
+            "name": new_staff.name,
+            "email": new_staff.email,
+            "role": new_staff.role.value
+        }
+    }
+

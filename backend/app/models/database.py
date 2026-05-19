@@ -124,6 +124,7 @@ class Hospital(Base):
     risk_level = Column(SQLEnum(RiskLevel), default=RiskLevel.MEDIUM)
     last_audit_date = Column(DateTime, nullable=True)
     next_audit_date = Column(DateTime, nullable=True)
+    onboarding_stage = Column(String(50), default="profile")
     
     # Metadata
     created_at = Column(DateTime, server_default=func.now())
