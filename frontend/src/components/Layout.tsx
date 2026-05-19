@@ -26,7 +26,14 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   
-  const currentPage = navigation.find(n => n.href === location.pathname)
+  const visibleNavigation = [
+    ...navigation,
+    ...(user?.role === 'super_admin' ? [
+      { name: 'HQ Command Center', href: '/hq', icon: Shield, description: 'SaaS Onboarding Portal' }
+    ] : [])
+  ]
+  
+  const currentPage = visibleNavigation.find(n => n.href === location.pathname)
   
   return (
     <div className="min-h-screen bg-slate-50">
@@ -64,7 +71,7 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
         
         {/* Navigation */}
         <nav className="px-3 py-4 space-y-1 overflow-y-auto max-h-[calc(100vh-160px)] pb-12">
-          {navigation.map((item) => {
+          {visibleNavigation.map((item) => {
             const isActive = location.pathname === item.href
             const Icon = item.icon
             

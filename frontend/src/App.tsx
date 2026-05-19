@@ -9,6 +9,7 @@ import NABHPage from './pages/NABH'
 import LicensesPage from './pages/Licenses'
 import RiskPage from './pages/Risk'
 import LoginPage from './pages/Login'
+import SuperAdminPage from './pages/SuperAdmin'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -52,6 +53,9 @@ function App() {
           <Route path="/nabh" element={<NABHPage />} />
           <Route path="/licenses" element={<LicensesPage />} />
           <Route path="/risk" element={<RiskPage />} />
+          {user?.role === 'super_admin' && (
+            <Route path="/hq" element={<SuperAdminPage />} />
+          )}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
