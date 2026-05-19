@@ -10,6 +10,7 @@ import LicensesPage from './pages/Licenses'
 import RiskPage from './pages/Risk'
 import LoginPage from './pages/Login'
 import SuperAdminPage from './pages/SuperAdmin'
+import StaffPage from './pages/Staff'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -55,6 +56,9 @@ function App() {
           <Route path="/risk" element={<RiskPage />} />
           {user?.role === 'super_admin' && (
             <Route path="/hq" element={<SuperAdminPage />} />
+          )}
+          {user?.role === 'hospital_admin' && (
+            <Route path="/staff" element={<StaffPage />} />
           )}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

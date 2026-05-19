@@ -204,6 +204,11 @@ async def get_dashboard_overview(
         "alerts": {
             "total_active": active_alerts,
             "critical": critical_alerts,
+        },
+        "hospital": {
+            "id": hospital.id,
+            "name": hospital.name,
+            "onboarding_stage": hospital.onboarding_stage or "profile"
         }
     }
 

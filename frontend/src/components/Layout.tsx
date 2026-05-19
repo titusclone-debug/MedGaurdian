@@ -30,6 +30,9 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
     ...navigation,
     ...(user?.role === 'super_admin' ? [
       { name: 'HQ Command Center', href: '/hq', icon: Shield, description: 'SaaS Onboarding Portal' }
+    ] : []),
+    ...(user?.role === 'hospital_admin' ? [
+      { name: 'Staff Directory', href: '/staff', icon: FileText, description: 'Team Management' }
     ] : [])
   ]
   
