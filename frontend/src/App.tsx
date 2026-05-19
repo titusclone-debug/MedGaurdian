@@ -13,7 +13,7 @@ import SuperAdminPage from './pages/SuperAdmin'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<any>(null)
   
   useEffect(() => {
     const token = localStorage.getItem('medguardian_token')
