@@ -391,7 +391,10 @@ async def list_hospital_staff(
 ):
     """Get all staff members registered in the current administrator's hospital."""
     # Scope check
-    staff_members = db.query(Staff).filter(Staff.hospital_id == current_user.hospital_id).all()
+    staff_members = db.query(Staff).filter(
+        Staff.hospital_id == current_user.hospital_id,
+        Staff.role != UserRole.SUPER_ADMIN
+    ).all()
     return [{
         "id": s.id,
         "name": s.name,
