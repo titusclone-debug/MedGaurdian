@@ -18,11 +18,14 @@ class ConsentCreate(BaseModel):
     hospital_id: str
     patient_id: str
     patient_name: str
+    patient_mobile: Optional[str] = None
+    patient_address: Optional[str] = None
     consent_type: str  # treatment, data_sharing, research, billing
     purpose: str
     data_categories: List[str]
     third_parties: Optional[List[str]] = None
     consent_method: str  # digital_signature, otp, verbal_witness, thumbprint
+    digital_signature: Optional[str] = None
     is_minor: bool = False
     guardian_consent_id: Optional[str] = None
     language_preference: str = "en"

@@ -10,7 +10,7 @@ class ConsentService:
     def grant_consent(db: Session, consent: Any) -> Dict[str, Any]:
         """Anonymize PII, create a Digital Consent Artefact, and hash-chain it to the ledger block."""
         # Generate consent artefact hash
-        artefact_data = f"{consent.patient_id}{consent.consent_type}{consent.purpose}{datetime.utcnow().isoformat()}"
+        artefact_data = f"{consent.patient_id}{consent.consent_type}{consent.purpose}{consent.digital_signature or ''}{datetime.utcnow().isoformat()}"
         
         # Get previous hash for chain
         last_consent = ConsentRepository.get_last_consent(db, consent.hospital_id)
@@ -25,6 +25,10 @@ class ConsentService:
             hospital_id=consent.hospital_id,
             patient_id=consent.patient_id,
             patient_name_hash=patient_name_hash,
+            patient_name=consent.patient_name,
+            patient_mobile=consent.patient_mobile,
+            patient_address=consent.patient_address,
+            digital_signature=consent.digital_signature,
             consent_type=consent.consent_type,
             purpose=consent.purpose,
             data_categories=consent.data_categories,
@@ -90,6 +94,9 @@ class ConsentService:
                 "id": c.id,
                 "type": c.consent_type,
                 "purpose": c.purpose,
+                "patient_name": c.patient_name,
+                "patient_mobile": c.patient_mobile,
+                "patient_address": c.patient_address,
                 "status": c.status.value,
                 "granted_at": c.granted_at.isoformat() if c.granted_at else None,
                 "expires_at": c.expires_at.isoformat() if c.expires_at else None,

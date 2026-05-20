@@ -23,11 +23,9 @@ export default function BMWPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [formCategory, setFormCategory] = useState('yellow')
-  const [formWeight, setFormWeight] = useState('')
+  const [formWeights, setFormWeights] = useState({ yellow: '0', red: '0', white: '0', blue: '0' })
   const [formDept, setFormDept] = useState('Surgery')
-  const [formWard, setFormWard] = useState('')
-  const [formTreatment, setFormTreatment] = useState('Incineration')
+  const [formWard, setFormWard] = useState('General Ward')
 
   async function fetchBMWData() {
     try {
@@ -117,16 +115,16 @@ export default function BMWPage() {
 
       if (!token || !hospitalId) throw new Error('Authentication parameters expired')
 
-      const payload = {
+      const payload = ['yellow', 'red', 'white', 'blue'].map(cat => ({
         hospital_id: hospitalId,
-        category: formCategory,
-        weight_kg: parseFloat(formWeight),
+        category: cat,
+        weight_kg: parseFloat(formWeights[cat as keyof typeof formWeights] || '0'),
         source_department: formDept,
-        source_ward: formWard || null,
-        treatment_method: formTreatment
-      }
+        source_ward: formWard,
+        treatment_method: BMW_CATEGORIES[cat as keyof typeof BMW_CATEGORIES]?.treatment || 'Incineration'
+      }))
 
-      const res = await fetch('/api/bmw/log', {
+      const res = await fetch('/api/bmw/batch-log', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,8 +139,9 @@ export default function BMWPage() {
       }
 
       setIsModalOpen(false)
-      setFormWeight('')
-      setFormWard('')
+      setFormWeights({ yellow: '0', red: '0', white: '0', blue: '0' })
+      setFormDept('Surgery')
+      setFormWard('General Ward')
       // Refresh Dashboard metrics
       setLoading(true)
       await fetchBMWData()
@@ -316,37 +315,6 @@ export default function BMWPage() {
             </div>
             
             <form onSubmit={handleLogSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Category Color</label>
-                <select 
-                  value={formCategory} 
-                  onChange={(e) => {
-                    setFormCategory(e.target.value)
-                    setFormTreatment(BMW_CATEGORIES[e.target.value as keyof typeof BMW_CATEGORIES]?.treatment || 'Incineration')
-                  }}
-                  className="input-field"
-                >
-                  <option value="yellow">Yellow (Anatomical/Soiled)</option>
-                  <option value="red">Red (Recyclable Plastic)</option>
-                  <option value="white">White (Sharps/Needles)</option>
-                  <option value="blue">Blue (Medicines/Cytotoxic)</option>
-                  <option value="black">Black (General Municipal)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Weight (in kg)</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  required
-                  placeholder="e.g. 12.45"
-                  value={formWeight}
-                  onChange={(e) => setFormWeight(e.target.value)}
-                  className="input-field"
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Source Department</label>
@@ -365,26 +333,42 @@ export default function BMWPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ward / Room</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Ward 3B"
-                    value={formWard}
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ward / Unit</label>
+                  <select 
+                    value={formWard} 
                     onChange={(e) => setFormWard(e.target.value)}
                     className="input-field"
-                  />
+                  >
+                    <option value="General Ward">General Ward</option>
+                    <option value="Private Room">Private Room</option>
+                    <option value="Operation Theatre 1">Operation Theatre 1</option>
+                    <option value="Operation Theatre 2">Operation Theatre 2</option>
+                    <option value="Dialysis Unit">Dialysis Unit</option>
+                    <option value="Isolation Ward">Isolation Ward</option>
+                    <option value="NICU">NICU</option>
+                  </select>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Treatment Method</label>
-                <input 
-                  type="text" 
-                  readOnly
-                  disabled
-                  value={formTreatment}
-                  className="input-field bg-slate-50 text-slate-500 cursor-not-allowed"
-                />
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label className="block text-sm font-semibold text-slate-900 mb-3">Waste Categories (kg)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {['yellow', 'red', 'white', 'blue'].map((cat) => (
+                    <div key={cat} className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${BMW_CATEGORIES[cat as keyof typeof BMW_CATEGORIES].color.split(' ')[0]}`} />
+                      <span className="text-sm font-medium text-slate-700 w-16 capitalize">{cat}</span>
+                      <input 
+                        type="number" 
+                        step="0.01"
+                        min="0"
+                        value={formWeights[cat as keyof typeof formWeights]}
+                        onChange={(e) => setFormWeights({...formWeights, [cat]: e.target.value})}
+                        className="input-field py-1 text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500 mt-3">* Date and time are automatically recorded upon submission.</p>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">

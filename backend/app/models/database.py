@@ -260,6 +260,10 @@ class ConsentRecord(Base):
     # Patient Identity (purpose-limited)
     patient_id = Column(String(100), nullable=False)
     patient_name_hash = Column(String(64))  # Hashed for privacy
+    patient_name = Column(String(255), nullable=True)
+    patient_mobile = Column(String(20), nullable=True)
+    patient_address = Column(Text, nullable=True)
+    digital_signature = Column(Text, nullable=True)
     
     # Consent Details
     consent_type = Column(String(100))  # treatment, data_sharing, research, billing

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FileCheck, Plus, Search, AlertTriangle, CheckCircle, Clock, Shield, X, HelpCircle } from 'lucide-react'
 
 export default function DPDPPage() {
@@ -18,6 +18,8 @@ export default function DPDPPage() {
   // Consent Form State
   const [formPatientId, setFormPatientId] = useState('')
   const [formPatientName, setFormPatientName] = useState('')
+  const [formPatientMobile, setFormPatientMobile] = useState('')
+  const [formPatientAddress, setFormPatientAddress] = useState('')
   const [formType, setFormType] = useState('treatment')
   const [formPurpose, setFormPurpose] = useState('')
   const [formDataCats, setFormDataCats] = useState<string[]>(['name', 'diagnosis'])
@@ -27,6 +29,32 @@ export default function DPDPPage() {
   const [formGuardianId, setFormGuardianId] = useState('')
   const [formExpiresDays, setFormExpiresDays] = useState('365')
   const [submittingConsent, setSubmittingConsent] = useState(false)
+
+  const [signatureData, setSignatureData] = useState<string | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+
+  const startDrawing = (e: any) => {
+    const canvas = canvasRef.current; if (!canvas) return
+    const ctx = canvas.getContext('2d'); if (!ctx) return
+    ctx.beginPath(); ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+    setIsDrawing(true)
+  }
+  const draw = (e: any) => {
+    if (!isDrawing) return
+    const canvas = canvasRef.current; if (!canvas) return
+    const ctx = canvas.getContext('2d'); if (!ctx) return
+    ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY); ctx.stroke()
+  }
+  const stopDrawing = () => {
+    setIsDrawing(false)
+    if (canvasRef.current) setSignatureData(canvasRef.current.toDataURL('image/png'))
+  }
+  const clearSignature = () => {
+    const canvas = canvasRef.current; if (!canvas) return
+    const ctx = canvas.getContext('2d'); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+    setSignatureData(null)
+  }
 
   // Breach Form State
   const [formBreachType, setFormBreachType] = useState('unauthorized_access')
@@ -96,11 +124,14 @@ export default function DPDPPage() {
         hospital_id: hospitalId,
         patient_id: formPatientId,
         patient_name: formPatientName,
+        patient_mobile: formPatientMobile,
+        patient_address: formPatientAddress,
         consent_type: formType,
         purpose: formPurpose,
         data_categories: formDataCats,
         third_parties: formThirdParties ? formThirdParties.split(',').map(s => s.trim()) : null,
         consent_method: formMethod,
+        digital_signature: signatureData,
         is_minor: formIsMinor,
         guardian_consent_id: formIsMinor ? formGuardianId : null,
         expires_in_days: parseInt(formExpiresDays)
@@ -124,9 +155,12 @@ export default function DPDPPage() {
       // reset form
       setFormPatientId('')
       setFormPatientName('')
+      setFormPatientMobile('')
+      setFormPatientAddress('')
       setFormPurpose('')
       setFormIsMinor(false)
       setFormGuardianId('')
+      clearSignature()
 
       setLoading(true)
       await fetchDPDPData()
@@ -370,7 +404,10 @@ export default function DPDPPage() {
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((consent) => (
                   <tr key={consent.id} className="hover:bg-slate-50">
-                    <td className="table-cell font-mono text-sm">{consent.patient_id}</td>
+                    <td className="table-cell font-mono text-sm">
+                      <div className="font-semibold">{consent.patient_id}</div>
+                      {consent.patient_name && <div className="text-xs text-slate-500">{consent.patient_name}</div>}
+                    </td>
                     <td className="table-cell">
                       <span className="badge bg-blue-100 text-blue-800 capitalize">{consent.type}</span>
                     </td>
@@ -479,6 +516,26 @@ export default function DPDPPage() {
                     className="input-field"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Mobile Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 9876543210"
+                    value={formPatientMobile}
+                    onChange={(e) => setFormPatientMobile(e.target.value)}
+                    className="input-field"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Address</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. New Delhi"
+                    value={formPatientAddress}
+                    onChange={(e) => setFormPatientAddress(e.target.value)}
+                    className="input-field"
+                  />
+                </div>
               </div>
 
               <div>
@@ -543,7 +600,7 @@ export default function DPDPPage() {
                     onChange={(e) => setFormMethod(e.target.value)}
                     className="input-field"
                   >
-                    <option value="digital_signature">Digital AADHAAR Sign</option>
+                    <option value="digital_signature">Digital Signature (Draw)</option>
                     <option value="otp">Mobile OTP Authentication</option>
                     <option value="verbal_witness">Verbal Witness Sign</option>
                     <option value="thumbprint">Biometric Thumbprint</option>
@@ -585,6 +642,28 @@ export default function DPDPPage() {
                   </div>
                 )}
               </div>
+
+              {formMethod === 'digital_signature' && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-sm font-medium text-slate-700">Digital Signature</label>
+                    <button type="button" onClick={clearSignature} className="text-xs text-red-600 hover:text-red-700">Clear</button>
+                  </div>
+                  <div className="border border-slate-300 rounded-lg bg-slate-50 overflow-hidden touch-none cursor-crosshair">
+                    <canvas 
+                      ref={canvasRef}
+                      width={400}
+                      height={150}
+                      className="w-full bg-white"
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                    />
+                  </div>
+                  {!signatureData && <p className="text-xs text-orange-600">Please draw signature to continue.</p>}
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button 

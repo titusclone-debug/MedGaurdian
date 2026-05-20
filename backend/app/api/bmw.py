@@ -58,6 +58,39 @@ async def log_bmw_entry(
     return BMWService.log_entry(db, entry, entry.hospital_id, category)
 
 
+@router.post("/batch-log")
+async def batch_log_bmw_entry(
+    entries: List[BMWLogCreate],
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER, UserRole.DOCTOR, UserRole.NURSE, UserRole.LAB_TECHNICIAN])),
+):
+    """Record multiple bio-medical waste entries simultaneously."""
+    if not entries:
+        return {"status": "success", "logs": []}
+        
+    hospital_id = entries[0].hospital_id
+    assert_hospital_access(current_user, hospital_id)
+
+    results = []
+    for entry in entries:
+        if entry.hospital_id != hospital_id:
+            raise HTTPException(status_code=400, detail="All batch entries must belong to the same hospital")
+            
+        try:
+            category = BMWCategory(entry.category.lower())
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid BMW category: {entry.category}. Must be one of: yellow, red, white, blue, black"
+            )
+        
+        # We allow logging 0 weight to indicate compliance checking was performed but no waste found
+        res = BMWService.log_entry(db, entry, entry.hospital_id, category)
+        results.append(res)
+
+    return {"status": "success", "logs": results}
+
+
 @router.post("/verify/{log_id}")
 async def verify_bmw_entry(
     log_id: str,
