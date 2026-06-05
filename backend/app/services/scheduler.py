@@ -11,6 +11,10 @@ scheduler = BackgroundScheduler()
 
 def start_scheduler():
     """Start all scheduled background tasks."""
+    if scheduler.running:
+        logger.info("⏰ MedGuardian scheduler is already running")
+        return
+    
     
     # Regulatory ingestion — daily at 6 AM
     scheduler.add_job(
@@ -86,8 +90,8 @@ def _check_license_expiry():
     
     db = SessionLocal()
     try:
-        # Find licenses expiring in 90, 30, 7 days
-        for days, severity in [(90, RiskLevel.MEDIUM), (30, RiskLevel.HIGH), (7, RiskLevel.CRITICAL)]:
+        # Find licenses expiring in 7, 30, 90 days (evaluate critical first)
+        for days, severity in [(7, RiskLevel.CRITICAL), (30, RiskLevel.HIGH), (90, RiskLevel.MEDIUM)]:
             threshold = datetime.utcnow() + timedelta(days=days)
             
             expiring = db.query(License).filter(

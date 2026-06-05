@@ -159,7 +159,7 @@ def ingest_regulation(
             "source": source,
             "published_date": published_date,
             "update_type": update_type,
-            "affected_areas": affected_areas or [],
+            "affected_areas": ",".join(affected_areas) if affected_areas else "",
             "chunk_index": i,
             "total_chunks": len(chunks),
         })

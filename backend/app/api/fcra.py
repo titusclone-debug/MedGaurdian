@@ -40,7 +40,7 @@ class TransactionCreate(BaseModel):
 async def get_fcra_accounts(
     hospital_id: str,
     db: Session = Depends(get_db),
-    current_user: Staff = Depends(get_current_user),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.ACCOUNTANT])),
 ):
     """Get all FCRA-designated fund accounts for a hospital."""
     assert_hospital_access(current_user, hospital_id)
