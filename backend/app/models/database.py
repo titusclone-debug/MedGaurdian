@@ -86,6 +86,21 @@ class FundType(enum.Enum):
     CSR_FUNDS = "csr_funds"
 
 
+class SeverityLevel(str, enum.Enum):
+    CRITICAL = "critical"  # Direct patient safety or strict legal rules (BMW, Fire, etc.)
+    MAJOR = "major"        # Systemic process gaps
+    MINOR = "minor"        # Documentation and minor typos
+
+
+class MaturityLevel(int, enum.Enum):
+    NON_EXISTENT = 0
+    AD_HOC = 1
+    DEFINED = 2
+    IMPLEMENTED = 3
+    MEASURED = 4
+    OPTIMIZED = 5
+
+
 # ============================================================
 # CORE MODELS
 # ============================================================
@@ -134,6 +149,7 @@ class Hospital(Base):
     licenses = relationship("License", back_populates="hospital")
     fund_accounts = relationship("FundAccount", back_populates="hospital")
     compliance_records = relationship("ComplianceRecord", back_populates="hospital")
+    nabh_objectives = relationship("NABHObjective", back_populates="hospital", cascade="all, delete-orphan")
     bmw_logs = relationship("BMWLog", back_populates="hospital")
     consent_records = relationship("ConsentRecord", back_populates="hospital")
     risk_alerts = relationship("RiskAlert", back_populates="hospital")
@@ -588,3 +604,40 @@ class AuditLog(Base):
         Index("idx_audit_user", "user_id"),
         Index("idx_audit_action", "action"),
     )
+
+
+class NABHObjective(Base):
+    """Granular NABH 6th Edition Standard & Element Compliance Tracking."""
+    __tablename__ = "nabh_objectives"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    hospital_id = Column(String, ForeignKey("hospitals.id"), nullable=False)
+    
+    # Hierarchical Code Identifiers (e.g., PC-4.a)
+    chapter_code = Column(String(50), nullable=False)   # e.g., "PC"
+    objective_number = Column(Integer, nullable=False)  # e.g., 4
+    element_letter = Column(String(10), nullable=False)  # e.g., "a"
+    standard_code = Column(String(100), nullable=False)  # Unique full index (e.g. "PC-4.a")
+    standard_name = Column(String(255), nullable=False)
+    
+    # Severity & Maturity Level
+    severity = Column(SQLEnum(SeverityLevel), default=SeverityLevel.MAJOR)
+    maturity_level = Column(SQLEnum(MaturityLevel), default=MaturityLevel.NON_EXISTENT)
+    
+    # 4-Tier Evidentiary Paths (The core audit trail)
+    policy_doc_url = Column(String(500), nullable=True)          # SOP document reference
+    implementation_logs_count = Column(Integer, default=0)        # Auto-scanned database items count
+    monitoring_indicator_rate = Column(Float, nullable=True)     # Auto-calculated performance percentage
+    cqi_project_id = Column(String(100), nullable=True)          # Reference to active CAPA loops
+    
+    # Remediation Workflow
+    remediation_plan = Column(Text, nullable=True)
+    remediation_deadline = Column(DateTime, nullable=True)
+    remediation_owner = Column(String, ForeignKey("staff.id"), nullable=True)
+    
+    # Auditing metadata
+    last_assessed = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    assessed_by = Column(String(255), default="System Agent")
+    
+    # Relationships
+    hospital = relationship("Hospital", back_populates="nabh_objectives")

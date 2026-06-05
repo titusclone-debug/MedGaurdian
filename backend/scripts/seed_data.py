@@ -152,6 +152,10 @@ def seed():
                 )
                 db.add(bmw)
         
+        # Seed granular NABH objectives
+        from app.nabh.seeder import seed_nabh_objectives
+        seed_nabh_objectives(db, "hospital-001")
+        
         db.commit()
         print("Database seeded successfully!")
         print("   1 hospital")
