@@ -1,70 +1,73 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional, List, Dict, Any
+
 from app.nabh.repository import ComplianceRepository
-from app.models.database import ComplianceRecord, ComplianceStatus
+from app.models.database import ComplianceRecord, ComplianceStatus, NABHObjective, MaturityLevel, SeverityLevel
+from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
 
 NABH_STANDARDS = {
     "ACC": {
         "name": "Access, Assessment, and Continuity of Care",
         "chapters": {
-            "AAC-1": "Patient Access Services",
-            "AAC-2": "Assessment of Patients",
-            "AAC-3": "Continuity and Coordination of Care",
-            "AAC-4": "Discharge Planning",
-            "AAC-5": "Transportation Services",
+            "AAC-1.a": "Patient admission protocols and criteria",
+            "AAC-1.b": "Registration and initial administrative triage",
+            "AAC-2.a": "Comprehensive initial clinical assessment",
+            "AAC-3.a": "Continuity of care and transfer protocols",
+            "AAC-4.a": "Discharge planning and discharge summary audits",
+            "AAC-5.a": "Ambulance and safe patient transport services",
         }
     },
     "PC": {
         "name": "Patient Care",
         "chapters": {
-            "PC-1": "Patient Rights and Education",
-            "PC-2": "Clinical Care Plan",
-            "PC-3": "Medication Management",
-            "PC-4": "Surgical Care",
-            "PC-5": "Anesthesia Care",
-            "PC-6": "Blood and Blood Products",
-            "PC-7": "Infection Prevention and Control",
-            "PC-8": "Patient Safety Goals",
+            "PC-1.a": "Patient rights education and informed consent checks",
+            "PC-2.a": "Clinical care plan documentation and review",
+            "PC-3.a": "Medication reconciliation and expiry management",
+            "PC-4.a": "Pre-operative assessment and WHO surgical safety checklist implementation",
+            "PC-5.a": "Pre-anesthesia assessment and monitoring standards",
+            "PC-6.a": "Blood safety, transfusion audits and cross-matching",
+            "PC-7.a": "Hand hygiene WHO 5 Moments audit protocols",
+            "PC-8.a": "International Patient Safety Goals (IPSG) tracking",
         }
     },
     "FMS": {
         "name": "Facility Management and Safety",
         "chapters": {
-            "FMS-1": "Fire Safety",
-            "FMS-2": "Biomedical Waste Management",
-            "FMS-3": "Disaster Preparedness",
-            "FMS-4": "Security Management",
-            "FMS-5": "Equipment Management",
-            "FMS-6": "Utility Management",
+            "FMS-1.a": "Fire Safety NOC, extinguisher mapping and drills",
+            "FMS-2.a": "Bio-Medical Waste segregation at source and manifest matching",
+            "FMS-3.a": "Disaster preparedness plan and evacuation routes",
+            "FMS-4.a": "Security access control and CCTV coverage audits",
+            "FMS-5.a": "Medical equipment calibration and maintenance records",
+            "FMS-6.a": "Water and power utility checks and back-up testing",
         }
     },
     "QMS": {
         "name": "Quality Management System",
         "chapters": {
-            "QMS-1": "Quality Planning",
-            "QMS-2": "Documentation and Records",
-            "QMS-3": "Internal Audit",
-            "QMS-4": "Management Review",
-            "QMS-5": "Incident Reporting and Analysis",
+            "QMS-1.a": "Quality indicators planning and benchmark reviews",
+            "QMS-2.a": "SOP version control and documentation access audits",
+            "QMS-3.a": "Internal quality audits schedule and resolution tracking",
+            "QMS-4.a": "Management reviews of compliance deficit metrics",
+            "QMS-5.a": "Incident reporting CAPA investigations",
         }
     },
     "IS": {
         "name": "Information Management System",
         "chapters": {
-            "IS-1": "Health Information Management",
-            "IS-2": "Medical Records",
-            "IS-3": "Data Privacy and Security",
-            "IS-4": "Clinical Decision Support",
+            "IS-1.a": "Health information management policy and system access logs",
+            "IS-2.a": "Medical records completion audits and restricted access protocols",
+            "IS-3.a": "DPDP audit readiness: Patient consent and signature mapping",
+            "IS-4.a": "Clinical decision support alerts and algorithm audit records",
         }
     },
     "HR": {
         "name": "Human Resource Management",
         "chapters": {
-            "HR-1": "Staff Qualifications and Credentialing",
-            "HR-2": "Orientation and Training",
-            "HR-3": "Performance Management",
-            "HR-4": "Staff Health and Safety",
+            "HR-1.a": "Staff credentialing and medical registration checks",
+            "HR-2.a": "Staff orientation records and compliance training logs",
+            "HR-3.a": "Performance reviews and competency certifications",
+            "HR-4.a": "Staff health assessments and immunization records",
         }
     },
 }
@@ -78,32 +81,35 @@ class ComplianceService:
         status: Optional[ComplianceStatus]
     ) -> Dict[str, Any]:
         """Fetch records and calculate compliance averages and readiness ratings."""
-        records = ComplianceRepository.get_all_for_hospital(db, hospital_id)
+        # A. Trigger Live Agent Audit Scan on fetch
+        inspector = InspectorAgent()
+        inspector.assess_current_state(db, hospital_id)
         
-        # Filter in-memory to simplify repository layer
-        filtered = []
-        for r in records:
-            if chapter and r.chapter != chapter:
+        # B. Read all granular objectives from DB
+        all_records = ComplianceRepository.get_all_for_hospital(db, hospital_id)
+        records = []
+        for r in all_records:
+            if chapter and r.chapter_code != chapter:
                 continue
-            if status and r.status != status:
-                continue
-            filtered.append(r)
-            
+            records.append(r)
+        
         chapters = {}
-        for r in filtered:
-            ch = r.chapter or "Uncategorized"
+        for r in records:
+            ch = r.chapter_code or "Uncategorized"
             if ch not in chapters:
                 chapters[ch] = {"total": 0, "compliant": 0, "non_compliant": 0, "partial": 0, "under_review": 0, "score_sum": 0}
-            chapters[ch]["total"] += 1
-            chapters[ch]["score_sum"] += r.current_score
             
-            if r.status == ComplianceStatus.COMPLIANT:
+            chapters[ch]["total"] += 1
+            chapters[ch]["score_sum"] += r.monitoring_indicator_rate if r.monitoring_indicator_rate is not None else (r.maturity_level.value * 20.0)
+            
+            # Map maturity to counts
+            if r.maturity_level >= MaturityLevel.IMPLEMENTED:
                 chapters[ch]["compliant"] += 1
-            elif r.status == ComplianceStatus.NON_COMPLIANT:
-                chapters[ch]["non_compliant"] += 1
-            elif r.status == ComplianceStatus.PARTIALLY_COMPLIANT:
+            elif r.maturity_level == MaturityLevel.DEFINED:
                 chapters[ch]["partial"] += 1
-            elif r.status == ComplianceStatus.UNDER_REVIEW:
+            elif r.maturity_level == MaturityLevel.AD_HOC:
+                chapters[ch]["non_compliant"] += 1
+            else:
                 chapters[ch]["under_review"] += 1
                 
         for ch in chapters:
@@ -111,8 +117,8 @@ class ComplianceService:
             chapters[ch]["compliance_rate"] = round(chapters[ch]["compliant"] / total * 100, 1) if total > 0 else 0
             chapters[ch]["avg_score"] = round(chapters[ch]["score_sum"] / total, 2) if total > 0 else 0
             
-        overall_compliant = sum(1 for r in filtered if r.status == ComplianceStatus.COMPLIANT)
-        overall_total = len(filtered)
+        overall_compliant = sum(1 for r in records if r.maturity_level >= MaturityLevel.IMPLEMENTED)
+        overall_total = len(records)
         
         return {
             "hospital_id": hospital_id,
@@ -120,17 +126,17 @@ class ComplianceService:
             "overall_compliance_rate": round(overall_compliant / overall_total * 100, 1) if overall_total > 0 else 0,
             "total_standards": overall_total,
             "compliant": overall_compliant,
-            "non_compliant": sum(1 for r in filtered if r.status == ComplianceStatus.NON_COMPLIANT),
-            "partially_compliant": sum(1 for r in filtered if r.status == ComplianceStatus.PARTIALLY_COMPLIANT),
-            "under_review": sum(1 for r in filtered if r.status == ComplianceStatus.UNDER_REVIEW),
+            "non_compliant": sum(1 for r in records if r.maturity_level == MaturityLevel.AD_HOC),
+            "partially_compliant": sum(1 for r in records if r.maturity_level == MaturityLevel.DEFINED),
+            "under_review": sum(1 for r in records if r.maturity_level == MaturityLevel.NON_EXISTENT),
             "chapters": chapters,
             "readiness_level": (
-                "Assessment Ready" if overall_compliant / overall_total >= 0.90 else
-                "Near Ready" if overall_compliant / overall_total >= 0.75 else
-                "In Progress" if overall_compliant / overall_total >= 0.50 else
+                "Assessment Ready" if overall_total > 0 and overall_compliant / overall_total >= 0.90 else
+                "Near Ready" if overall_total > 0 and overall_compliant / overall_total >= 0.75 else
+                "In Progress" if overall_total > 0 and overall_compliant / overall_total >= 0.50 else
                 "Early Stage" if overall_total > 0 else
                 "Not Started"
-            ) if overall_total > 0 else "Not Started"
+            )
         }
 
     @staticmethod
@@ -141,31 +147,44 @@ class ComplianceService:
         compliance_status: ComplianceStatus,
         remediation_deadline: Optional[datetime]
     ) -> Dict[str, Any]:
-        """Update or insert compliance assessments for NABH codes."""
-        record = ComplianceRepository.get_by_standard_code(db, hospital_id, update.standard_code)
+        """Update or insert compliance assessments for NABH codes manually."""
+        record = db.query(NABHObjective).filter(
+            NABHObjective.hospital_id == hospital_id,
+            NABHObjective.standard_code == update.standard_code
+        ).first()
         
         if not record:
-            record = ComplianceRecord(
+            record = NABHObjective(
                 hospital_id=hospital_id,
                 standard_code=update.standard_code,
             )
-            ComplianceRepository.create(db, record)
+            db.add(record)
             
-        record.status = compliance_status
-        record.current_score = update.current_score
-        record.evidence_description = update.evidence_description
+        # Map manual input status back to maturity levels
+        if update.status == "compliant":
+            record.maturity_level = MaturityLevel.IMPLEMENTED
+        elif update.status == "partially_compliant":
+            record.maturity_level = MaturityLevel.DEFINED
+        elif update.status == "non_compliant":
+            record.maturity_level = MaturityLevel.AD_HOC
+        else:
+            record.maturity_level = MaturityLevel.NON_EXISTENT
+            
+        record.monitoring_indicator_rate = update.current_score
+        record.policy_doc_url = update.evidence_description
         record.remediation_plan = update.remediation_plan
         record.remediation_deadline = remediation_deadline
         record.last_assessed = datetime.utcnow()
+        record.assessed_by = "Manual Officer Audit"
         
         # Populate category metadata
         for category, data in NABH_STANDARDS.items():
             if update.standard_code in data["chapters"]:
                 record.standard_name = data["chapters"][update.standard_code]
-                record.chapter = category
+                record.chapter_code = category
                 break
                 
-        ComplianceRepository.save(db, record)
+        db.commit()
         
         return {
             "standard_code": update.standard_code,
@@ -175,23 +194,34 @@ class ComplianceService:
 
     @staticmethod
     def get_gap_analysis(db: Session, hospital_id: str) -> Dict[str, Any]:
-        """Compile a prioritized remediation list of compliance gaps."""
+        """Compile a prioritized remediation list of compliance gaps and auto-create CAPA tasks."""
+        inspector = InspectorAgent()
+        gap_report = inspector.assess_current_state(db, hospital_id)
+        
+        # Trigger Consultant Agent to verify & create active database CAPA tasks
+        consultant = ConsultantAgent()
+        consultant.generate_remediation_action_plan(db, hospital_id, gap_report)
+        
+        # Fetch updated objectives list
         records = ComplianceRepository.get_all_for_hospital(db, hospital_id)
         
         gaps = []
         for record in records:
-            if record.status in [ComplianceStatus.NON_COMPLIANT, ComplianceStatus.PARTIALLY_COMPLIANT]:
+            if record.maturity_level < MaturityLevel.IMPLEMENTED:
+                # Severity-to-priority scaling
+                priority = "critical" if record.severity == SeverityLevel.CRITICAL else "high" if record.severity == SeverityLevel.MAJOR else "medium"
+                
                 gaps.append({
                     "standard_code": record.standard_code,
                     "standard_name": record.standard_name,
-                    "chapter": record.chapter,
-                    "current_status": record.status.value,
-                    "current_score": record.current_score,
-                    "gap_percentage": record.gap_percentage,
+                    "chapter": record.chapter_code,
+                    "current_status": "non_compliant" if record.maturity_level == MaturityLevel.AD_HOC else "partially_compliant" if record.maturity_level == MaturityLevel.DEFINED else "under_review",
+                    "current_score": record.monitoring_indicator_rate or (record.maturity_level.value * 20.0),
+                    "gap_percentage": round(100.0 - (record.monitoring_indicator_rate or (record.maturity_level.value * 20.0)), 1),
                     "remediation_plan": record.remediation_plan,
                     "remediation_deadline": record.remediation_deadline.isoformat() if record.remediation_deadline else None,
                     "owner": record.remediation_owner,
-                    "priority": "critical" if record.gap_percentage > 50 else "high" if record.gap_percentage > 25 else "medium",
+                    "priority": priority,
                 })
                 
         priority_order = {"critical": 0, "high": 1, "medium": 2}
@@ -210,5 +240,5 @@ class ComplianceService:
             "gaps": gaps,
             "missing_standards": missing,
             "missing_count": len(missing),
-            "recommendation": "Focus on critical gaps first. Aim for 90% compliance before scheduling NABH assessment."
+            "recommendation": "Consultant Agent: Prioritize critical safety gaps (Fire, BMW, Patient Consent) before scheduling mock audits."
         }

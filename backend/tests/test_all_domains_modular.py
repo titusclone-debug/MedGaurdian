@@ -16,7 +16,7 @@ from app.consent.repository import ConsentRepository
 from app.models.database import (
     License, LicenseStatus, RiskAlert, RiskLevel,
     ComplianceRecord, ComplianceStatus, FundAccount, FundType,
-    ConsentRecord, ConsentStatus
+    ConsentRecord, ConsentStatus, NABHObjective, SeverityLevel, MaturityLevel
 )
 
 def test_license_service_aggregation():
@@ -59,8 +59,23 @@ def test_nabh_service_gap_analysis():
     """Verify ComplianceService aggregates non-compliant scores as critical compliance gaps."""
     db = MagicMock()
     records = [
-        ComplianceRecord(standard_code="AAC-1", standard_name="Access Plan", status=ComplianceStatus.NON_COMPLIANT, gap_percentage=80),
-        ComplianceRecord(standard_code="AAC-2", standard_name="Assessment Plan", status=ComplianceStatus.COMPLIANT, gap_percentage=0)
+        NABHObjective(
+            standard_code="AAC-1.a",
+            standard_name="Patient Access Services",
+            chapter_code="ACC",
+            severity=SeverityLevel.CRITICAL,
+            maturity_level=MaturityLevel.AD_HOC,
+            monitoring_indicator_rate=20.0,
+            remediation_plan="Critical gap plan"
+        ),
+        NABHObjective(
+            standard_code="AAC-2.a",
+            standard_name="Assessment of Patients",
+            chapter_code="ACC",
+            severity=SeverityLevel.MAJOR,
+            maturity_level=MaturityLevel.IMPLEMENTED,
+            monitoring_indicator_rate=100.0
+        )
     ]
     
     original_get_all = ComplianceRepository.get_all_for_hospital
@@ -69,7 +84,7 @@ def test_nabh_service_gap_analysis():
     try:
         res = ComplianceService.get_gap_analysis(db, "hosp-1")
         assert res["total_gaps"] == 1
-        assert res["gaps"][0]["standard_code"] == "AAC-1"
+        assert res["gaps"][0]["standard_code"] == "AAC-1.a"
         assert res["gaps"][0]["priority"] == "critical"
     finally:
         ComplianceRepository.get_all_for_hospital = original_get_all

@@ -10,6 +10,7 @@ from app.api.auth import assert_hospital_access, get_current_user, require_role
 from app.models.database import ComplianceRecord, Hospital, Staff, ComplianceStatus, UserRole
 from app.nabh.repository import ComplianceRepository
 from app.nabh.service import ComplianceService, NABH_STANDARDS
+from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
 
 router = APIRouter()
 
@@ -96,7 +97,48 @@ async def get_gap_analysis(
     current_user: Staff = Depends(get_current_user),
 ):
     """Gap analysis — identifies what's missing for NABH accreditation."""
-    # SECURITY FIX: Restored assert_hospital_access from docstring comment into active code!
     assert_hospital_access(current_user, hospital_id)
-    
     return ComplianceService.get_gap_analysis(db, hospital_id)
+
+
+@router.get("/agent/spot-check/{hospital_id}")
+async def get_random_spot_checks(
+    hospital_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user),
+):
+    """Get randomized spot-check logs selected by the Inspector Agent."""
+    assert_hospital_access(current_user, hospital_id)
+    inspector = InspectorAgent()
+    checks = inspector.select_random_spot_check_selector(db, hospital_id)
+    if not checks:
+        raise HTTPException(status_code=404, detail="No active logs found for spot check selection.")
+    return checks
+
+
+@router.get("/agent/sop/{hospital_id}/{standard_code}")
+async def get_sop_template(
+    hospital_id: str,
+    standard_code: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user),
+):
+    """Get dynamic, customized SOP template drafted by the Consultant Agent."""
+    assert_hospital_access(current_user, hospital_id)
+    consultant = ConsultantAgent()
+    sop = consultant.generate_sop_template(db, hospital_id, standard_code)
+    if "error" in sop:
+        raise HTTPException(status_code=400, detail=sop["error"])
+    return sop
+
+
+@router.get("/agent/tracer/{hospital_id}/{patient_id}")
+async def get_tracer_audit(
+    hospital_id: str,
+    patient_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user),
+):
+    """Run a simulated patient tracer audit to map compliance end-to-end."""
+    assert_hospital_access(current_user, hospital_id)
+    return simulate_tracer_audit(db, hospital_id, patient_id)
