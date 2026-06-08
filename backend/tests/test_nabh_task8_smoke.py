@@ -1,0 +1,196 @@
+"""
+Smoke Tests: Task 8 — Populate Minimum Viable Official Ontology & Coverage API
+
+Covers:
+  - Seeding the 10 official 6th Edition chapters with exact counts.
+  - Seeding the minimal, source-backed requirements for IPC, MOM, FMS.
+  - Ensuring every seeded element has at least one citation and one evidence requirement.
+  - Verifying the GET /api/nabh/ontology/coverage endpoint returns correct counts and partial status.
+"""
+
+import os
+import pytest
+from sqlalchemy import text
+
+from app.api.auth import get_current_user
+from app.models.database import (
+    NABHEdition, NABHChapter, NABHStandard,
+    NABHObjectiveElement, NABHMeasurableElement,
+    NABHSourceDocument, NABHRequirementCitation,
+    NABHEvidenceRequirement, Staff, UserRole
+)
+from app.main import app
+from app.nabh.seeder import seed_versioned_ontology
+
+
+def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
+    # Enable foreign keys for SQLite in-memory DB connection
+    db_session.execute(text("PRAGMA foreign_keys=ON"))
+
+    # Override auth dependency to allow route access
+    def mock_user():
+        return Staff(
+            id="mock-staff",
+            hospital_id="mock-hosp",
+            role=UserRole.SUPER_ADMIN,
+            name="Mock Admin",
+            is_active=True
+        )
+    app.dependency_overrides[get_current_user] = mock_user
+
+    # Clean any existing data to guarantee a fresh run
+    db_session.execute(text("DELETE FROM nabh_requirement_citations"))
+    db_session.execute(text("DELETE FROM nabh_applicability_rules"))
+    db_session.execute(text("DELETE FROM nabh_evidence_requirements"))
+    db_session.execute(text("DELETE FROM nabh_measurable_elements"))
+    db_session.execute(text("DELETE FROM nabh_objective_elements"))
+    db_session.execute(text("DELETE FROM nabh_standards"))
+    db_session.execute(text("DELETE FROM nabh_chapters"))
+    db_session.execute(text("DELETE FROM nabh_source_documents"))
+    db_session.execute(text("DELETE FROM nabh_editions"))
+    db_session.commit()
+
+    # Find the real seed data directory relative to this file
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.abspath(os.path.join(test_dir, "..", "app", "nabh", "data"))
+
+    # 1. Run the versioned ontology seeder
+    seed_versioned_ontology(db_session, data_dir, "6.0")
+
+    # 2. Assert seeder populated database models cleanly
+    edition = db_session.query(NABHEdition).filter(NABHEdition.version == "6.0").first()
+    assert edition is not None
+    assert edition.name == "NABH 6.0 Edition"
+
+    # All 10 official chapters must be in the DB
+    official_chapter_codes = ["AAC", "COP", "MOM", "PRE", "IPC", "PSQ", "ROM", "FMS", "HRM", "IMS"]
+    db_chapters = db_session.query(NABHChapter).filter(NABHChapter.edition_id == edition.id).all()
+    assert len(db_chapters) == 10
+    for chap in db_chapters:
+        assert chap.canonical_code in official_chapter_codes
+        assert chap.is_fully_seeded is False
+        assert chap.official_standards_count is not None
+        assert chap.official_measurable_elements_count is not None
+
+    # Total official chapter counts check
+    official_standards_total = sum(c.official_standards_count for c in db_chapters)
+    official_elements_total = sum(c.official_measurable_elements_count for c in db_chapters)
+    assert official_standards_total == 100
+    assert official_elements_total == 638
+
+    # Assert seeded requirement entities exist and match IPC, MOM, FMS
+    seeded_elements = db_session.query(NABHMeasurableElement).all()
+    assert len(seeded_elements) == 3
+    element_codes = {el.canonical_code for el in seeded_elements}
+    assert element_codes == {"IPC-1.a.1", "MOM-1.a.1", "FMS-1.a.1"}
+
+    # Assert every seeded element has at least one citation and one evidence requirement
+    for el in seeded_elements:
+        ev_reqs = db_session.query(NABHEvidenceRequirement).filter(
+            NABHEvidenceRequirement.measurable_element_id == el.id
+        ).all()
+        assert len(ev_reqs) >= 1
+
+        citations = db_session.query(NABHRequirementCitation).filter(
+            NABHRequirementCitation.measurable_element_id == el.id
+        ).all()
+        assert len(citations) >= 1
+
+    # 3. Call the coverage API endpoint
+    response = client.get("/api/nabh/ontology/coverage")
+    assert response.status_code == 200
+    
+    data = response.json()
+    assert data["ontology_status"] == "partial_seed"
+    assert data["official_declared_total_standards"] == 100
+    assert data["official_declared_total_elements"] == 639
+    assert data["official_chapter_sum_standards"] == 100
+    assert data["official_chapter_sum_elements"] == 638
+    assert data["official_chapter_objective_elements_sum"] == 638
+    assert data["official_category_breakdown_sum"] == 639
+    assert data["official_standards_discrepancy"] == 0
+    assert data["official_elements_discrepancy"] == 1
+    assert data["has_source_inconsistency"] is True
+    assert len(data["inconsistencies"]) == 1
+    
+    inconsistency = data["inconsistencies"][0]
+    assert inconsistency["chapter_code"] == "COP"
+    assert inconsistency["objective_elements_count"] == 135
+    assert inconsistency["category_breakdown_sum"] == 136
+    assert inconsistency["difference"] == 1
+    
+    assert data["seeded_total_standards"] == 3
+    assert data["seeded_total_elements"] == 3
+    assert data["global_standards_coverage_percent"] == 3.0
+    assert data["global_elements_coverage_percent"] == 0.5
+    assert data["citation_complete"] is False
+
+    # Assert ordering of chapters matches display_order
+    chapters_resp = data["chapters"]
+    display_orders = [c.canonical_code for c in sorted(db_chapters, key=lambda x: x.display_order)]
+    resp_codes = [c["chapter_code"] for c in chapters_resp]
+    assert resp_codes == display_orders
+
+    # Check COP category counts
+    cop_resp = [c for c in chapters_resp if c["chapter_code"] == "COP"][0]
+    assert cop_resp["core_count"] == 13
+    assert cop_resp["commitment_count"] == 107
+    assert cop_resp["achievement_count"] == 12
+    assert cop_resp["excellence_count"] == 4
+
+    # Check IPC breakdown details
+    ipc_resp = [c for c in chapters_resp if c["chapter_code"] == "IPC"][0]
+    assert ipc_resp["title"] == "Infection Prevention & Control"
+    assert ipc_resp["official_standards_count"] == 8
+    assert ipc_resp["official_objective_elements_count"] == 49
+    assert ipc_resp["core_count"] == 13
+    assert ipc_resp["commitment_count"] == 33
+    assert ipc_resp["achievement_count"] == 3
+    assert ipc_resp["excellence_count"] == 0
+    assert ipc_resp["seeded_standards_count"] == 1
+    assert ipc_resp["seeded_objective_elements_count"] == 1
+    assert ipc_resp["standards_coverage_percent"] == 12.5 # 1/8
+    assert ipc_resp["elements_coverage_percent"] == 2.0  # 1/49 = 2.04% -> 2.0
+    assert ipc_resp["citation_count"] == 1
+    assert ipc_resp["uncited_seeded_elements_count"] == 0
+    assert ipc_resp["is_fully_seeded"] is False
+
+    # Check FMS breakdown details
+    fms_resp = [c for c in chapters_resp if c["chapter_code"] == "FMS"][0]
+    assert fms_resp["title"] == "Facility Management and Safety"
+    assert fms_resp["official_standards_count"] == 7
+    assert fms_resp["official_objective_elements_count"] == 43
+    assert fms_resp["core_count"] == 11
+    assert fms_resp["commitment_count"] == 29
+    assert fms_resp["achievement_count"] == 2
+    assert fms_resp["excellence_count"] == 1
+    assert fms_resp["seeded_standards_count"] == 1
+    assert fms_resp["seeded_objective_elements_count"] == 1
+    assert fms_resp["standards_coverage_percent"] == 14.3 # 1/7
+    assert fms_resp["elements_coverage_percent"] == 2.3  # 1/43 = 2.32% -> 2.3
+    assert fms_resp["citation_count"] == 1
+    assert fms_resp["uncited_seeded_elements_count"] == 0
+    assert fms_resp["is_fully_seeded"] is False
+
+    # Check MOM breakdown details
+    mom_resp = [c for c in chapters_resp if c["chapter_code"] == "MOM"][0]
+    assert mom_resp["title"] == "Management of Medication"
+    assert mom_resp["official_standards_count"] == 11
+    assert mom_resp["official_objective_elements_count"] == 68
+    assert mom_resp["seeded_standards_count"] == 1
+    assert mom_resp["seeded_objective_elements_count"] == 1
+    assert mom_resp["standards_coverage_percent"] == 9.1  # 1/11
+    assert mom_resp["elements_coverage_percent"] == 1.5  # 1/68 = 1.47% -> 1.5
+    assert mom_resp["citation_count"] == 1
+    assert mom_resp["uncited_seeded_elements_count"] == 0
+    assert fms_resp["is_fully_seeded"] is False
+
+    # Check IMS breakdown details
+    ims_resp = [c for c in chapters_resp if c["chapter_code"] == "IMS"][0]
+    assert ims_resp["core_count"] == 12
+    assert ims_resp["commitment_count"] == 25
+    assert ims_resp["achievement_count"] == 6
+    assert ims_resp["excellence_count"] == 2
+
+    # Clean up overrides
+    app.dependency_overrides.clear()

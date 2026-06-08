@@ -1,24 +1,35 @@
 [
   {
-    "measurable_element_code": "HIC-1.a.1",
+    "measurable_element_code": "IPC-1.a.1",
     "edition_version": "6.0",
-    "evidence_code": "HIC-1.a.1-EV-SOP-01",
+    "evidence_code": "IPC-1.a.1-EV-MANUAL",
     "evidence_type": "sop",
-    "description": "Standard Operating Procedure for Triage Control",
-    "is_mandatory": true,
-    "evidence_frequency": "yearly",
-    "minimum_lookback_days": 180,
-    "default_owner_role": "compliance_officer"
-  },
-  {
-    "measurable_element_code": "HIC-1.a.2",
-    "edition_version": "6.0",
-    "evidence_code": "HIC-1.a.2-EV-POL-01",
-    "evidence_type": "sop",
-    "description": "Infection Control Manual Annual Review Policy",
+    "description": "Documented Infection Prevention and Control Manual updated per national guidelines.",
     "is_mandatory": true,
     "evidence_frequency": "yearly",
     "minimum_lookback_days": 365,
     "default_owner_role": "infection_control_officer"
+  },
+  {
+    "measurable_element_code": "MOM-1.a.1",
+    "edition_version": "6.0",
+    "evidence_code": "MOM-1.a.1-EV-TEMP",
+    "evidence_type": "register",
+    "description": "Daily room and refrigerator temperature logbook for medication storage areas.",
+    "is_mandatory": true,
+    "evidence_frequency": "daily",
+    "minimum_lookback_days": 30,
+    "default_owner_role": "pharmacist"
+  },
+  {
+    "measurable_element_code": "FMS-1.a.1",
+    "edition_version": "6.0",
+    "evidence_code": "FMS-1.a.1-EV-NOC",
+    "evidence_type": "license",
+    "description": "Valid Fire No Objection Certificate (NOC) issued by the local fire safety department.",
+    "is_mandatory": true,
+    "evidence_frequency": "yearly",
+    "minimum_lookback_days": 365,
+    "default_owner_role": "facility_director"
   }
 ]

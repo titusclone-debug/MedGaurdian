@@ -1,36 +1,49 @@
 {
   "_meta": {
-    "description": "NABH 6th Edition — HIC chapter citation seed (proof-of-concept, NOT citation-complete).",
+    "description": "NABH 6th Edition — Chapter citation seed (partial official ontology, NOT citation-complete).",
     "edition_version": "6.0",
     "citation_complete": false,
-    "note": "This file seeds two citations for HIC-1.a.1 and HIC-1.a.2 as an engine verification only. HIC chapter citation coverage is intentionally partial. Do NOT infer citation completeness for any standard or chapter from this file."
+    "note": "This file contains verified citations backing the minimum viable ontology for FMS, IPC, and MOM chapters. Citation coverage is intentionally partial."
   },
   "citations": [
     {
-      "measurable_element_code": "HIC-1.a.1",
+      "measurable_element_code": "IPC-1.a.1",
       "edition_version": "6.0",
       "document_title": "Accreditation Standards for Hospitals, 6th Edition Reference Guide",
       "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
       "document_version": "6.0",
-      "section": "Chapter HIC",
-      "page_number": "142",
-      "clause_text_summary": "Initial registration and triage protocols must include basic infection control scanning as per Section 4.1 of the NABH Infection Control Manual.",
+      "section": "Chapter IPC",
+      "page_number": "121",
+      "clause_text_summary": "The organization must implement an infection prevention and control manual based on standard precautions and national policy frameworks.",
       "effective_date": "2026-01-01",
-      "file_path": "/excerpts/HIC_1a1_triage_excerpt.png",
+      "file_path": "/excerpts/IPC_1a1_manual_excerpt.png",
       "url": null
     },
     {
-      "measurable_element_code": "HIC-1.a.2",
+      "measurable_element_code": "MOM-1.a.1",
       "edition_version": "6.0",
       "document_title": "Accreditation Standards for Hospitals, 6th Edition Reference Guide",
       "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
       "document_version": "6.0",
-      "section": "Chapter HIC",
-      "page_number": "143",
-      "clause_text_summary": "Infection control manual must be reviewed at least annually by the Infection Control Committee and updated with latest evidence-based guidelines.",
+      "section": "Chapter MOM",
+      "page_number": "63",
+      "clause_text_summary": "Medications must be stored under optimal conditions of cleanliness, security, and temperature, monitored and logged daily.",
       "effective_date": "2026-01-01",
       "file_path": null,
-      "url": "https://www.nabh.co/standards/hospitals-6th-edition/hic-manual-review"
+      "url": "https://www.nabh.co/standards/hospitals-6th-edition/mom-storage"
+    },
+    {
+      "measurable_element_code": "FMS-1.a.1",
+      "edition_version": "6.0",
+      "document_title": "Accreditation Standards for Hospitals, 6th Edition Reference Guide",
+      "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
+      "document_version": "6.0",
+      "section": "Chapter FMS",
+      "page_number": "184",
+      "clause_text_summary": "The organization must possess a valid Fire NOC or clearance certificate from competent local authorities to ensure structural safety.",
+      "effective_date": "2026-01-01",
+      "file_path": "/excerpts/FMS_1a1_fire_noc_excerpt.png",
+      "url": null
     }
   ]
 }

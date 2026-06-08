@@ -160,7 +160,11 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                     display_order=chap_data["display_order"],
                     official_standards_count=chap_data["official_standards_count"],
                     official_measurable_elements_count=chap_data["official_measurable_elements_count"],
-                    is_fully_seeded=chap_data["is_fully_seeded"]
+                    is_fully_seeded=chap_data["is_fully_seeded"],
+                    core_count=chap_data.get("core_count"),
+                    commitment_count=chap_data.get("commitment_count"),
+                    achievement_count=chap_data.get("achievement_count"),
+                    excellence_count=chap_data.get("excellence_count")
                 )
                 db.add(chap)
             else:
@@ -170,6 +174,10 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 chap.official_standards_count = chap_data["official_standards_count"]
                 chap.official_measurable_elements_count = chap_data["official_measurable_elements_count"]
                 chap.is_fully_seeded = chap_data["is_fully_seeded"]
+                chap.core_count = chap_data.get("core_count")
+                chap.commitment_count = chap_data.get("commitment_count")
+                chap.achievement_count = chap_data.get("achievement_count")
+                chap.excellence_count = chap_data.get("excellence_count")
             
             db.flush()
             chapter_id_map[code] = chap.id

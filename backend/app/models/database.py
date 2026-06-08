@@ -740,6 +740,12 @@ class NABHChapter(Base):
     official_standards_count = Column(Integer, nullable=True)
     official_measurable_elements_count = Column(Integer, nullable=True)
     is_fully_seeded = Column(Boolean, default=False, nullable=False)
+
+    # Category counts
+    core_count = Column(Integer, nullable=True)
+    commitment_count = Column(Integer, nullable=True)
+    achievement_count = Column(Integer, nullable=True)
+    excellence_count = Column(Integer, nullable=True)
     
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

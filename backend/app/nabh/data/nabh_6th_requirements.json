@@ -1,37 +1,90 @@
 [
   {
-    "chapter_code": "HIC",
+    "chapter_code": "IPC",
     "edition_version": "6.0",
     "standards": [
       {
-        "code": "HIC-1",
-        "title": "Infection Control Program",
-        "description": "The organization has an active infection control program.",
+        "code": "IPC-1",
+        "title": "Infection Prevention and Control Program",
+        "description": "The organization has a documented and implemented infection prevention and control program to prevent and reduce healthcare-associated infections.",
         "display_order": 1,
         "objective_elements": [
           {
-            "code": "HIC-1.a",
-            "description": "Documented manual is updated.",
+            "code": "IPC-1.a",
+            "description": "The infection prevention and control program is documented, defining infection control policies and manual procedures.",
             "severity": "major",
             "display_order": 1,
             "measurable_elements": [
               {
-                "code": "HIC-1.a.1",
-                "description": "Standard registration and triage checks exist.",
-                "applicability_default": "applicable",
-                "scoring_weight": 1.0,
-                "risk_weight": 1.0,
-                "default_owner_role": "compliance_officer",
-                "display_order": 1
-              },
-              {
-                "code": "HIC-1.a.2",
-                "description": "The manual is reviewed annually and updated.",
+                "code": "IPC-1.a.1",
+                "description": "The organization has a documented infection prevention and control manual updated in accordance with national guidelines.",
                 "applicability_default": "applicable",
                 "scoring_weight": 1.0,
                 "risk_weight": 1.0,
                 "default_owner_role": "infection_control_officer",
-                "display_order": 2
+                "display_order": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "MOM",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "MOM-1",
+        "title": "Safe Medication Storage",
+        "description": "Medications are stored appropriately and securely under recommended storage conditions across the organization.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "MOM-1.a",
+            "description": "Medications are stored in a clean, secure, and temperature-controlled environment as per manufacturer requirements.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.a.1",
+                "description": "Medication storage areas are secure, clean, and temperature-monitored with daily temperature logging.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "FMS",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "FMS-1",
+        "title": "Fire Prevention and Safety",
+        "description": "The organization has a structured program to prevent, detect, and respond to fire emergencies.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "FMS-1.a",
+            "description": "The organization complies with national fire safety regulations and has emergency response protocols.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.a.1",
+                "description": "The organization possesses a valid Fire No Objection Certificate (NOC) or fire clearance certificate from fire authorities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1
               }
             ]
           }

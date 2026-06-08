@@ -9,7 +9,9 @@ from app.core.database import get_db
 from app.api.auth import assert_hospital_access, get_current_user, require_role
 from app.models.database import (
     ComplianceRecord, Hospital, Staff, ComplianceStatus, UserRole,
-    RiskAlert, NABHObjective, MaturityLevel, SeverityLevel
+    RiskAlert, NABHObjective, MaturityLevel, SeverityLevel,
+    NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement,
+    NABHMeasurableElement, NABHRequirementCitation, NABHSourceDocument
 )
 from app.nabh.repository import ComplianceRepository
 from app.nabh.service import ComplianceService, NABH_STANDARDS, LEGACY_NABH_MODEL_NOTICE
@@ -377,4 +379,174 @@ async def get_daily_brief(
             "deadline": g.remediation_deadline.isoformat() if g.remediation_deadline else None
         } for i, g in enumerate(sorted_gaps)]
     }
+
+
+@router.get("/ontology/coverage")
+async def get_ontology_coverage(db: Session = Depends(get_db)):
+    """
+    Get the official reference ontology coverage statistics for NABH 6th Edition.
+    """
+    import os
+    import json
+    
+    # 1. Read citation complete status from nabh_6th_citations.json
+    api_dir = os.path.dirname(os.path.abspath(__file__))
+    citations_path = os.path.abspath(os.path.join(api_dir, "..", "nabh", "data", "nabh_6th_citations.json"))
+    
+    citation_complete = False
+    if os.path.exists(citations_path):
+        try:
+            with open(citations_path, "r", encoding="utf-8") as f:
+                raw_data = json.load(f)
+                if isinstance(raw_data, dict):
+                    citation_complete = raw_data.get("_meta", {}).get("citation_complete", False)
+        except Exception:
+            pass
+
+    # 2. Get the active edition (6.0)
+    edition = db.query(NABHEdition).filter(NABHEdition.version == "6.0").first()
+    if not edition:
+        return {
+            "ontology_status": "partial_seed",
+            "official_declared_total_standards": 100,
+            "official_declared_total_elements": 639,
+            "official_chapter_sum_standards": 100,
+            "official_chapter_sum_elements": 638,
+            "official_chapter_objective_elements_sum": 638,
+            "official_category_breakdown_sum": 639,
+            "official_standards_discrepancy": 0,
+            "official_elements_discrepancy": 1,
+            "has_source_inconsistency": True,
+            "inconsistencies": [
+                {
+                    "chapter_code": "COP",
+                    "objective_elements_count": 135,
+                    "category_breakdown_sum": 136,
+                    "difference": 1,
+                    "note": "Official summary table appears internally inconsistent. COP objective elements count is listed as 135, but its category breakdown sum is 136."
+                }
+            ],
+            "seeded_total_standards": 0,
+            "seeded_total_elements": 0,
+            "global_standards_coverage_percent": 0.0,
+            "global_elements_coverage_percent": 0.0,
+            "citation_complete": citation_complete,
+            "chapters": []
+        }
+
+    # 3. Query all official 6th edition chapters from nabh_chapters
+    # Exclude HIC from calculations if it exists, matching only the official 10 canonical codes
+    official_chapter_codes = ["AAC", "COP", "MOM", "PRE", "IPC", "PSQ", "ROM", "FMS", "HRM", "IMS"]
+    
+    chapters = db.query(NABHChapter).filter(
+        NABHChapter.edition_id == edition.id,
+        NABHChapter.canonical_code.in_(official_chapter_codes)
+    ).order_by(NABHChapter.display_order).all()
+
+    chapter_stats = []
+    total_seeded_standards = 0
+    total_seeded_elements = 0
+    
+    for chap in chapters:
+        # Seeded standards count for this chapter
+        seeded_standards_count = db.query(NABHStandard).filter(
+            NABHStandard.chapter_id == chap.id
+        ).count()
+        
+        # Seeded measurable elements (represented as objective elements) count for this chapter
+        seeded_elements = db.query(NABHMeasurableElement).join(NABHObjectiveElement).join(NABHStandard).filter(
+            NABHStandard.chapter_id == chap.id
+        ).all()
+        seeded_elements_count = len(seeded_elements)
+        seeded_element_ids = [el.id for el in seeded_elements]
+
+        # Citation count for seeded elements in this chapter
+        citation_count = 0
+        if seeded_element_ids:
+            citation_count = db.query(NABHRequirementCitation).filter(
+                NABHRequirementCitation.measurable_element_id.in_(seeded_element_ids),
+                NABHRequirementCitation.retired_at.is_(None)
+            ).count()
+            
+        # Uncited seeded elements count
+        uncited_count = 0
+        for el in seeded_elements:
+            has_citation = db.query(NABHRequirementCitation).filter(
+                NABHRequirementCitation.measurable_element_id == el.id,
+                NABHRequirementCitation.retired_at.is_(None)
+            ).first() is not None
+            if not has_citation:
+                uncited_count += 1
+                
+        # Coverage percentages
+        std_pct = round((seeded_standards_count / chap.official_standards_count) * 100, 1) if chap.official_standards_count else 0.0
+        meas_pct = round((seeded_elements_count / chap.official_measurable_elements_count) * 100, 1) if chap.official_measurable_elements_count else 0.0
+
+        chapter_stats.append({
+            "chapter_code": chap.canonical_code,
+            "title": chap.title,
+            "official_standards_count": chap.official_standards_count,
+            "official_objective_elements_count": chap.official_measurable_elements_count,
+            "core_count": chap.core_count,
+            "commitment_count": chap.commitment_count,
+            "achievement_count": chap.achievement_count,
+            "excellence_count": chap.excellence_count,
+            "seeded_standards_count": seeded_standards_count,
+            "seeded_objective_elements_count": seeded_elements_count,
+            "standards_coverage_percent": std_pct,
+            "elements_coverage_percent": meas_pct,
+            "citation_count": citation_count,
+            "uncited_seeded_elements_count": uncited_count,
+            "is_fully_seeded": chap.is_fully_seeded
+        })
+        
+        total_seeded_standards += seeded_standards_count
+        total_seeded_elements += seeded_elements_count
+
+    # Global calculations
+    global_std_pct = round((total_seeded_standards / 100) * 100, 1)
+    global_elem_pct = round((total_seeded_elements / 639) * 100, 1)
+
+    official_chapter_sum_standards = sum(chap.official_standards_count for chap in chapters)
+    official_chapter_sum_elements = sum(chap.official_measurable_elements_count for chap in chapters)
+
+    official_category_breakdown_sum = sum(
+        (c.core_count or 0) + (c.commitment_count or 0) + (c.achievement_count or 0) + (c.excellence_count or 0)
+        for c in chapters
+    )
+
+    inconsistencies = []
+    for chap in chapters:
+        cat_sum = (chap.core_count or 0) + (chap.commitment_count or 0) + (chap.achievement_count or 0) + (chap.excellence_count or 0)
+        if chap.official_measurable_elements_count is not None and cat_sum > 0 and chap.official_measurable_elements_count != cat_sum:
+            diff = cat_sum - chap.official_measurable_elements_count
+            inconsistencies.append({
+                "chapter_code": chap.canonical_code,
+                "objective_elements_count": chap.official_measurable_elements_count,
+                "category_breakdown_sum": cat_sum,
+                "difference": abs(diff),
+                "note": f"Official summary table appears internally inconsistent. {chap.canonical_code} objective elements count is listed as {chap.official_measurable_elements_count}, but its category breakdown sum is {cat_sum}."
+            })
+    has_source_inconsistency = len(inconsistencies) > 0
+
+    return {
+        "ontology_status": "partial_seed",
+        "official_declared_total_standards": 100,
+        "official_declared_total_elements": 639,
+        "official_chapter_sum_standards": official_chapter_sum_standards,
+        "official_chapter_sum_elements": official_chapter_sum_elements,
+        "official_chapter_objective_elements_sum": official_chapter_sum_elements,
+        "official_category_breakdown_sum": official_category_breakdown_sum,
+        "official_standards_discrepancy": 100 - official_chapter_sum_standards,
+        "official_elements_discrepancy": 639 - official_chapter_sum_elements,
+        "has_source_inconsistency": has_source_inconsistency,
+        "inconsistencies": inconsistencies,
+        "seeded_total_standards": total_seeded_standards,
+        "seeded_total_elements": total_seeded_elements,
+        "global_standards_coverage_percent": global_std_pct,
+        "global_elements_coverage_percent": global_elem_pct,
+        "citation_complete": citation_complete,
+        "chapters": chapter_stats
+    }
+
 
