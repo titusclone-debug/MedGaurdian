@@ -710,6 +710,7 @@ class NABHSourceDocument(Base):
     file_path_or_url = Column(String(500), nullable=True)
     checksum = Column(String(64), nullable=True)
     publication_date = Column(DateTime, nullable=True)
+    effective_date = Column(DateTime, nullable=True)
     
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -876,6 +877,9 @@ class NABHRequirementCitation(Base):
     section = Column(String(100), nullable=True)
     page_number = Column(String(50), nullable=True)
     clause_text_summary = Column(Text, nullable=True)
+    effective_date = Column(DateTime, nullable=True)
+    file_path = Column(String(500), nullable=True)
+    url = Column(String(1000), nullable=True)
     
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
