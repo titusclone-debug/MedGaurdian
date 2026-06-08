@@ -224,6 +224,8 @@ def test_applicability_engine_smoke(db_session):
 
     # ME 4 (E4) -> bed_count is 30 -> rule 30 >= 50 evaluates False -> action_if_false is 'applicable'
     assert results_by_code["FMS-1.a.4"]["applicability_status"] == "applicable"
+    assert "High bed count safety standards" in results_by_code["FMS-1.a.4"]["applicability_reason"]
+    assert "applying applicable" in results_by_code["FMS-1.a.4"]["applicability_reason"]
 
     # Clean up the null rule to test clean rerun
     db_session.delete(r_null)
@@ -316,3 +318,76 @@ def test_applicability_engine_smoke(db_session):
     ApplicabilityEngine.compute_applicability(db_session, hosp.id)
     refreshed_legacy = db_session.query(NABHObjective).filter(NABHObjective.id == "legacy-1").first()
     assert refreshed_legacy.maturity_level == MaturityLevel.NON_EXISTENT
+
+    # ==========================================
+    # TEST: Retired Parent Requirements Excluded
+    # ==========================================
+    retired_standard = NABHStandard(
+        id="test-std-fms-retired",
+        edition_id=edition.id,
+        chapter_id=chapter.id,
+        code="FMS-99",
+        canonical_code="FMS-99",
+        title="Retired standard",
+        retired_at=datetime.utcnow()
+    )
+    db_session.add(retired_standard)
+    db_session.commit()
+
+    retired_obj = NABHObjectiveElement(
+        id="test-obj-fms-retired.a",
+        edition_id=edition.id,
+        standard_id=retired_standard.id,
+        code="FMS-99.a",
+        canonical_code="FMS-99.a",
+        description="Retired objective element"
+    )
+    db_session.add(retired_obj)
+    db_session.commit()
+
+    retired_child = NABHMeasurableElement(
+        id="test-me-fms-retired.a.1",
+        edition_id=edition.id,
+        objective_element_id=retired_obj.id,
+        code="FMS-99.a.1",
+        canonical_code="FMS-99.a.1",
+        description="Child under retired standard",
+        applicability_default=ApplicabilityDefault.APPLICABLE
+    )
+    db_session.add(retired_child)
+    db_session.commit()
+
+    retired_objective = NABHObjectiveElement(
+        id="test-obj-fms-active-standard-retired-objective",
+        edition_id=edition.id,
+        standard_id=standard.id,
+        code="FMS-1.z",
+        canonical_code="FMS-1.z",
+        description="Retired objective under active standard",
+        retired_at=datetime.utcnow()
+    )
+    db_session.add(retired_objective)
+    db_session.commit()
+
+    retired_objective_child = NABHMeasurableElement(
+        id="test-me-fms-active-standard-retired-objective.1",
+        edition_id=edition.id,
+        objective_element_id=retired_objective.id,
+        code="FMS-1.z.1",
+        canonical_code="FMS-1.z.1",
+        description="Child under retired objective element",
+        applicability_default=ApplicabilityDefault.APPLICABLE
+    )
+    db_session.add(retired_objective_child)
+    db_session.commit()
+
+    res_retired_parent = ApplicabilityEngine.compute_applicability(db_session, hosp.id)
+    assert res_retired_parent["total_requirements_evaluated"] == 4
+    retired_state = db_session.query(HospitalNABHRequirement).filter(
+        HospitalNABHRequirement.requirement_id == retired_child.id
+    ).first()
+    assert retired_state is None
+    retired_objective_state = db_session.query(HospitalNABHRequirement).filter(
+        HospitalNABHRequirement.requirement_id == retired_objective_child.id
+    ).first()
+    assert retired_objective_state is None

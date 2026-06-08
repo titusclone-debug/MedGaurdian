@@ -157,6 +157,9 @@ class ApplicabilityEngine:
         elements = db.query(NABHMeasurableElement).join(NABHObjectiveElement).join(NABHStandard).join(NABHChapter).filter(
             NABHChapter.edition_id == edition.id,
             NABHChapter.canonical_code.in_(official_chapter_codes),
+            NABHChapter.retired_at.is_(None),
+            NABHStandard.retired_at.is_(None),
+            NABHObjectiveElement.retired_at.is_(None),
             NABHMeasurableElement.retired_at.is_(None)
         ).all()
         
@@ -226,7 +229,8 @@ class ApplicabilityEngine:
                                 status = ApplicabilityDefault(rule.action_if_false)
                             except ValueError:
                                 status = ApplicabilityDefault.MANUAL_REVIEW
-                            reason = f"Did not match rule: {rule.rule_code}"
+                            rule_context = rule.description or f"Rule {rule.rule_code}"
+                            reason = f"{rule_context} Rule did not match; applying {status.value}."
                             update_status(status, reason)
             
             if winning_status is None:
