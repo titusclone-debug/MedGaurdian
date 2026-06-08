@@ -737,6 +737,10 @@ class NABHChapter(Base):
     description = Column(Text, nullable=True)
     display_order = Column(Integer, default=0, nullable=False)
     
+    official_standards_count = Column(Integer, nullable=True)
+    official_measurable_elements_count = Column(Integer, nullable=True)
+    is_fully_seeded = Column(Boolean, default=False, nullable=False)
+    
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     retired_at = Column(DateTime, nullable=True)
@@ -854,6 +858,8 @@ class NABHEvidenceRequirement(Base):
     minimum_lookback_days = Column(Integer, default=90, nullable=False)
     default_owner_role = Column(String(100), nullable=True)
     
+    evidence_code = Column(String(100), nullable=True)
+    
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     retired_at = Column(DateTime, nullable=True)
@@ -863,6 +869,7 @@ class NABHEvidenceRequirement(Base):
     evidence_links = relationship("HospitalRequirementEvidenceLink", back_populates="evidence_requirement", cascade="all, delete-orphan")
 
     __table_args__ = (
+        UniqueConstraint("measurable_element_id", "evidence_code", name="uq_evidence_req_element_code"),
         Index("idx_evidence_req_meas_el", "measurable_element_id"),
     )
 

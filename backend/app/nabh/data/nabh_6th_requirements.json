@@ -1,0 +1,42 @@
+[
+  {
+    "chapter_code": "HIC",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "HIC-1",
+        "title": "Infection Control Program",
+        "description": "The organization has an active infection control program.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "HIC-1.a",
+            "description": "Documented manual is updated.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HIC-1.a.1",
+                "description": "Standard registration and triage checks exist.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1
+              },
+              {
+                "code": "HIC-1.a.2",
+                "description": "The manual is reviewed annually and updated.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

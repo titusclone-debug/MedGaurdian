@@ -1,0 +1,15 @@
+[
+  {
+    "measurable_element_code": "HIC-1.a.1",
+    "edition_version": "6.0",
+    "rule_code": "rule_triage_active",
+    "rule_json": {
+      "field": "has_emergency",
+      "operator": "eq",
+      "value": true
+    },
+    "description": "Applies only if hospital provides emergency triage care.",
+    "action_if_true": "applicable",
+    "action_if_false": "not_applicable"
+  }
+]

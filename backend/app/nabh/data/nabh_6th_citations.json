@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "description": "NABH 6th Edition — HIC chapter citation seed (proof-of-concept, NOT citation-complete).",
+    "edition_version": "6.0",
+    "citation_complete": false,
+    "note": "This file seeds two citations for HIC-1.a.1 and HIC-1.a.2 as an engine verification only. HIC chapter citation coverage is intentionally partial. Do NOT infer citation completeness for any standard or chapter from this file."
+  },
+  "citations": [
+    {
+      "measurable_element_code": "HIC-1.a.1",
+      "edition_version": "6.0",
+      "document_title": "Accreditation Standards for Hospitals, 6th Edition Reference Guide",
+      "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
+      "document_version": "6.0",
+      "section": "Chapter HIC",
+      "page_number": "142",
+      "clause_text_summary": "Initial registration and triage protocols must include basic infection control scanning as per Section 4.1 of the NABH Infection Control Manual.",
+      "effective_date": "2026-01-01",
+      "file_path": "/excerpts/HIC_1a1_triage_excerpt.png",
+      "url": null
+    },
+    {
+      "measurable_element_code": "HIC-1.a.2",
+      "edition_version": "6.0",
+      "document_title": "Accreditation Standards for Hospitals, 6th Edition Reference Guide",
+      "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
+      "document_version": "6.0",
+      "section": "Chapter HIC",
+      "page_number": "143",
+      "clause_text_summary": "Infection control manual must be reviewed at least annually by the Infection Control Committee and updated with latest evidence-based guidelines.",
+      "effective_date": "2026-01-01",
+      "file_path": null,
+      "url": "https://www.nabh.co/standards/hospitals-6th-edition/hic-manual-review"
+    }
+  ]
+}

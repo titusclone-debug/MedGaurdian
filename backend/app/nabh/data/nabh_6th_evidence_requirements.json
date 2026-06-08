@@ -1,0 +1,24 @@
+[
+  {
+    "measurable_element_code": "HIC-1.a.1",
+    "edition_version": "6.0",
+    "evidence_code": "HIC-1.a.1-EV-SOP-01",
+    "evidence_type": "sop",
+    "description": "Standard Operating Procedure for Triage Control",
+    "is_mandatory": true,
+    "evidence_frequency": "yearly",
+    "minimum_lookback_days": 180,
+    "default_owner_role": "compliance_officer"
+  },
+  {
+    "measurable_element_code": "HIC-1.a.2",
+    "edition_version": "6.0",
+    "evidence_code": "HIC-1.a.2-EV-POL-01",
+    "evidence_type": "sop",
+    "description": "Infection Control Manual Annual Review Policy",
+    "is_mandatory": true,
+    "evidence_frequency": "yearly",
+    "minimum_lookback_days": 365,
+    "default_owner_role": "infection_control_officer"
+  }
+]

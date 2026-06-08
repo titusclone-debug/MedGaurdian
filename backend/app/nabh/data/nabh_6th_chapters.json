@@ -1,0 +1,11 @@
+[
+  {
+    "code": "HIC",
+    "title": "Hospital Infection Control",
+    "description": "Standards for infection prevention and control program.",
+    "display_order": 1,
+    "official_standards_count": 9,
+    "official_measurable_elements_count": 45,
+    "is_fully_seeded": false
+  }
+]
