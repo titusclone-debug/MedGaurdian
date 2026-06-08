@@ -11,11 +11,23 @@ from app.models.database import (
     ComplianceRecord, Hospital, Staff, ComplianceStatus, UserRole,
     RiskAlert, NABHObjective, MaturityLevel, SeverityLevel,
     NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement,
-    NABHMeasurableElement, NABHRequirementCitation, NABHSourceDocument
+    NABHMeasurableElement, NABHRequirementCitation, NABHSourceDocument,
+    EvidenceStatus, ApplicabilityDefault
 )
 from app.nabh.repository import ComplianceRepository
 from app.nabh.service import ComplianceService, NABH_STANDARDS, LEGACY_NABH_MODEL_NOTICE
 from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
+from app.nabh.citation_service import CitationService
+from app.nabh.applicability import ApplicabilityEngine
+
+from app.schemas.nabh import (
+    NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
+    NABHRuleSchema, NABHEvidenceRequirementSchema, NABHCitationSchema, NABHRequirementDetail,
+    CitationResponse, HospitalProfileResponse, HospitalProfileUpdate, ApplicabilityComputeResponse,
+    HospitalRequirementSummary as SchemaHospitalRequirementSummary,
+    PaginatedHospitalRequirementSummary, HospitalRequirementDetail as SchemaHospitalRequirementDetail,
+    HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema
+)
 
 router = APIRouter()
 
@@ -548,5 +560,656 @@ async def get_ontology_coverage(db: Session = Depends(get_db)):
         "citation_complete": citation_complete,
         "chapters": chapter_stats
     }
+
+
+# ============================================================
+# NEW NABH ONTOLOGY & COMPLIANCE APIs (Tasks 10-12)
+# ============================================================
+
+@router.get("/ontology/editions", response_model=List[NABHEditionSummary])
+async def get_ontology_editions(
+    include_retired: bool = Query(False),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Get the list of all standard editions, optionally including retired ones."""
+    query = db.query(NABHEdition)
+    if not include_retired:
+        query = query.filter(NABHEdition.retired_at.is_(None))
+    return query.all()
+
+
+@router.get("/ontology/chapters", response_model=List[NABHChapterSummary])
+async def get_ontology_chapters(
+    edition_version: str = Query("6.0"),
+    include_retired: bool = Query(False),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Get the list of all chapters for a given edition version, optionally including retired ones."""
+    edition = db.query(NABHEdition).filter(
+        NABHEdition.version == edition_version,
+        NABHEdition.retired_at.is_(None)
+    ).first()
+    if not edition:
+        raise HTTPException(status_code=404, detail=f"Edition '{edition_version}' not found")
+        
+    query = db.query(NABHChapter).filter(NABHChapter.edition_id == edition.id)
+    if not include_retired:
+        query = query.filter(NABHChapter.retired_at.is_(None))
+    return query.order_by(NABHChapter.display_order).all()
+
+
+@router.get("/ontology/requirements", response_model=PaginatedRequirementSummary)
+async def get_ontology_requirements(
+    edition_version: str = Query("6.0"),
+    chapter_code: Optional[str] = Query(None),
+    standard_code: Optional[str] = Query(None),
+    include_retired: bool = Query(False),
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Get a paginated, filtered list of all requirements (measurable elements) with hierarchy context."""
+    query = db.query(
+        NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).join(
+        NABHEdition, NABHChapter.edition_id == NABHEdition.id
+    ).filter(
+        NABHEdition.version == edition_version
+    )
+    
+    if not include_retired:
+        query = query.filter(
+            NABHMeasurableElement.retired_at.is_(None),
+            NABHObjectiveElement.retired_at.is_(None),
+            NABHStandard.retired_at.is_(None),
+            NABHChapter.retired_at.is_(None)
+        )
+        
+    if chapter_code:
+        query = query.filter(NABHChapter.canonical_code == chapter_code)
+    if standard_code:
+        query = query.filter(NABHStandard.canonical_code == standard_code)
+        
+    total = query.count()
+    results = query.order_by(
+        NABHChapter.display_order,
+        NABHStandard.display_order,
+        NABHObjectiveElement.display_order,
+        NABHMeasurableElement.display_order
+    ).offset(offset).limit(limit).all()
+    
+    items = [
+        NABHRequirementSummary(
+            id=el.id,
+            code=el.code,
+            canonical_code=el.canonical_code,
+            description=el.description,
+            applicability_default=el.applicability_default,
+            chapter_code=chap.canonical_code,
+            chapter_title=chap.title,
+            standard_code=std.canonical_code,
+            standard_title=std.title,
+            objective_element_code=obj.canonical_code
+        )
+        for el, chap, std, obj in results
+    ]
+    
+    return PaginatedRequirementSummary(
+        total=total,
+        limit=limit,
+        offset=offset,
+        items=items
+    )
+
+
+@router.get("/ontology/requirements/{requirement_id}", response_model=NABHRequirementDetail)
+async def get_ontology_requirement_detail(
+    requirement_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Get full details of a specific ontology requirement, including rules, evidence, and citations."""
+    result = db.query(
+        NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).filter(
+        NABHMeasurableElement.id == requirement_id
+    ).first()
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+        
+    el, chap, std, obj = result
+    
+    from app.models.database import NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation
+    
+    rules = db.query(NABHApplicabilityRule).filter(
+        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.retired_at.is_(None)
+    ).all()
+    
+    evidences = db.query(NABHEvidenceRequirement).filter(
+        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.retired_at.is_(None)
+    ).all()
+    
+    citations = db.query(NABHRequirementCitation).filter(
+        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.retired_at.is_(None)
+    ).all()
+    
+    return NABHRequirementDetail(
+        id=el.id,
+        code=el.code,
+        canonical_code=el.canonical_code,
+        description=el.description,
+        applicability_default=el.applicability_default,
+        chapter_code=chap.canonical_code,
+        chapter_title=chap.title,
+        standard_code=std.canonical_code,
+        standard_title=std.title,
+        objective_element_code=obj.canonical_code,
+        objective_element_description=obj.description,
+        applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
+        evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
+        citations=[NABHCitationSchema.model_validate(c) for c in citations],
+        has_citation=len(citations) > 0,
+        has_evidence_requirements=len(evidences) > 0
+    )
+
+
+@router.get("/ontology/citations/{citation_id}")
+async def get_ontology_citation(
+    citation_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Retrieve detailed citation information by ID."""
+    citation = CitationService.get_citation_by_id(db, citation_id)
+    if not citation:
+        raise HTTPException(status_code=404, detail="Citation not found")
+    return citation
+
+
+@router.get("/profile/{hospital_id}", response_model=HospitalProfileResponse)
+async def get_hospital_profile(
+    hospital_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Retrieve hospital accreditation profile, returning a default draft shape if it does not exist in DB."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    # Verify hospital exists
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalAccreditationProfile, ProfileStatus
+    
+    profile = db.query(HospitalAccreditationProfile).filter(
+        HospitalAccreditationProfile.hospital_id == hospital_id,
+        HospitalAccreditationProfile.retired_at.is_(None)
+    ).first()
+    
+    if not profile:
+        return HospitalProfileResponse(
+            hospital_id=hospital_id,
+            bed_count=0,
+            profile_status=ProfileStatus.DRAFT,
+            exists=False
+        )
+        
+    services_offered = profile.services_offered or []
+    specialty_services = profile.specialty_services or []
+    scope_exclusions = profile.scope_exclusions or []
+    
+    return HospitalProfileResponse(
+        id=profile.id,
+        hospital_id=profile.hospital_id,
+        bed_count=profile.bed_count,
+        hospital_type=profile.hospital_type,
+        profile_status=profile.profile_status,
+        services_offered=services_offered,
+        specialty_services=specialty_services,
+        has_icu=profile.has_icu,
+        has_operation_theatre=profile.has_operation_theatre,
+        has_emergency=profile.has_emergency,
+        has_pharmacy=profile.has_pharmacy,
+        has_lab=profile.has_lab,
+        has_blood_bank=profile.has_blood_bank,
+        has_ambulance=profile.has_ambulance,
+        has_maternity=profile.has_maternity,
+        has_dialysis=profile.has_dialysis,
+        has_imaging=profile.has_imaging,
+        has_cssd=profile.has_cssd,
+        scope_exclusions=scope_exclusions,
+        annual_patient_volume=profile.annual_patient_volume,
+        avg_monthly_opd=profile.avg_monthly_opd,
+        last_scoped_at=profile.last_scoped_at,
+        exists=True
+    )
+
+
+@router.put("/profile/{hospital_id}", response_model=HospitalProfileResponse)
+async def create_or_update_hospital_profile(
+    hospital_id: str,
+    update: HospitalProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER]))
+):
+    """Create or update a hospital accreditation profile."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalAccreditationProfile, ProfileStatus
+    
+    profile = db.query(HospitalAccreditationProfile).filter(
+        HospitalAccreditationProfile.hospital_id == hospital_id,
+        HospitalAccreditationProfile.retired_at.is_(None)
+    ).first()
+    
+    if not profile:
+        profile = HospitalAccreditationProfile(
+            hospital_id=hospital_id,
+            profile_status=ProfileStatus.DRAFT
+        )
+        db.add(profile)
+        
+    update_data = update.model_dump(exclude_unset=True)
+    for key, val in update_data.items():
+        setattr(profile, key, val)
+        
+    db.commit()
+    db.refresh(profile)
+    
+    services_offered = profile.services_offered or []
+    specialty_services = profile.specialty_services or []
+    scope_exclusions = profile.scope_exclusions or []
+    
+    return HospitalProfileResponse(
+        id=profile.id,
+        hospital_id=profile.hospital_id,
+        bed_count=profile.bed_count,
+        hospital_type=profile.hospital_type,
+        profile_status=profile.profile_status,
+        services_offered=services_offered,
+        specialty_services=specialty_services,
+        has_icu=profile.has_icu,
+        has_operation_theatre=profile.has_operation_theatre,
+        has_emergency=profile.has_emergency,
+        has_pharmacy=profile.has_pharmacy,
+        has_lab=profile.has_lab,
+        has_blood_bank=profile.has_blood_bank,
+        has_ambulance=profile.has_ambulance,
+        has_maternity=profile.has_maternity,
+        has_dialysis=profile.has_dialysis,
+        has_imaging=profile.has_imaging,
+        has_cssd=profile.has_cssd,
+        scope_exclusions=scope_exclusions,
+        annual_patient_volume=profile.annual_patient_volume,
+        avg_monthly_opd=profile.avg_monthly_opd,
+        last_scoped_at=profile.last_scoped_at,
+        exists=True
+    )
+
+
+@router.post("/profile/{hospital_id}/compute-applicability", response_model=ApplicabilityComputeResponse)
+async def compute_hospital_applicability(
+    hospital_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER]))
+):
+    """Computes/updates the hospital requirement scope based on its profile."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalAccreditationProfile
+    
+    profile = db.query(HospitalAccreditationProfile).filter(
+        HospitalAccreditationProfile.hospital_id == hospital_id,
+        HospitalAccreditationProfile.retired_at.is_(None)
+    ).first()
+    
+    res = ApplicabilityEngine.compute_applicability(db, hospital_id)
+    db.commit()
+    
+    warnings = []
+    if not profile:
+        warnings.append("Hospital accreditation profile is missing.")
+        
+    return ApplicabilityComputeResponse(
+        total_requirements_evaluated=res["total_requirements_evaluated"],
+        status_counts=res["status_counts"],
+        created_rows_count=res["created_rows_count"],
+        updated_rows_count=res["updated_rows_count"],
+        unchanged_rows_count=res["unchanged_rows_count"],
+        warnings=warnings
+    )
+
+
+@router.get("/requirements/{hospital_id}", response_model=PaginatedHospitalRequirementSummary)
+async def get_hospital_requirements(
+    hospital_id: str,
+    chapter_code: Optional[str] = Query(None),
+    applicability_status: Optional[ApplicabilityDefault] = Query(None),
+    evidence_status: Optional[EvidenceStatus] = Query(None),
+    readiness_status: Optional[ComplianceStatus] = Query(None),
+    owner_id: Optional[str] = Query(None),
+    include_retired: bool = Query(False),
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Retrieve paginated, filtered hospital requirement progress states with ontology reference information."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalNABHRequirement
+    
+    query = db.query(
+        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+    ).join(
+        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).filter(
+        HospitalNABHRequirement.hospital_id == hospital_id
+    )
+    
+    if not include_retired:
+        query = query.filter(
+            HospitalNABHRequirement.retired_at.is_(None),
+            NABHMeasurableElement.retired_at.is_(None),
+            NABHObjectiveElement.retired_at.is_(None),
+            NABHStandard.retired_at.is_(None),
+            NABHChapter.retired_at.is_(None)
+        )
+        
+    if chapter_code:
+        query = query.filter(NABHChapter.canonical_code == chapter_code)
+    if applicability_status:
+        query = query.filter(HospitalNABHRequirement.applicability_status == applicability_status)
+    if evidence_status:
+        query = query.filter(HospitalNABHRequirement.evidence_status == evidence_status)
+    if readiness_status:
+        query = query.filter(HospitalNABHRequirement.readiness_status == readiness_status)
+    if owner_id:
+        query = query.filter(HospitalNABHRequirement.owner_id == owner_id)
+        
+    total = query.count()
+    results = query.order_by(
+        NABHChapter.display_order,
+        NABHStandard.display_order,
+        NABHObjectiveElement.display_order,
+        NABHMeasurableElement.display_order
+    ).offset(offset).limit(limit).all()
+    
+    items = [
+        SchemaHospitalRequirementSummary(
+            id=req.id,
+            hospital_id=req.hospital_id,
+            requirement_id=req.requirement_id,
+            applicability_status=req.applicability_status,
+            applicability_reason=req.applicability_reason,
+            maturity_level=req.maturity_level,
+            evidence_status=req.evidence_status,
+            owner_id=req.owner_id,
+            due_date=req.due_date,
+            last_reviewed_at=req.last_reviewed_at,
+            last_reviewed_by=req.last_reviewed_by,
+            readiness_status=req.readiness_status,
+            requirement_code=el.canonical_code,
+            requirement_description=el.description,
+            chapter_code=chap.canonical_code,
+            standard_code=std.canonical_code,
+            objective_element_code=obj.canonical_code
+        )
+        for req, el, chap, std, obj in results
+    ]
+    
+    return PaginatedHospitalRequirementSummary(
+        total=total,
+        limit=limit,
+        offset=offset,
+        items=items
+    )
+
+
+@router.get("/requirements/{hospital_id}/{requirement_id}", response_model=SchemaHospitalRequirementDetail)
+async def get_hospital_requirement_detail(
+    hospital_id: str,
+    requirement_id: str,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """Retrieve detailed state of a specific hospital requirement."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalNABHRequirement
+    
+    result = db.query(
+        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+    ).join(
+        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).filter(
+        HospitalNABHRequirement.hospital_id == hospital_id,
+        HospitalNABHRequirement.requirement_id == requirement_id
+    ).first()
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Hospital requirement state not found")
+        
+    req, el, chap, std, obj = result
+    
+    from app.models.database import (
+        NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation,
+        HospitalRequirementEvidenceLink
+    )
+    
+    rules = db.query(NABHApplicabilityRule).filter(
+        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.retired_at.is_(None)
+    ).all()
+    
+    evidences = db.query(NABHEvidenceRequirement).filter(
+        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.retired_at.is_(None)
+    ).all()
+    
+    citations = db.query(NABHRequirementCitation).filter(
+        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.retired_at.is_(None)
+    ).all()
+    
+    links = db.query(HospitalRequirementEvidenceLink).filter(
+        HospitalRequirementEvidenceLink.hospital_requirement_id == req.id,
+        HospitalRequirementEvidenceLink.retired_at.is_(None)
+    ).all()
+    
+    ont_detail = NABHRequirementDetail(
+        id=el.id,
+        code=el.code,
+        canonical_code=el.canonical_code,
+        description=el.description,
+        applicability_default=el.applicability_default,
+        chapter_code=chap.canonical_code,
+        chapter_title=chap.title,
+        standard_code=std.canonical_code,
+        standard_title=std.title,
+        objective_element_code=obj.canonical_code,
+        objective_element_description=obj.description,
+        applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
+        evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
+        citations=[NABHCitationSchema.model_validate(c) for c in citations],
+        has_citation=len(citations) > 0,
+        has_evidence_requirements=len(evidences) > 0
+    )
+    
+    return SchemaHospitalRequirementDetail(
+        id=req.id,
+        hospital_id=req.hospital_id,
+        requirement_id=req.requirement_id,
+        applicability_status=req.applicability_status,
+        applicability_reason=req.applicability_reason,
+        maturity_level=req.maturity_level,
+        evidence_status=req.evidence_status,
+        owner_id=req.owner_id,
+        due_date=req.due_date,
+        last_reviewed_at=req.last_reviewed_at,
+        last_reviewed_by=req.last_reviewed_by,
+        readiness_status=req.readiness_status,
+        ontology_requirement=ont_detail,
+        evidence_links=[HospitalRequirementEvidenceLinkSchema.model_validate(l) for l in links]
+    )
+
+
+@router.patch("/requirements/{hospital_id}/{requirement_id}", response_model=SchemaHospitalRequirementDetail)
+async def patch_hospital_requirement(
+    hospital_id: str,
+    requirement_id: str,
+    patch: HospitalRequirementPatch,
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER]))
+):
+    """Patch standard progress fields for a hospital's requirement state."""
+    assert_hospital_access(current_user, hospital_id)
+    
+    hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
+    if not hosp:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    from app.models.database import HospitalNABHRequirement
+    
+    req = db.query(HospitalNABHRequirement).filter(
+        HospitalNABHRequirement.hospital_id == hospital_id,
+        HospitalNABHRequirement.requirement_id == requirement_id
+    ).first()
+    
+    if not req:
+        raise HTTPException(status_code=404, detail="Hospital requirement state not found")
+        
+    patch_data = patch.model_dump(exclude_unset=True)
+    for key, val in patch_data.items():
+        setattr(req, key, val)
+        
+    db.commit()
+    
+    # Reload details to return the full response schema
+    result = db.query(
+        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+    ).join(
+        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).filter(
+        HospitalNABHRequirement.hospital_id == hospital_id,
+        HospitalNABHRequirement.requirement_id == requirement_id
+    ).first()
+    
+    req, el, chap, std, obj = result
+    
+    from app.models.database import (
+        NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation,
+        HospitalRequirementEvidenceLink
+    )
+    
+    rules = db.query(NABHApplicabilityRule).filter(
+        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.retired_at.is_(None)
+    ).all()
+    
+    evidences = db.query(NABHEvidenceRequirement).filter(
+        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.retired_at.is_(None)
+    ).all()
+    
+    citations = db.query(NABHRequirementCitation).filter(
+        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.retired_at.is_(None)
+    ).all()
+    
+    links = db.query(HospitalRequirementEvidenceLink).filter(
+        HospitalRequirementEvidenceLink.hospital_requirement_id == req.id,
+        HospitalRequirementEvidenceLink.retired_at.is_(None)
+    ).all()
+    
+    ont_detail = NABHRequirementDetail(
+        id=el.id,
+        code=el.code,
+        canonical_code=el.canonical_code,
+        description=el.description,
+        applicability_default=el.applicability_default,
+        chapter_code=chap.canonical_code,
+        chapter_title=chap.title,
+        standard_code=std.canonical_code,
+        standard_title=std.title,
+        objective_element_code=obj.canonical_code,
+        objective_element_description=obj.description,
+        applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
+        evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
+        citations=[NABHCitationSchema.model_validate(c) for c in citations],
+        has_citation=len(citations) > 0,
+        has_evidence_requirements=len(evidences) > 0
+    )
+    
+    return SchemaHospitalRequirementDetail(
+        id=req.id,
+        hospital_id=req.hospital_id,
+        requirement_id=req.requirement_id,
+        applicability_status=req.applicability_status,
+        applicability_reason=req.applicability_reason,
+        maturity_level=req.maturity_level,
+        evidence_status=req.evidence_status,
+        owner_id=req.owner_id,
+        due_date=req.due_date,
+        last_reviewed_at=req.last_reviewed_at,
+        last_reviewed_by=req.last_reviewed_by,
+        readiness_status=req.readiness_status,
+        ontology_requirement=ont_detail,
+        evidence_links=[HospitalRequirementEvidenceLinkSchema.model_validate(l) for l in links]
+    )
 
 
