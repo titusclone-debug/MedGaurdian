@@ -154,6 +154,8 @@ class Hospital(Base):
     consent_records = relationship("ConsentRecord", back_populates="hospital")
     risk_alerts = relationship("RiskAlert", back_populates="hospital")
     staff = relationship("Staff", back_populates="hospital")
+    accreditation_profile = relationship("HospitalAccreditationProfile", back_populates="hospital", uselist=False, cascade="all, delete-orphan")
+    nabh_requirements = relationship("HospitalNABHRequirement", back_populates="hospital", cascade="all, delete-orphan")
 
 
 class Staff(Base):
@@ -607,7 +609,12 @@ class AuditLog(Base):
 
 
 class NABHObjective(Base):
-    """Granular NABH 6th Edition Standard & Element Compliance Tracking."""
+    """
+    Granular NABH 6th Edition Standard & Element Compliance Tracking.
+    
+    WARNING: LEGACY MODEL
+    Do not build new features on this model; use the upcoming versioned ontology models.
+    """
     __tablename__ = "nabh_objectives"
     
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -641,3 +648,412 @@ class NABHObjective(Base):
     
     # Relationships
     hospital = relationship("Hospital", back_populates="nabh_objectives")
+
+
+# ============================================================
+# NEW VERSIONED NABH ONTOLOGY MODELS (Task 2)
+# ============================================================
+
+class EditionStatus(enum.Enum):
+    DRAFT = "draft"
+    ACTIVE = "active"
+    RETIRED = "retired"
+
+
+class ApplicabilityDefault(enum.Enum):
+    APPLICABLE = "applicable"
+    CONDITIONAL = "conditional"
+    NOT_APPLICABLE = "not_applicable"
+    MANUAL_REVIEW = "manual_review"
+
+
+class EvidenceType(enum.Enum):
+    SOP = "sop"
+    REGISTER = "register"
+    TRAINING_RECORD = "training_record"
+    LICENSE = "license"
+    AUDIT_LOG = "audit_log"
+    PHOTO = "photo"
+    COMMITTEE_MINUTES = "committee_minutes"
+    TELEMETRY = "telemetry"
+    CAPA = "capa"
+
+
+class NABHEdition(Base):
+    """Accreditation standards edition."""
+    __tablename__ = "nabh_editions"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    name = Column(String(255), nullable=False)
+    version = Column(String(50), unique=True, nullable=False)
+    status = Column(SQLEnum(EditionStatus), default=EditionStatus.DRAFT, nullable=False)
+    effective_date = Column(DateTime, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    source_documents = relationship("NABHSourceDocument", back_populates="edition", cascade="all, delete-orphan")
+    chapters = relationship("NABHChapter", back_populates="edition", cascade="all, delete-orphan")
+
+
+class NABHSourceDocument(Base):
+    """Source documentation backing the standards."""
+    __tablename__ = "nabh_source_documents"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String(255), nullable=False)
+    publisher = Column(String(255), nullable=False)
+    edition_version = Column(String(50), nullable=False)
+    file_path_or_url = Column(String(500), nullable=True)
+    checksum = Column(String(64), nullable=True)
+    publication_date = Column(DateTime, nullable=True)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    edition = relationship("NABHEdition", back_populates="source_documents")
+    citations = relationship("NABHRequirementCitation", back_populates="document")
+
+    __table_args__ = (
+        Index("idx_source_doc_edition", "edition_id"),
+    )
+
+
+class NABHChapter(Base):
+    """High-level chapters (e.g. ACC, HIC, MOM)."""
+    __tablename__ = "nabh_chapters"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    code = Column(String(50), nullable=False)
+    canonical_code = Column(String(100), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    display_order = Column(Integer, default=0, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    edition = relationship("NABHEdition", back_populates="chapters")
+    standards = relationship("NABHStandard", back_populates="chapter", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("edition_id", "canonical_code", name="uq_chapter_edition_code"),
+        Index("idx_chapter_edition", "edition_id"),
+    )
+
+
+class NABHStandard(Base):
+    """Specific standard groups under chapters (e.g. AAC 1, FMS 2)."""
+    __tablename__ = "nabh_standards"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    chapter_id = Column(String, ForeignKey("nabh_chapters.id", ondelete="CASCADE"), nullable=False)
+    code = Column(String(50), nullable=False)
+    canonical_code = Column(String(100), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    display_order = Column(Integer, default=0, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    chapter = relationship("NABHChapter", back_populates="standards")
+    objective_elements = relationship("NABHObjectiveElement", back_populates="standard", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("edition_id", "canonical_code", name="uq_standard_edition_code"),
+        Index("idx_standard_edition", "edition_id"),
+        Index("idx_standard_chapter", "chapter_id"),
+    )
+
+
+class NABHObjectiveElement(Base):
+    """Accreditation Objective Elements (e.g. AAC 1a, FMS 1b)."""
+    __tablename__ = "nabh_objective_elements"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    standard_id = Column(String, ForeignKey("nabh_standards.id", ondelete="CASCADE"), nullable=False)
+    code = Column(String(50), nullable=False)
+    canonical_code = Column(String(100), nullable=False)
+    description = Column(Text, nullable=False)
+    severity = Column(SQLEnum(SeverityLevel), default=SeverityLevel.MAJOR, nullable=False)
+    display_order = Column(Integer, default=0, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    standard = relationship("NABHStandard", back_populates="objective_elements")
+    measurable_elements = relationship("NABHMeasurableElement", back_populates="objective_element", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("edition_id", "canonical_code", name="uq_obj_element_edition_code"),
+        Index("idx_obj_element_edition", "edition_id"),
+        Index("idx_obj_element_standard", "standard_id"),
+    )
+
+
+class NABHMeasurableElement(Base):
+    """Granular measurable requirements (e.g. AAC 1a.1)."""
+    __tablename__ = "nabh_measurable_elements"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    objective_element_id = Column(String, ForeignKey("nabh_objective_elements.id", ondelete="CASCADE"), nullable=False)
+    code = Column(String(50), nullable=False)
+    canonical_code = Column(String(100), nullable=False)
+    description = Column(Text, nullable=False)
+    applicability_default = Column(SQLEnum(ApplicabilityDefault), default=ApplicabilityDefault.APPLICABLE, nullable=False)
+    scoring_weight = Column(Float, default=1.0, nullable=False)
+    risk_weight = Column(Float, default=1.0, nullable=False)
+    default_owner_role = Column(String(100), nullable=True)
+    display_order = Column(Integer, default=0, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    objective_element = relationship("NABHObjectiveElement", back_populates="measurable_elements")
+    evidence_requirements = relationship("NABHEvidenceRequirement", back_populates="measurable_element", cascade="all, delete-orphan")
+    citations = relationship("NABHRequirementCitation", back_populates="measurable_element", cascade="all, delete-orphan")
+    applicability_rules = relationship("NABHApplicabilityRule", back_populates="measurable_element", cascade="all, delete-orphan")
+    hospital_states = relationship("HospitalNABHRequirement", back_populates="measurable_element", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("edition_id", "canonical_code", name="uq_meas_element_edition_code"),
+        Index("idx_meas_element_edition", "edition_id"),
+        Index("idx_meas_element_obj_el", "objective_element_id"),
+    )
+
+
+class NABHEvidenceRequirement(Base):
+    """Evidentiary path details needed for audit readiness verification."""
+    __tablename__ = "nabh_evidence_requirements"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    evidence_type = Column(SQLEnum(EvidenceType), nullable=False)
+    description = Column(Text, nullable=False)
+    is_mandatory = Column(Boolean, default=True, nullable=False)
+    evidence_frequency = Column(String(50), nullable=True)
+    minimum_lookback_days = Column(Integer, default=90, nullable=False)
+    default_owner_role = Column(String(100), nullable=True)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    measurable_element = relationship("NABHMeasurableElement", back_populates="evidence_requirements")
+    evidence_links = relationship("HospitalRequirementEvidenceLink", back_populates="evidence_requirement", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        Index("idx_evidence_req_meas_el", "measurable_element_id"),
+    )
+
+
+class NABHRequirementCitation(Base):
+    """Reference guide/statutory citations for compliance guidelines."""
+    __tablename__ = "nabh_requirement_citations"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    document_id = Column(String, ForeignKey("nabh_source_documents.id", ondelete="SET NULL"), nullable=True)
+    section = Column(String(100), nullable=True)
+    page_number = Column(String(50), nullable=True)
+    clause_text_summary = Column(Text, nullable=True)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    measurable_element = relationship("NABHMeasurableElement", back_populates="citations")
+    document = relationship("NABHSourceDocument", back_populates="citations")
+
+    __table_args__ = (
+        Index("idx_citation_meas_el", "measurable_element_id"),
+        Index("idx_citation_document", "document_id"),
+    )
+
+
+class NABHApplicabilityRule(Base):
+    """Computed applicability logic rule specifications."""
+    __tablename__ = "nabh_applicability_rules"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    rule_code = Column(String(100), nullable=False)
+    rule_json = Column(JSON, nullable=False)
+    description = Column(Text, nullable=True)
+    action_if_true = Column(String(50), default="applicable", nullable=False)
+    action_if_false = Column(String(50), default="not_applicable", nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    measurable_element = relationship("NABHMeasurableElement", back_populates="applicability_rules")
+
+    __table_args__ = (
+        Index("idx_app_rule_meas_el", "measurable_element_id"),
+    )
+
+
+class ProfileStatus(enum.Enum):
+    DRAFT = "draft"
+    COMPLETE = "complete"
+    NEEDS_REVIEW = "needs_review"
+
+
+class HospitalAccreditationProfile(Base):
+    """Hospital clinical capabilities and exclusions for accreditation scoping."""
+    __tablename__ = "hospital_accreditation_profiles"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    hospital_id = Column(String, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False, unique=True)
+    
+    bed_count = Column(Integer, default=0, nullable=False)
+    hospital_type = Column(String(50), nullable=True)
+    profile_status = Column(SQLEnum(ProfileStatus), default=ProfileStatus.DRAFT, nullable=False)
+    
+    services_offered = Column(JSON, default=[], nullable=False)
+    specialty_services = Column(JSON, default=[], nullable=False)
+    
+    has_icu = Column(Boolean, default=False, nullable=False)
+    has_operation_theatre = Column(Boolean, default=False, nullable=False)
+    has_emergency = Column(Boolean, default=True, nullable=False)
+    has_pharmacy = Column(Boolean, default=False, nullable=False)
+    has_lab = Column(Boolean, default=False, nullable=False)
+    has_blood_bank = Column(Boolean, default=False, nullable=False)
+    has_ambulance = Column(Boolean, default=False, nullable=False)
+    has_maternity = Column(Boolean, default=False, nullable=False)
+    has_dialysis = Column(Boolean, default=False, nullable=False)
+    has_imaging = Column(Boolean, default=False, nullable=False)
+    has_cssd = Column(Boolean, default=False, nullable=False)
+    
+    annual_patient_volume = Column(Integer, nullable=True)
+    avg_monthly_opd = Column(Integer, nullable=True)
+    
+    scope_exclusions = Column(JSON, default=[], nullable=False)
+    
+    last_scoped_at = Column(DateTime, nullable=True)
+    scoped_by = Column(String(255), nullable=True)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    hospital = relationship("Hospital", back_populates="accreditation_profile")
+
+    __table_args__ = (
+        Index("idx_accred_profile_hospital", "hospital_id"),
+    )
+
+
+class EvidenceStatus(enum.Enum):
+    MISSING = "missing"
+    DRAFT = "draft"
+    PENDING_VERIFICATION = "pending_verification"
+    VERIFIED = "verified"
+    EXPIRED = "expired"
+
+
+class VerificationStatus(enum.Enum):
+    PENDING = "pending"
+    VERIFIED = "verified"
+    REJECTED = "rejected"
+
+
+class HospitalNABHRequirement(Base):
+    """Accreditation progress and ownership per requirement per hospital."""
+    __tablename__ = "hospital_nabh_requirements"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    hospital_id = Column(String, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False)
+    requirement_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    
+    applicability_status = Column(SQLEnum(ApplicabilityDefault), default=ApplicabilityDefault.APPLICABLE, nullable=False)
+    applicability_reason = Column(Text, nullable=True)
+    maturity_level = Column(SQLEnum(MaturityLevel), default=MaturityLevel.NON_EXISTENT, nullable=False)
+    evidence_status = Column(SQLEnum(EvidenceStatus), default=EvidenceStatus.MISSING, nullable=False)
+    
+    owner_id = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    due_date = Column(DateTime, nullable=True)
+    last_reviewed_at = Column(DateTime, nullable=True)
+    last_reviewed_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    readiness_status = Column(SQLEnum(ComplianceStatus), default=ComplianceStatus.UNDER_REVIEW, nullable=False)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    hospital = relationship("Hospital", back_populates="nabh_requirements")
+    measurable_element = relationship("NABHMeasurableElement", back_populates="hospital_states")
+    owner = relationship("Staff", foreign_keys=[owner_id])
+    reviewer = relationship("Staff", foreign_keys=[last_reviewed_by])
+    evidence_links = relationship("HospitalRequirementEvidenceLink", back_populates="hospital_requirement", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("hospital_id", "requirement_id", name="uq_hospital_requirement"),
+        Index("idx_hosp_req_hospital", "hospital_id"),
+        Index("idx_hosp_req_requirement", "requirement_id"),
+        Index("idx_hosp_req_owner", "owner_id"),
+        Index("idx_hosp_req_reviewer", "last_reviewed_by"),
+    )
+
+
+class HospitalRequirementEvidenceLink(Base):
+    """Links specific uploaded documents or proof artifacts to a hospital's requirement state."""
+    __tablename__ = "hospital_requirement_evidence_links"
+    
+    id = Column(String, primary_key=True, default=generate_uuid)
+    hospital_requirement_id = Column(String, ForeignKey("hospital_nabh_requirements.id", ondelete="CASCADE"), nullable=False)
+    evidence_requirement_id = Column(String, ForeignKey("nabh_evidence_requirements.id", ondelete="CASCADE"), nullable=False)
+    
+    document_name = Column(String(255), nullable=False)
+    file_path_or_url = Column(String(500), nullable=False)
+    notes = Column(Text, nullable=True)
+    verification_status = Column(SQLEnum(VerificationStatus), default=VerificationStatus.PENDING, nullable=False)
+    
+    verified_at = Column(DateTime, nullable=True)
+    verified_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    uploaded_at = Column(DateTime, server_default=func.now())
+    uploaded_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    # Relationships
+    hospital_requirement = relationship("HospitalNABHRequirement", back_populates="evidence_links")
+    evidence_requirement = relationship("NABHEvidenceRequirement", back_populates="evidence_links")
+    uploader = relationship("Staff", foreign_keys=[uploaded_by])
+    verifier = relationship("Staff", foreign_keys=[verified_by])
+
+    __table_args__ = (
+        UniqueConstraint("hospital_requirement_id", "evidence_requirement_id", name="uq_hosp_req_evidence_req"),
+        Index("idx_evidence_link_requirement", "hospital_requirement_id"),
+        Index("idx_evidence_link_evidence_req", "evidence_requirement_id"),
+        Index("idx_evidence_link_uploader", "uploaded_by"),
+        Index("idx_evidence_link_verifier", "verified_by"),
+    )
+
+

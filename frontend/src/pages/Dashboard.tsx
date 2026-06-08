@@ -53,6 +53,7 @@ export default function Dashboard() {
   
   const [savingOnboard, setSavingOnboard] = useState(false)
   const [userRole, setUserRole] = useState('')
+  const [fleetSummary, setFleetSummary] = useState<any[] | null>(null)
 
   const token = localStorage.getItem('medguardian_token')
 
@@ -94,6 +95,18 @@ export default function Dashboard() {
         // Sync stage from backend if hospital info has onboarding_stage
         if (overviewData.hospital?.onboarding_stage) {
           setOnboardingStage(overviewData.hospital.onboarding_stage)
+        }
+
+        // Fetch fleet summary for super admin
+        if (userObj?.role === 'super_admin') {
+          try {
+            const fleetRes = await fetch('/api/admin/nabh-fleet-summary', { headers })
+            if (fleetRes.ok) {
+              setFleetSummary(await fleetRes.json())
+            }
+          } catch (err) {
+            console.error('Fleet summary fetch error:', err)
+          }
         }
       }
     } catch (err: any) {
@@ -439,7 +452,62 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      
+
+      {/* Fleet Overview Card (SUPER_ADMIN only) */}
+      {userRole === 'super_admin' && fleetSummary && (
+        <div className="card border-2 border-brand-200 bg-brand-50/50 p-6 space-y-4">
+          <div className="flex items-center gap-2 border-b border-brand-100 pb-3">
+            <Users className="text-brand-600" size={24} />
+            <div>
+              <h3 className="text-lg font-bold text-brand-900">Fleet Operations Dashboard</h3>
+              <p className="text-xs text-brand-700">Real-time accreditation status across all managed hospitals</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {fleetSummary.map((h) => (
+              <div key={h.hospital_id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-slate-800 text-sm truncate max-w-[170px]">{h.hospital_name}</h4>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      h.critical_gaps_count > 0 ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
+                    }`}>
+                      {h.critical_gaps_count} Critical Gaps
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-slate-500">
+                    <span>Overall Maturity Avg</span>
+                    <span className="font-semibold text-slate-800">{h.overall_maturity_avg} / 5.0</span>
+                  </div>
+                  {/* Maturity Level progress bar */}
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full ${
+                        h.overall_maturity_avg >= 3.0 ? 'bg-green-500' :
+                        h.overall_maturity_avg >= 1.5 ? 'bg-yellow-500' :
+                        'bg-red-500'
+                      }`}
+                      style={{ width: `${(h.overall_maturity_avg / 5.0) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mt-4 pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+                  <span>Assessed: {h.last_assessed ? new Date(h.last_assessed).toLocaleDateString() : 'Never'}</span>
+                  <Link 
+                    to="/nabh" 
+                    className="text-brand-600 font-semibold hover:underline"
+                  >
+                    Manage compliance →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Domain Scores Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.entries(dashboard.domain_scores || {}).map(([domain, data]: any) => {

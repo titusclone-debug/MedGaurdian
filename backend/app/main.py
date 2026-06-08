@@ -19,7 +19,7 @@ from app.models.database import (
 from app.core.database import engine, get_db
 from app.api import (
     dashboard, fcra, dpdp, bmw, nabh, licenses,
-    risk, regulatory, auth, reports
+    risk, regulatory, auth, reports, admin
 )
 from app.api.auth import get_current_user
 
@@ -111,6 +111,7 @@ app.include_router(licenses.router, prefix="/api/licenses", tags=["License Track
 app.include_router(risk.router, prefix="/api/risk", tags=["Risk Intelligence"], dependencies=protected_dependencies)
 app.include_router(regulatory.router, prefix="/api/regulatory", tags=["Regulatory Monitor"], dependencies=protected_dependencies)
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports & Export"], dependencies=protected_dependencies)
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"], dependencies=protected_dependencies)
 
 
 @app.get("/", tags=["Root"])

@@ -6,6 +6,10 @@ from app.nabh.repository import ComplianceRepository
 from app.models.database import ComplianceRecord, ComplianceStatus, NABHObjective, MaturityLevel, SeverityLevel
 from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
 
+LEGACY_NABH_MODEL_NOTICE = "LEGACY MODEL: This is a simplified 33-item NABH model. Do not build new features on this model; use the upcoming versioned ontology models."
+
+# WARNING: LEGACY STRUCTURE
+# Do not build new features on this model; use the upcoming versioned ontology models.
 NABH_STANDARDS = {
     "ACC": {
         "name": "Access, Assessment, and Continuity of Care",
@@ -73,6 +77,10 @@ NABH_STANDARDS = {
 }
 
 class ComplianceService:
+    """
+    WARNING: LEGACY SERVICE
+    Do not build new features on this model; use the upcoming versioned ontology models.
+    """
     @staticmethod
     def get_compliance_status(
         db: Session,

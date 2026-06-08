@@ -31,3 +31,7 @@ Thumbs.db
 .env
 .env.local
 .env.production
+
+# Local data and db backup files
+backend/data/
+*.real

@@ -36,7 +36,8 @@ echo -e "${GREEN}✅ Backend dependencies installed${NC}"
 echo ""
 echo -e "${BLUE}Step 2: Seeding database...${NC}"
 python3 scripts/seed_data.py
-echo -e "${GREEN}✅ Database seeded with sample data${NC}"
+python3 scripts/seed_regulations.py
+echo -e "${GREEN}✅ Database and vector store seeded with sample data${NC}"
 
 echo ""
 echo -e "${BLUE}Step 3: Starting Backend (port 8000)...${NC}"

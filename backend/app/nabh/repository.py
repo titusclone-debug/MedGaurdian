@@ -3,6 +3,8 @@ from sqlalchemy import and_
 from typing import Optional, List
 from app.models.database import NABHObjective
 
+# WARNING: LEGACY REPOSITORY
+# Do not build new features on this model; use the upcoming versioned ontology models.
 class ComplianceRepository:
     @staticmethod
     def get_by_standard_code(db: Session, hospital_id: str, code: str) -> Optional[NABHObjective]:

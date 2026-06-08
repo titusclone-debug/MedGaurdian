@@ -273,9 +273,14 @@ async def onboard_hospital(
     db.refresh(new_hospital)
     db.refresh(new_admin)
 
+    # Seed NABH 6th Edition objectives for the new hospital
+    # Every hospital starts with 33 standards at MaturityLevel.NON_EXISTENT
+    from app.nabh.seeder import seed_nabh_objectives
+    seed_nabh_objectives(db, new_hospital.id)
+
     return {
         "status": "success",
-        "message": f"Hospital '{new_hospital.name}' onboarded successfully.",
+        "message": f"Hospital '{new_hospital.name}' onboarded successfully with 33 NABH objectives seeded.",
         "hospital_id": new_hospital.id,
         "admin_user": {
             "id": new_admin.id,

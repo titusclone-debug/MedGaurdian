@@ -2,10 +2,13 @@
 import logging
 from sqlalchemy.orm import Session
 from app.models.database import NABHObjective, SeverityLevel, MaturityLevel
+from app.nabh.service import LEGACY_NABH_MODEL_NOTICE
 
 logger = logging.getLogger(__name__)
 
-# Complete mapping of NABH 6th Edition Objectives & Default Severity
+# WARNING: LEGACY STRUCTURE
+# Do not build new features on this model; use the upcoming versioned ontology models.
+# Notice: LEGACY MODEL: This is a simplified 33-item NABH model.
 NABH_ELEMENTS_SEED = [
     # ACC: Access, Assessment, and Continuity of Care
     {"code": "AAC-1.a", "chapter": "ACC", "num": 1, "letter": "a", "name": "Patient admission protocols and criteria", "severity": SeverityLevel.MAJOR},
@@ -54,7 +57,12 @@ NABH_ELEMENTS_SEED = [
 ]
 
 def seed_nabh_objectives(db: Session, hospital_id: str):
-    """Seed base compliance objectives for a hospital if they don't exist."""
+    """
+    Seed base compliance objectives for a hospital if they don't exist.
+    
+    WARNING: LEGACY SEEDER
+    Do not build new features on this model; use the upcoming versioned ontology models.
+    """
     logger.info(f"🌱 Seeding NABH objectives for hospital: {hospital_id}")
     
     count = 0
