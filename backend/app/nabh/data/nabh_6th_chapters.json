@@ -6,10 +6,10 @@
     "display_order": 1,
     "official_standards_count": 13,
     "official_measurable_elements_count": 87,
-    "core_count": 13,
-    "commitment_count": 62,
+    "core_count": 6,
+    "commitment_count": 68,
     "achievement_count": 9,
-    "excellence_count": 3,
+    "excellence_count": 4,
     "is_fully_seeded": false
   },
   {
@@ -32,10 +32,10 @@
     "display_order": 3,
     "official_standards_count": 11,
     "official_measurable_elements_count": 68,
-    "core_count": 10,
-    "commitment_count": 49,
-    "achievement_count": 7,
-    "excellence_count": 2,
+    "core_count": 13,
+    "commitment_count": 48,
+    "achievement_count": 6,
+    "excellence_count": 1,
     "is_fully_seeded": false
   },
   {
@@ -45,9 +45,9 @@
     "display_order": 4,
     "official_standards_count": 8,
     "official_measurable_elements_count": 52,
-    "core_count": 8,
-    "commitment_count": 37,
-    "achievement_count": 6,
+    "core_count": 12,
+    "commitment_count": 32,
+    "achievement_count": 7,
     "excellence_count": 1,
     "is_fully_seeded": false
   },
@@ -71,10 +71,10 @@
     "display_order": 6,
     "official_standards_count": 7,
     "official_measurable_elements_count": 46,
-    "core_count": 7,
-    "commitment_count": 33,
-    "achievement_count": 5,
-    "excellence_count": 1,
+    "core_count": 8,
+    "commitment_count": 28,
+    "achievement_count": 7,
+    "excellence_count": 3,
     "is_fully_seeded": false
   },
   {
@@ -84,10 +84,10 @@
     "display_order": 7,
     "official_standards_count": 6,
     "official_measurable_elements_count": 37,
-    "core_count": 5,
-    "commitment_count": 27,
-    "achievement_count": 4,
-    "excellence_count": 1,
+    "core_count": 4,
+    "commitment_count": 23,
+    "achievement_count": 8,
+    "excellence_count": 2,
     "is_fully_seeded": false
   },
   {
@@ -110,10 +110,10 @@
     "display_order": 9,
     "official_standards_count": 13,
     "official_measurable_elements_count": 76,
-    "core_count": 13,
-    "commitment_count": 55,
-    "achievement_count": 6,
-    "excellence_count": 2,
+    "core_count": 16,
+    "commitment_count": 56,
+    "achievement_count": 4,
+    "excellence_count": 0,
     "is_fully_seeded": false
   },
   {
@@ -123,10 +123,10 @@
     "display_order": 10,
     "official_standards_count": 7,
     "official_measurable_elements_count": 45,
-    "core_count": 12,
-    "commitment_count": 25,
-    "achievement_count": 6,
-    "excellence_count": 2,
+    "core_count": 9,
+    "commitment_count": 33,
+    "achievement_count": 2,
+    "excellence_count": 1,
     "is_fully_seeded": false
   }
 ]

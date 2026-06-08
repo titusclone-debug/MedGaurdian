@@ -131,6 +131,26 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
     resp_codes = [c["chapter_code"] for c in chapters_resp]
     assert resp_codes == display_orders
 
+    official_category_counts = {
+        "AAC": {"core": 6, "commitment": 68, "achievement": 9, "excellence": 4},
+        "COP": {"core": 13, "commitment": 107, "achievement": 12, "excellence": 4},
+        "MOM": {"core": 13, "commitment": 48, "achievement": 6, "excellence": 1},
+        "PRE": {"core": 12, "commitment": 32, "achievement": 7, "excellence": 1},
+        "IPC": {"core": 13, "commitment": 33, "achievement": 3, "excellence": 0},
+        "PSQ": {"core": 8, "commitment": 28, "achievement": 7, "excellence": 3},
+        "ROM": {"core": 4, "commitment": 23, "achievement": 8, "excellence": 2},
+        "FMS": {"core": 11, "commitment": 29, "achievement": 2, "excellence": 1},
+        "HRM": {"core": 16, "commitment": 56, "achievement": 4, "excellence": 0},
+        "IMS": {"core": 9, "commitment": 33, "achievement": 2, "excellence": 1},
+    }
+    chapters_by_code = {c["chapter_code"]: c for c in chapters_resp}
+    for code, counts in official_category_counts.items():
+        chapter = chapters_by_code[code]
+        assert chapter["core_count"] == counts["core"]
+        assert chapter["commitment_count"] == counts["commitment"]
+        assert chapter["achievement_count"] == counts["achievement"]
+        assert chapter["excellence_count"] == counts["excellence"]
+
     # Check COP category counts
     cop_resp = [c for c in chapters_resp if c["chapter_code"] == "COP"][0]
     assert cop_resp["core_count"] == 13
@@ -183,14 +203,14 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
     assert mom_resp["elements_coverage_percent"] == 1.5  # 1/68 = 1.47% -> 1.5
     assert mom_resp["citation_count"] == 1
     assert mom_resp["uncited_seeded_elements_count"] == 0
-    assert fms_resp["is_fully_seeded"] is False
+    assert mom_resp["is_fully_seeded"] is False
 
     # Check IMS breakdown details
     ims_resp = [c for c in chapters_resp if c["chapter_code"] == "IMS"][0]
-    assert ims_resp["core_count"] == 12
-    assert ims_resp["commitment_count"] == 25
-    assert ims_resp["achievement_count"] == 6
-    assert ims_resp["excellence_count"] == 2
+    assert ims_resp["core_count"] == 9
+    assert ims_resp["commitment_count"] == 33
+    assert ims_resp["achievement_count"] == 2
+    assert ims_resp["excellence_count"] == 1
 
     # Clean up overrides
     app.dependency_overrides.clear()
