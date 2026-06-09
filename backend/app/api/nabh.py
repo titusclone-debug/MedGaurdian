@@ -32,6 +32,22 @@ from app.schemas.nabh import (
 router = APIRouter()
 
 
+def _assert_staff_belongs_to_hospital(db: Session, staff_id: Optional[str], hospital_id: str, field_name: str) -> None:
+    """Validate staff references used on hospital-scoped requirement state."""
+    if staff_id is None:
+        return
+
+    staff = db.query(Staff).filter(
+        Staff.id == staff_id,
+        Staff.is_active == True
+    ).first()
+    if not staff or staff.hospital_id != hospital_id:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{field_name} must reference an active staff member in the same hospital."
+        )
+
+
 class ComplianceUpdate(BaseModel):
     standard_code: str
     status: str  # compliant, non_compliant, partially_compliant, under_review
@@ -687,7 +703,11 @@ async def get_ontology_requirement_detail(
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
-        NABHMeasurableElement.id == requirement_id
+        NABHMeasurableElement.id == requirement_id,
+        NABHMeasurableElement.retired_at.is_(None),
+        NABHObjectiveElement.retired_at.is_(None),
+        NABHStandard.retired_at.is_(None),
+        NABHChapter.retired_at.is_(None)
     ).first()
     
     if not result:
@@ -732,7 +752,7 @@ async def get_ontology_requirement_detail(
     )
 
 
-@router.get("/ontology/citations/{citation_id}")
+@router.get("/ontology/citations/{citation_id}", response_model=CitationResponse)
 async def get_ontology_citation(
     citation_id: str,
     db: Session = Depends(get_db),
@@ -1032,7 +1052,12 @@ async def get_hospital_requirement_detail(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id
+        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.retired_at.is_(None),
+        NABHMeasurableElement.retired_at.is_(None),
+        NABHObjectiveElement.retired_at.is_(None),
+        NABHStandard.retired_at.is_(None),
+        NABHChapter.retired_at.is_(None)
     ).first()
     
     if not result:
@@ -1119,15 +1144,34 @@ async def patch_hospital_requirement(
         
     from app.models.database import HospitalNABHRequirement
     
-    req = db.query(HospitalNABHRequirement).filter(
+    req_result = db.query(
+        HospitalNABHRequirement
+    ).join(
+        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+    ).join(
+        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
+    ).join(
+        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+    ).join(
+        NABHChapter, NABHStandard.chapter_id == NABHChapter.id
+    ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id
+        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.retired_at.is_(None),
+        NABHMeasurableElement.retired_at.is_(None),
+        NABHObjectiveElement.retired_at.is_(None),
+        NABHStandard.retired_at.is_(None),
+        NABHChapter.retired_at.is_(None)
     ).first()
     
-    if not req:
+    if not req_result:
         raise HTTPException(status_code=404, detail="Hospital requirement state not found")
+
+    req = req_result
         
     patch_data = patch.model_dump(exclude_unset=True)
+    _assert_staff_belongs_to_hospital(db, patch_data.get("owner_id"), hospital_id, "owner_id")
+    _assert_staff_belongs_to_hospital(db, patch_data.get("last_reviewed_by"), hospital_id, "last_reviewed_by")
     for key, val in patch_data.items():
         setattr(req, key, val)
         
@@ -1146,7 +1190,12 @@ async def patch_hospital_requirement(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id
+        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.retired_at.is_(None),
+        NABHMeasurableElement.retired_at.is_(None),
+        NABHObjectiveElement.retired_at.is_(None),
+        NABHStandard.retired_at.is_(None),
+        NABHChapter.retired_at.is_(None)
     ).first()
     
     req, el, chap, std, obj = result

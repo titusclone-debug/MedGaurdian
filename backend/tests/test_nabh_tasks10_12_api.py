@@ -268,6 +268,12 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     response = client.put(f"/api/nabh/profile/{hosp1.id}", json={**payload, "invalid_field": "error"})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
+    # Negative profile volume/capacity values should be rejected
+    response = client.put(f"/api/nabh/profile/{hosp1.id}", json={"bed_count": -1})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    response = client.put(f"/api/nabh/profile/{hosp1.id}", json={"annual_patient_volume": -10})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
     # GET profile now that it exists
     response = client.get(f"/api/nabh/profile/{hosp1.id}")
     assert response.status_code == status.HTTP_200_OK
@@ -355,6 +361,16 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     response = client.patch(f"/api/nabh/requirements/{hosp1.id}/{me1.id}", json={"non_existent_field": "error"})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
+    # Owner/reviewer references must stay inside the same hospital tenant
+    response = client.patch(f"/api/nabh/requirements/{hosp1.id}/{me1.id}", json={"owner_id": staff_h2.id})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    response = client.patch(f"/api/nabh/requirements/{hosp1.id}/{me1.id}", json={"last_reviewed_by": staff_h2.id})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = client.patch(f"/api/nabh/requirements/{hosp1.id}/{me1.id}", json={"owner_id": staff_h1.id})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["owner_id"] == staff_h1.id
+
     # ============================================================
     # ACCESS CONTROL (RBAC) TESTS
     # ============================================================
@@ -411,6 +427,18 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     for item in req_list_data["items"]:
         assert item["chapter_code"] != "HIC"
         assert item["requirement_code"] != "HIC 1"
+
+    # Retired ontology requirements should not be accessible through state detail/patch APIs
+    me2.retired_at = datetime.utcnow()
+    db_session.add(me2)
+    db_session.commit()
+
+    response = client.get(f"/api/nabh/ontology/requirements/{me2.id}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    response = client.get(f"/api/nabh/requirements/{hosp1.id}/{me2.id}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    response = client.patch(f"/api/nabh/requirements/{hosp1.id}/{me2.id}", json={"evidence_status": "verified"})
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # Clean up overrides
     app.dependency_overrides.pop(get_current_user, None)

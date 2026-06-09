@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import Optional, List
 from app.models.database import (
@@ -142,7 +142,7 @@ class HospitalProfileResponse(BaseModel):
 
 class HospitalProfileUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    bed_count: Optional[int] = None
+    bed_count: Optional[int] = Field(default=None, ge=0)
     hospital_type: Optional[str] = None
     profile_status: Optional[ProfileStatus] = None
     services_offered: Optional[List[str]] = None
@@ -159,8 +159,8 @@ class HospitalProfileUpdate(BaseModel):
     has_imaging: Optional[bool] = None
     has_cssd: Optional[bool] = None
     scope_exclusions: Optional[List[str]] = None
-    annual_patient_volume: Optional[int] = None
-    avg_monthly_opd: Optional[int] = None
+    annual_patient_volume: Optional[int] = Field(default=None, ge=0)
+    avg_monthly_opd: Optional[int] = Field(default=None, ge=0)
 
 class ApplicabilityComputeResponse(BaseModel):
     total_requirements_evaluated: int
