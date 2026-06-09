@@ -375,12 +375,24 @@ def test_seeding_transaction_safety(db_session, tmp_path, monkeypatch):
         ]
     }]
 
+    evidence = [{
+        "measurable_element_code": "HIC-1.a.1",
+        "edition_version": "6.0",
+        "evidence_code": "HIC-1.a.1-EV-SOP-01",
+        "evidence_type": "sop",
+        "description": "Standard Operating Procedure for Triage",
+        "is_mandatory": True,
+        "evidence_frequency": "yearly",
+        "minimum_lookback_days": 180,
+        "default_owner_role": "officer"
+    }]
+
     with open(os.path.join(data_dir, "nabh_6th_chapters.json"), "w", encoding="utf-8") as f:
         json.dump(chapters, f)
     with open(os.path.join(data_dir, "nabh_6th_requirements.json"), "w", encoding="utf-8") as f:
         json.dump(requirements, f)
     with open(os.path.join(data_dir, "nabh_6th_evidence_requirements.json"), "w", encoding="utf-8") as f:
-        json.dump([], f)
+        json.dump(evidence, f)
     with open(os.path.join(data_dir, "nabh_6th_applicability_rules.json"), "w", encoding="utf-8") as f:
         json.dump([], f)
 

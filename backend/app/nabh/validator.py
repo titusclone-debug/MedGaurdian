@@ -7,7 +7,8 @@ from app.nabh.constants import (
     SUPPORTED_RULE_OPERATORS,
     VALID_SEVERITY_LEVELS,
     VALID_APPLICABILITY_DEFAULTS,
-    VALID_EVIDENCE_TYPES
+    VALID_EVIDENCE_TYPES,
+    VALID_EVIDENCE_FREQUENCIES
 )
 
 class ValidationError(Exception):
@@ -226,8 +227,7 @@ def validate_ontology_seeds(
 
     required_evidence_keys = {
         "measurable_element_code", "edition_version", "evidence_code", 
-        "evidence_type", "description", "is_mandatory", 
-        "evidence_frequency", "minimum_lookback_days", "default_owner_role"
+        "evidence_type", "description", "is_mandatory"
     }
 
     evidence_codes_per_element: Dict[str, Set[str]] = {}
@@ -259,6 +259,24 @@ def validate_ontology_seeds(
         ev_type = ev["evidence_type"]
         if ev_type not in VALID_EVIDENCE_TYPES:
             raise ValidationError(f"Invalid evidence type '{ev_type}' in evidence requirement '{ev_code}'.")
+
+        # Frequency validation: if present, must be one of VALID_EVIDENCE_FREQUENCIES
+        if "evidence_frequency" in ev and ev["evidence_frequency"] is not None:
+            freq = ev["evidence_frequency"]
+            if freq not in VALID_EVIDENCE_FREQUENCIES:
+                raise ValidationError(f"Invalid evidence frequency '{freq}' in evidence requirement '{ev_code}'.")
+
+        # Minimum lookback days validation: if present, must be >= 0
+        if "minimum_lookback_days" in ev and ev["minimum_lookback_days"] is not None:
+            days = ev["minimum_lookback_days"]
+            if not isinstance(days, int) or days < 0:
+                raise ValidationError(f"Invalid minimum_lookback_days '{days}' in evidence requirement '{ev_code}': must be a non-negative integer.")
+
+        # Default owner role validation: if present, must be a string and not empty
+        if "default_owner_role" in ev and ev["default_owner_role"] is not None:
+            role = ev["default_owner_role"]
+            if not isinstance(role, str) or not role.strip():
+                raise ValidationError(f"Invalid default_owner_role '{role}' in evidence requirement '{ev_code}': must be a non-empty string.")
 
     # 5. Load and Validate Applicability Rules
     try:
@@ -422,6 +440,27 @@ def validate_ontology_seeds(
             url_valid = isinstance(url, str) and bool(url.strip())
             if not file_path_valid and not url_valid:
                 raise ValidationError(f"Citation at index {idx} for '{meas_code}' must have at least one non-empty string file_path or url.")
+
+    # 7. Cross-Ontology Validation
+    # Enforce that every seeded measurable element has at least one evidence requirement,
+    # and at least one must be is_mandatory = True
+    for code in defined_measurable_codes:
+        if code not in evidence_codes_per_element or len(evidence_codes_per_element[code]) == 0:
+            raise ValidationError(f"Measurable element '{code}' does not have any evidence requirements.")
+        
+        # Check if there is at least one mandatory evidence requirement
+        ev_items = [ev for ev in evidence_requirements if ev["measurable_element_code"] == code]
+        has_mandatory = any(ev.get("is_mandatory") is True for ev in ev_items)
+        if not has_mandatory:
+            raise ValidationError(f"Measurable element '{code}' does not have any mandatory evidence requirement.")
+
+    # Enforce that in production (allow_missing_citations is False), each seeded measurable element
+    # has at least one citation.
+    if not allow_missing_citations:
+        cited_element_codes = {cit["measurable_element_code"] for cit in citations}
+        for code in defined_measurable_codes:
+            if code not in cited_element_codes:
+                raise ValidationError(f"Measurable element '{code}' does not have any citations.")
 
     return {
         "chapters": chapters,

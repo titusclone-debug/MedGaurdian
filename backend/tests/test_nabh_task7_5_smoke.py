@@ -140,10 +140,35 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
         }],
     }]
 
+    evidence = [
+        {
+            "measurable_element_code": "HIC-1.a.1",
+            "edition_version": "6.0",
+            "evidence_code": "HIC-1.a.1-EV-SOP-01",
+            "evidence_type": "sop",
+            "description": "Standard Operating Procedure for Triage",
+            "is_mandatory": True,
+            "evidence_frequency": "yearly",
+            "minimum_lookback_days": 180,
+            "default_owner_role": "officer"
+        },
+        {
+            "measurable_element_code": "HIC-1.a.2",
+            "edition_version": "6.0",
+            "evidence_code": "HIC-1.a.2-EV-SOP-01",
+            "evidence_type": "sop",
+            "description": "Annual manual review checklist",
+            "is_mandatory": True,
+            "evidence_frequency": "yearly",
+            "minimum_lookback_days": 180,
+            "default_owner_role": "infection_control_officer"
+        }
+    ]
+
     for name, data in [
         ("nabh_6th_chapters.json", chapters),
         ("nabh_6th_requirements.json", requirements),
-        ("nabh_6th_evidence_requirements.json", []),
+        ("nabh_6th_evidence_requirements.json", evidence),
         ("nabh_6th_applicability_rules.json", []),
     ]:
         with open(os.path.join(str(tmp_path), name), "w", encoding="utf-8") as f:

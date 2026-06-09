@@ -299,25 +299,32 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 NABHEvidenceRequirement.evidence_code == ev_code
             ).first()
             
+            evidence_frequency = ev_data.get("evidence_frequency")
+            minimum_lookback_days = ev_data.get("minimum_lookback_days", 90)
+            default_owner_role = ev_data.get("default_owner_role")
+            suggested_documentation = ev_data.get("suggested_documentation")
+            
             if not ev_record:
                 ev_record = NABHEvidenceRequirement(
                     measurable_element_id=meas_id,
                     evidence_code=ev_code,
                     evidence_type=ev_type_enum,
                     description=ev_data["description"],
+                    suggested_documentation=suggested_documentation,
                     is_mandatory=ev_data["is_mandatory"],
-                    evidence_frequency=ev_data["evidence_frequency"],
-                    minimum_lookback_days=ev_data["minimum_lookback_days"],
-                    default_owner_role=ev_data["default_owner_role"]
+                    evidence_frequency=evidence_frequency,
+                    minimum_lookback_days=minimum_lookback_days,
+                    default_owner_role=default_owner_role
                 )
                 db.add(ev_record)
             else:
                 ev_record.evidence_type = ev_type_enum
                 ev_record.description = ev_data["description"]
+                ev_record.suggested_documentation = suggested_documentation
                 ev_record.is_mandatory = ev_data["is_mandatory"]
-                ev_record.evidence_frequency = ev_data["evidence_frequency"]
-                ev_record.minimum_lookback_days = ev_data["minimum_lookback_days"]
-                ev_record.default_owner_role = ev_data["default_owner_role"]
+                ev_record.evidence_frequency = evidence_frequency
+                ev_record.minimum_lookback_days = minimum_lookback_days
+                ev_record.default_owner_role = default_owner_role
             
             db.flush()
 

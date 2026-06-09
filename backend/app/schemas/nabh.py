@@ -63,10 +63,14 @@ class NABHRuleSchema(BaseModel):
 class NABHEvidenceRequirementSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
+    evidence_code: Optional[str] = None
     evidence_type: EvidenceType
     description: str
     suggested_documentation: Optional[str] = None
     is_mandatory: bool
+    evidence_frequency: Optional[str] = None
+    minimum_lookback_days: int = 90
+    default_owner_role: Optional[str] = None
 
 class NABHCitationSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -97,6 +101,10 @@ class NABHRequirementDetail(BaseModel):
     citations: List[NABHCitationSchema] = []
     has_citation: bool
     has_evidence_requirements: bool
+    mandatory_evidence_count: int = 0
+    optional_evidence_count: int = 0
+    evidence_types_required: List[str] = Field(default_factory=list)
+    lookback_days_required: int = 0
 
 class CitationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

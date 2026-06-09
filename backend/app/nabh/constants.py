@@ -8,3 +8,9 @@ VALID_EVIDENCE_TYPES = {
     "sop", "register", "training_record", "license", "audit_log", 
     "photo", "committee_minutes", "telemetry", "capa"
 }
+
+VALID_EVIDENCE_FREQUENCIES = {
+    "one_time", "daily", "weekly", "monthly", "quarterly", 
+    "yearly", "per_event", "continuous", "not_applicable"
+}
+

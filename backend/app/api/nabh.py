@@ -49,6 +49,23 @@ def _assert_staff_belongs_to_hospital(db: Session, staff_id: Optional[str], hosp
         )
 
 
+def _build_evidence_burden_summary(evidences: List) -> dict:
+    """Helper to construct Proof Burden Summary dict from a list of NABHEvidenceRequirement objects."""
+    mandatory_count = sum(1 for ev in evidences if ev.is_mandatory)
+    optional_count = sum(1 for ev in evidences if not ev.is_mandatory)
+    evidence_types = list(set(
+        (ev.evidence_type.value if hasattr(ev.evidence_type, "value") else str(ev.evidence_type))
+        for ev in evidences
+    ))
+    lookback_days = max([ev.minimum_lookback_days for ev in evidences] + [0])
+    return {
+        "mandatory_evidence_count": mandatory_count,
+        "optional_evidence_count": optional_count,
+        "evidence_types_required": evidence_types,
+        "lookback_days_required": lookback_days
+    }
+
+
 class ComplianceUpdate(BaseModel):
     standard_code: str
     status: str  # compliant, non_compliant, partially_compliant, under_review
@@ -733,6 +750,7 @@ async def get_ontology_requirement_detail(
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
     
+    summary_data = _build_evidence_burden_summary(evidences)
     return NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -749,7 +767,8 @@ async def get_ontology_requirement_detail(
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
         has_citation=len(citations) > 0,
-        has_evidence_requirements=len(evidences) > 0
+        has_evidence_requirements=len(evidences) > 0,
+        **summary_data
     )
 
 
@@ -1091,6 +1110,7 @@ async def get_hospital_requirement_detail(
         HospitalRequirementEvidenceLink.retired_at.is_(None)
     ).all()
     
+    summary_data = _build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -1107,7 +1127,8 @@ async def get_hospital_requirement_detail(
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
         has_citation=len(citations) > 0,
-        has_evidence_requirements=len(evidences) > 0
+        has_evidence_requirements=len(evidences) > 0,
+        **summary_data
     )
     
     return SchemaHospitalRequirementDetail(
@@ -1226,6 +1247,7 @@ async def patch_hospital_requirement(
         HospitalRequirementEvidenceLink.retired_at.is_(None)
     ).all()
     
+    summary_data = _build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -1242,7 +1264,8 @@ async def patch_hospital_requirement(
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
         has_citation=len(citations) > 0,
-        has_evidence_requirements=len(evidences) > 0
+        has_evidence_requirements=len(evidences) > 0,
+        **summary_data
     )
     
     return SchemaHospitalRequirementDetail(

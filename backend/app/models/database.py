@@ -859,6 +859,7 @@ class NABHEvidenceRequirement(Base):
     measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
     evidence_type = Column(SQLEnum(EvidenceType), nullable=False)
     description = Column(Text, nullable=False)
+    suggested_documentation = Column(Text, nullable=True)
     is_mandatory = Column(Boolean, default=True, nullable=False)
     evidence_frequency = Column(String(50), nullable=True)
     minimum_lookback_days = Column(Integer, default=90, nullable=False)
