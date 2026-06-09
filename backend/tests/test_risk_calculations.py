@@ -62,7 +62,7 @@ def test_get_forecast_identifies_improving_trend(db_session):
     now = datetime.utcnow()
 
     for i in range(5):
-        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=8, hours=i))
+        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=12, hours=i))
     for i in range(2):
         _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=2, hours=i))
 
@@ -75,7 +75,7 @@ def test_get_forecast_identifies_worsening_trend(db_session):
     now = datetime.utcnow()
 
     for i in range(2):
-        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=8, hours=i))
+        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=12, hours=i))
     for i in range(6):
         _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=2, hours=i))
 
@@ -88,7 +88,7 @@ def test_get_forecast_identifies_stable_trend(db_session):
     now = datetime.utcnow()
 
     for i in range(3):
-        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=8, hours=i))
+        _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=12, hours=i))
     for i in range(3):
         _seed_alert(db_session, hospital.id, RiskLevel.HIGH, now - timedelta(days=2, hours=i))
 
