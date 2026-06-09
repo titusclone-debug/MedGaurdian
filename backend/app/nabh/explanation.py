@@ -8,7 +8,7 @@ from app.models.database import (
     NABHObjectiveElement, NABHMeasurableElement,
     NABHEvidenceRequirement, NABHRequirementCitation,
     NABHSourceDocument, HospitalNABHRequirement, Staff,
-    SeverityLevel
+    SeverityLevel, EditionStatus
 )
 
 def build_requirement_explanation(
@@ -24,6 +24,7 @@ def build_requirement_explanation(
     # 1. Verify Edition
     edition = db.query(NABHEdition).filter(
         NABHEdition.version == edition_version,
+        NABHEdition.status == EditionStatus.ACTIVE,
         NABHEdition.retired_at.is_(None)
     ).first()
     if not edition:
@@ -155,8 +156,12 @@ def build_requirement_explanation(
     responsible_owner_name = None
 
     staff_owner = None
-    if hospital_req and hospital_req.owner_id:
-        staff_owner = db.query(Staff).filter(Staff.id == hospital_req.owner_id).first()
+    if hospital_req and hospital_req.owner_id and hospital_id:
+        staff_owner = db.query(Staff).filter(
+            Staff.id == hospital_req.owner_id,
+            Staff.hospital_id == hospital_id,
+            Staff.is_active == True
+        ).first()
 
     if staff_owner:
         responsible_role = staff_owner.role.value if hasattr(staff_owner.role, "value") else str(staff_owner.role)
@@ -199,8 +204,12 @@ def build_requirement_explanation(
     if hospital_id:
         if hospital_req:
             # Look up owner if not done
-            if not staff_owner and hospital_req.owner_id:
-                staff_owner = db.query(Staff).filter(Staff.id == hospital_req.owner_id).first()
+            if not staff_owner and hospital_req.owner_id and hospital_id:
+                staff_owner = db.query(Staff).filter(
+                    Staff.id == hospital_req.owner_id,
+                    Staff.hospital_id == hospital_id,
+                    Staff.is_active == True
+                ).first()
 
             hospital_state = {
                 "applicability_status": hospital_req.applicability_status.value if hasattr(hospital_req.applicability_status, "value") else str(hospital_req.applicability_status),
