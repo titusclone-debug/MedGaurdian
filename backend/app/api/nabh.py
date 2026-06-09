@@ -20,6 +20,7 @@ from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audi
 from app.nabh.citation_service import CitationService
 from app.nabh.applicability import ApplicabilityEngine
 from app.nabh.readiness import calculate_hospital_readiness
+from app.nabh.explanation import build_requirement_explanation
 
 from app.schemas.nabh import (
     NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
@@ -27,7 +28,8 @@ from app.schemas.nabh import (
     CitationResponse, HospitalProfileResponse, HospitalProfileUpdate, ApplicabilityComputeResponse,
     HospitalRequirementSummary as SchemaHospitalRequirementSummary,
     PaginatedHospitalRequirementSummary, HospitalRequirementDetail as SchemaHospitalRequirementDetail,
-    HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema, HospitalReadinessResponse
+    HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema, HospitalReadinessResponse,
+    NABHRequirementExplanationResponse
 )
 
 router = APIRouter()
@@ -1298,5 +1300,32 @@ async def get_hospital_readiness(
     """
     assert_hospital_access(current_user, hospital_id)
     return calculate_hospital_readiness(db, hospital_id, edition_version)
+
+
+@router.get(
+    "/ontology/requirements/{requirement_id}/explanation",
+    response_model=NABHRequirementExplanationResponse
+)
+async def get_requirement_explanation(
+    requirement_id: str,
+    hospital_id: Optional[str] = Query(None),
+    edition_version: str = Query("6.0"),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """
+    Get a deterministic, source-cited explanation of a specific requirement,
+    including plain language instructions, why it matters, citations, and optional hospital-specific state.
+    """
+    if hospital_id:
+        assert_hospital_access(current_user, hospital_id)
+
+    return build_requirement_explanation(
+        db=db,
+        requirement_id=requirement_id,
+        hospital_id=hospital_id,
+        edition_version=edition_version
+    )
+
 
 

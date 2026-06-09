@@ -287,3 +287,73 @@ class HospitalReadinessResponse(BaseModel):
     under_review_count: int
     chapters: List[ReadinessChapterBreakdown]
 
+
+# --- Task 15: Explanation Schemas ---
+
+class NABHExplanationCitation(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    document_title: str
+    publisher: str
+    edition_version: str
+    section: Optional[str] = None
+    page_number: Optional[str] = None
+    clause_text_summary: Optional[str] = None
+    effective_date: Optional[datetime] = None
+    file_path: Optional[str] = None
+    url: Optional[str] = None
+
+class NABHExplanationEvidenceItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    evidence_code: str
+    evidence_type: str
+    description: str
+    suggested_documentation: Optional[str] = None
+    is_mandatory: bool
+    evidence_frequency: Optional[str] = None
+    minimum_lookback_days: int = 90
+    default_owner_role: Optional[str] = None
+
+class NABHExplanationApplicability(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    status: str
+    reason: str
+
+class NABHExplanationProofBurdenSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    mandatory_evidence_count: int = 0
+    optional_evidence_count: int = 0
+    evidence_types_required: List[str] = Field(default_factory=list)
+    lookback_days_required: int = 0
+
+class NABHExplanationHospitalState(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    applicability_status: str
+    applicability_reason: Optional[str] = None
+    readiness_status: str
+    maturity_level: Optional[int] = None
+    evidence_status: Optional[str] = None
+    due_date: Optional[datetime] = None
+    owner_id: Optional[str] = None
+    owner_name: Optional[str] = None
+    owner_role: Optional[str] = None
+
+class NABHRequirementExplanationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    requirement_id: str
+    requirement_code: str
+    title: str
+    plain_language_explanation: Optional[str] = None
+    why_it_matters: Optional[str] = None
+    required_evidence: List[NABHExplanationEvidenceItem] = Field(default_factory=list)
+    proof_burden_summary: NABHExplanationProofBurdenSummary
+    responsible_role: str
+    responsible_roles: List[str] = Field(default_factory=list)
+    responsible_owner_id: Optional[str] = None
+    responsible_owner_name: Optional[str] = None
+    applicability: NABHExplanationApplicability
+    citations: List[NABHExplanationCitation] = Field(default_factory=list)
+    confidence: str
+    hospital_state: Optional[NABHExplanationHospitalState] = None
+    limitations: List[str] = Field(default_factory=list)
+
+
