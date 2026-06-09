@@ -237,3 +237,45 @@ class HospitalRequirementPatch(BaseModel):
     last_reviewed_at: Optional[datetime] = None
     last_reviewed_by: Optional[str] = None
     readiness_status: Optional[ComplianceStatus] = None
+
+
+class ReadinessChapterBreakdown(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    chapter_code: str
+    chapter_title: str
+    total_state_rows: int
+    denominator: int
+    ready_count: int
+    readiness_score_percent: Optional[float] = None
+    status: str
+    applicable_count: int
+    conditional_count: int
+    manual_review_count: int
+    not_applicable_count: int
+    compliant_count: int
+    non_compliant_count: int
+    partially_compliant_count: int
+    under_review_count: int
+
+
+class HospitalReadinessResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    hospital_id: str
+    edition_version: str
+    status: str
+    calculated_at: datetime
+    generated_at: datetime
+    total_state_rows: int
+    denominator: int
+    ready_count: int
+    readiness_score_percent: Optional[float] = None
+    not_applicable_count: int
+    applicable_count: int
+    conditional_count: int
+    manual_review_count: int
+    compliant_count: int
+    non_compliant_count: int
+    partially_compliant_count: int
+    under_review_count: int
+    chapters: List[ReadinessChapterBreakdown]
+
