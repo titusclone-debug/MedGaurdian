@@ -10,6 +10,7 @@ from app.models.database import (
     NABHSourceDocument, HospitalNABHRequirement, Staff,
     SeverityLevel, EditionStatus
 )
+from app.nabh.quality import citation_has_locator
 
 def build_requirement_explanation(
     db: Session,
@@ -72,8 +73,14 @@ def build_requirement_explanation(
         NABHSourceDocument, NABHRequirementCitation.document_id == NABHSourceDocument.id
     ).filter(
         NABHRequirementCitation.measurable_element_id == me.id,
-        NABHRequirementCitation.retired_at.is_(None)
+        NABHRequirementCitation.retired_at.is_(None),
+        NABHSourceDocument.retired_at.is_(None)
     ).all()
+    citations_data = [
+        (citation, document)
+        for citation, document in citations_data
+        if citation_has_locator(citation)
+    ]
 
     # 5. Retrieve Hospital Requirement State if hospital_id is provided
     hospital_req = None

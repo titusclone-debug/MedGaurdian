@@ -21,6 +21,7 @@ from app.nabh.citation_service import CitationService
 from app.nabh.applicability import ApplicabilityEngine
 from app.nabh.readiness import calculate_hospital_readiness
 from app.nabh.explanation import build_requirement_explanation
+from app.nabh.quality import NABHQualityError, assert_compliant_status_allowed
 
 from app.schemas.nabh import (
     NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
@@ -1196,6 +1197,11 @@ async def patch_hospital_requirement(
     patch_data = patch.model_dump(exclude_unset=True)
     _assert_staff_belongs_to_hospital(db, patch_data.get("owner_id"), hospital_id, "owner_id")
     _assert_staff_belongs_to_hospital(db, patch_data.get("last_reviewed_by"), hospital_id, "last_reviewed_by")
+    try:
+        assert_compliant_status_allowed(db, requirement_id, patch_data.get("readiness_status"))
+    except NABHQualityError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
     for key, val in patch_data.items():
         setattr(req, key, val)
         

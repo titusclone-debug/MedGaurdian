@@ -12,6 +12,7 @@ from app.models.database import (
 )
 from app.nabh.service import LEGACY_NABH_MODEL_NOTICE
 from app.nabh.validator import validate_ontology_seeds
+from app.nabh.quality import assert_seeded_requirements_runtime_quality
 
 logger = logging.getLogger(__name__)
 
@@ -431,6 +432,19 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 cit_record.url = url_val
 
             db.flush()
+
+        # Task 18: post-database runtime quality guard.
+        # The seed-file validator has already checked JSON structure. This
+        # verifies that persisted active rows are actually linked to active
+        # citations/source documents and evidence definitions before commit.
+        active_requirement_ids = [
+            row[0]
+            for row in db.query(NABHMeasurableElement.id).filter(
+                NABHMeasurableElement.edition_id == edition.id,
+                NABHMeasurableElement.retired_at.is_(None)
+            ).all()
+        ]
+        assert_seeded_requirements_runtime_quality(db, active_requirement_ids)
 
         db.commit()
         logger.info(f"✅ Seeding transaction committed successfully for edition '{target_version}'.")
