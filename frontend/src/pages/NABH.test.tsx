@@ -1,4 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import * as reactRouterDom from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import NABHPage from './NABH'
 
@@ -187,6 +189,7 @@ function mockApi({ profile = profileMissing, requirements = [] as any[] } = {}) 
   return vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
     const method = init?.method || 'GET'
+    console.log('[MOCK FETCH]', method, url)
 
     if (url === '/api/nabh/ontology/coverage') return jsonResponse(coverage)
     if (url === '/api/nabh/ontology/chapters') return jsonResponse(chapters)
@@ -219,7 +222,11 @@ describe('NABH Phase 1 workspace', () => {
   it('opens Start Here before the dashboard when profile is missing', async () => {
     vi.stubGlobal('fetch', mockApi())
 
-    render(<NABHPage />)
+    render(
+      <MemoryRouter>
+        <NABHPage />
+      </MemoryRouter>
+    )
 
     expect(await screen.findByRole('heading', { name: 'Start Here' })).toBeDefined()
     expect(screen.queryByText('NABH Agentic Compliance')).toBeNull()
@@ -230,7 +237,11 @@ describe('NABH Phase 1 workspace', () => {
     const fetchMock = mockApi({ profile: profileMissing })
     vi.stubGlobal('fetch', fetchMock)
 
-    render(<NABHPage />)
+    render(
+      <MemoryRouter>
+        <NABHPage />
+      </MemoryRouter>
+    )
 
     fireEvent.click(await screen.findByText('Hospital Profile'))
     fireEvent.click(screen.getByText('Save Profile'))
@@ -255,7 +266,11 @@ describe('NABH Phase 1 workspace', () => {
   it('renders applicable requirement rows after scope exists', async () => {
     vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
 
-    render(<NABHPage />)
+    render(
+      <MemoryRouter>
+        <NABHPage />
+      </MemoryRouter>
+    )
 
     expect(await screen.findByText('The hospital has a valid Fire NOC.')).toBeDefined()
     expect(screen.getByText('FMS-1.a.1')).toBeDefined()
@@ -265,7 +280,11 @@ describe('NABH Phase 1 workspace', () => {
   it('shows standards browser coverage and opens source-cited explanation drawer', async () => {
     vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
 
-    render(<NABHPage />)
+    render(
+      <MemoryRouter>
+        <NABHPage />
+      </MemoryRouter>
+    )
 
     fireEvent.click(await screen.findByText('Standards Browser'))
     expect(await screen.findByText('Facility Management and Safety')).toBeDefined()
@@ -277,4 +296,137 @@ describe('NABH Phase 1 workspace', () => {
     expect(screen.getByText('Original Fire Safety NOC Certificate.')).toBeDefined()
     expect(screen.getByText('NABH Reference Guide')).toBeDefined()
   })
+
+  it('falls back to computed default tab when an invalid tab is provided in URL', async () => {
+    vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
+
+    render(
+      <MemoryRouter initialEntries={['/nabh?tab=garbage']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+
+    // Since profile exists and requirements exist, it should fallback to 'applicable'
+    expect(await screen.findByRole('heading', { name: 'Applicable Requirements' })).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('applicable')
+  })
+
+  it('respects a valid tab provided in the URL and does not redirect', async () => {
+    vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
+
+    render(
+      <MemoryRouter initialEntries={['/nabh?tab=browser']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+
+    // Should render browser directly
+    expect(await screen.findByText('Official Chapters')).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('browser')
+  })
+
+  it('respects the evidence tab provided in the URL directly and does not redirect', async () => {
+    vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
+
+    render(
+      <MemoryRouter initialEntries={['/nabh?tab=evidence']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByRole('button', { name: 'Evidence Needed' })).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('evidence')
+  })
+
+  it('computes default tab based on profile and scope state when no tab param is provided', async () => {
+    // Case A: Profile missing -> defaults to start
+    const fetchMockA = mockApi({ profile: profileMissing, requirements: [] })
+    vi.stubGlobal('fetch', fetchMockA)
+    const { unmount: unmountA } = render(
+      <MemoryRouter initialEntries={['/nabh']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+    expect(await screen.findByRole('heading', { name: 'Start Here' })).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('start')
+    unmountA()
+
+    // Case B: Profile saved, no requirements -> defaults to profile
+    const fetchMockB = mockApi({ profile: profileSaved, requirements: [] })
+    vi.stubGlobal('fetch', fetchMockB)
+    const { unmount: unmountB } = render(
+      <MemoryRouter initialEntries={['/nabh']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+    expect(await screen.findByText('Hospital Accreditation Profile')).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('profile')
+    unmountB()
+
+    // Case C: Profile saved, requirements exist -> defaults to applicable
+    const fetchMockC = mockApi({ profile: profileSaved, requirements: [hospitalRequirement] })
+    vi.stubGlobal('fetch', fetchMockC)
+    render(
+      <MemoryRouter initialEntries={['/nabh']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+    expect(await screen.findByRole('heading', { name: 'Applicable Requirements' })).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('applicable')
+  })
+
+  it('calls setSearchParams with replace: true when falling back from an invalid tab', async () => {
+    const fetchMock = mockApi({ profile: profileSaved, requirements: [hospitalRequirement] })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const setSearchParamsSpy = vi.fn()
+    const mockSearchParams = new URLSearchParams('?tab=garbage')
+    
+    const useSearchParamsSpy = vi.spyOn(reactRouterDom, 'useSearchParams')
+    useSearchParamsSpy.mockReturnValue([mockSearchParams, setSearchParamsSpy])
+
+    render(
+      <MemoryRouter>
+        <NABHPage />
+      </MemoryRouter>
+    )
+
+    await waitFor(() => {
+      expect(setSearchParamsSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ tab: 'applicable' }),
+        expect.objectContaining({ replace: true })
+      )
+    })
+  })
+
+  it('updates the search query parameter when a tab is clicked', async () => {
+    vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
+
+    render(
+      <MemoryRouter initialEntries={['/nabh?tab=applicable']}>
+        <NABHPage />
+        <TestSearchParamsExporter />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByRole('heading', { name: 'Applicable Requirements' })).toBeDefined()
+    
+    // Click on Standards Browser tab
+    fireEvent.click(screen.getByText('Standards Browser'))
+    
+    // The tab should change and the search parameter should update to 'browser'
+    expect(await screen.findByText('Official Chapters')).toBeDefined()
+    expect(screen.getByTestId('current-tab').textContent).toBe('browser')
+  })
 })
+
+function TestSearchParamsExporter() {
+  const [searchParams] = reactRouterDom.useSearchParams()
+  return <div data-testid="current-tab">{searchParams.get('tab')}</div>
+}

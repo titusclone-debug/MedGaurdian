@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   AlertTriangle,
   Award,
@@ -357,7 +358,14 @@ function SplitListInput({
 }
 
 export default function NABHPage() {
-  const [activeTab, setActiveTab] = useState<TabId>('start')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab') as TabId | null
+  const isValidTab = useMemo(() => {
+    return tabParam && ['start', 'profile', 'applicable', 'browser', 'evidence', 'dashboard'].includes(tabParam)
+  }, [tabParam])
+
+  const activeTab = isValidTab ? (tabParam as TabId) : 'start'
+
   const [user] = useState<UserSession | null>(() => getStoredUser())
   const hospitalId = user?.hospital_id
 
@@ -406,9 +414,14 @@ export default function NABHPage() {
       setReadiness(readinessData)
 
       if (!hasChosenTabRef.current) {
-        if (!profileData.exists) setActiveTab('start')
-        else if ((requirementsData.items || []).length === 0) setActiveTab('profile')
-        else setActiveTab('applicable')
+        if (!isValidTab) {
+          let defaultTab: TabId = 'start'
+          if (!profileData.exists) defaultTab = 'start'
+          else if ((requirementsData.items || []).length === 0) defaultTab = 'profile'
+          else defaultTab = 'applicable'
+          setSearchParams({ tab: defaultTab }, { replace: true })
+        }
+        hasChosenTabRef.current = true
       }
     } catch (err: any) {
       setError(err.message || 'Unable to load NABH workspace')
@@ -516,7 +529,7 @@ export default function NABHPage() {
       hasChosenTabRef.current = true
       await fetchHospitalData()
       setEvidenceExplanations([])
-      setActiveTab('applicable')
+      setSearchParams({ tab: 'applicable' })
       setNotice(`Scope computed across ${result.total_requirements_evaluated} seeded requirements.`)
     } catch (err: any) {
       setError(err.message || 'Unable to compute applicability')
@@ -545,7 +558,7 @@ export default function NABHPage() {
 
   function chooseTab(tab: TabId) {
     hasChosenTabRef.current = true
-    setActiveTab(tab)
+    setSearchParams({ tab })
   }
 
   if (loading) {
