@@ -41,25 +41,25 @@ def _good_citations():
     """
     return [
         {
-            "measurable_element_code": "HIC-1.a.1",
+            "measurable_element_code": "IPC-1.a.1",
             "edition_version": "6.0",
             "document_title": "NABH 6th Edition Reference Guide",
             "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
             "document_version": "6.0",
-            "section": "Chapter HIC",
+            "section": "Chapter IPC",
             "page_number": "142",
             "clause_text_summary": "Triage protocols must include infection control scanning.",
             "effective_date": "2026-01-01",
-            "file_path": "/excerpts/HIC_1a1_triage.png",
+            "file_path": "/excerpts/IPC_1a1_triage.png",
             "url": None,
         },
         {
-            "measurable_element_code": "HIC-1.a.2",
+            "measurable_element_code": "IPC-1.a.2",
             "edition_version": "6.0",
             "document_title": "NABH 6th Edition Reference Guide",
             "document_publisher": "National Accreditation Board for Hospitals & Healthcare Providers",
             "document_version": "6.0",
-            "section": "Chapter HIC",
+            "section": "Chapter IPC",
             "page_number": "143",
             "clause_text_summary": "Manual reviewed annually by Infection Control Committee.",
             "effective_date": "2026-01-01",
@@ -95,8 +95,8 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
         Use for testing bare-array or malformed-envelope scenarios.
     """
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Standards for infection control.",
         "display_order": 1,
         "official_standards_count": 1,
@@ -104,21 +104,21 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
         "is_fully_seeded": True,
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "6.0",
         "standards": [{
-            "code": "HIC-1",
+            "code": "IPC-1",
             "title": "Infection Control Program",
             "description": "Infection Control Program.",
             "display_order": 1,
             "objective_elements": [{
-                "code": "HIC-1.a",
+                "code": "IPC-1.a",
                 "description": "Manual is updated.",
                 "severity": "major",
                 "display_order": 1,
                 "measurable_elements": [
                     {
-                        "code": "HIC-1.a.1",
+                        "code": "IPC-1.a.1",
                         "description": "Triage checks.",
                         "applicability_default": "applicable",
                         "scoring_weight": 1.0,
@@ -127,7 +127,7 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
                         "display_order": 1,
                     },
                     {
-                        "code": "HIC-1.a.2",
+                        "code": "IPC-1.a.2",
                         "description": "Annual manual review.",
                         "applicability_default": "applicable",
                         "scoring_weight": 1.0,
@@ -142,9 +142,9 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
 
     evidence = [
         {
-            "measurable_element_code": "HIC-1.a.1",
+            "measurable_element_code": "IPC-1.a.1",
             "edition_version": "6.0",
-            "evidence_code": "HIC-1.a.1-EV-SOP-01",
+            "evidence_code": "IPC-1.a.1-EV-SOP-01",
             "evidence_type": "sop",
             "description": "Standard Operating Procedure for Triage",
             "is_mandatory": True,
@@ -153,9 +153,9 @@ def _base_seed_files(tmp_path, *, include_citations=False, citations=None,
             "default_owner_role": "officer"
         },
         {
-            "measurable_element_code": "HIC-1.a.2",
+            "measurable_element_code": "IPC-1.a.2",
             "edition_version": "6.0",
-            "evidence_code": "HIC-1.a.2-EV-SOP-01",
+            "evidence_code": "IPC-1.a.2-EV-SOP-01",
             "evidence_type": "sop",
             "description": "Annual manual review checklist",
             "is_mandatory": True,
@@ -377,7 +377,7 @@ class TestValidatorExcerptPresence:
 class TestValidatorCrossReferences:
     def test_unknown_measurable_element_raises(self, tmp_path):
         bad = _good_citations()
-        bad[0]["measurable_element_code"] = "HIC-99.z.999"
+        bad[0]["measurable_element_code"] = "IPC-99.z.999"
         _base_seed_files(tmp_path, include_citations=True, citations=bad)
         with pytest.raises(ValidationError, match="unknown measurable element code"):
             validate_ontology_seeds(str(tmp_path))
@@ -469,7 +469,7 @@ class TestSeederCitationsIdempotency:
         # Mutate the citation data
         updated = _good_citations()
         updated[0]["clause_text_summary"] = "UPDATED: Enhanced triage protocols."
-        updated[0]["file_path"] = "/excerpts/HIC_1a1_triage_v2.png"
+        updated[0]["file_path"] = "/excerpts/IPC_1a1_triage_v2.png"
 
         _base_seed_files(tmp_path, include_citations=True, citations=updated)
         seed_versioned_ontology(db_session, str(tmp_path), "6.0")
@@ -480,7 +480,7 @@ class TestSeederCitationsIdempotency:
 
         updated_cit = next(c for c in citations if c.page_number == "142")
         assert updated_cit.clause_text_summary == "UPDATED: Enhanced triage protocols."
-        assert updated_cit.file_path == "/excerpts/HIC_1a1_triage_v2.png"
+        assert updated_cit.file_path == "/excerpts/IPC_1a1_triage_v2.png"
 
 
 # ---------------------------------------------------------------------------
@@ -488,14 +488,15 @@ class TestSeederCitationsIdempotency:
 # ---------------------------------------------------------------------------
 
 class TestSeederWithoutCitationsFile:
-    def test_seeder_without_citations_file_skips_gracefully(self, db_session, tmp_path):
-        """Seeder should succeed when citations file is absent and flag is set."""
+    def test_seeder_without_citations_fails_quality_gate(self, db_session, tmp_path):
+        """Seeder should fail quality validation if citations are missing, even if validation flag is patched."""
         _clear_ontology_tables(db_session)
         _base_seed_files(tmp_path)  # no citations file
 
         # Patch validate to allow missing citations so seeder itself can pass validation
         from unittest.mock import patch
         from app.nabh import validator as val_mod
+        from app.nabh.quality import NABHQualityError
 
         original_validate = val_mod.validate_ontology_seeds
 
@@ -504,10 +505,10 @@ class TestSeederWithoutCitationsFile:
             return original_validate(data_dir, target_version, allow_missing_citations=True)
 
         with patch("app.nabh.seeder.validate_ontology_seeds", side_effect=patched_validate):
-            seed_versioned_ontology(db_session, str(tmp_path), "6.0")
+            with pytest.raises(NABHQualityError, match="missing active citation"):
+                seed_versioned_ontology(db_session, str(tmp_path), "6.0")
 
-        # No citations or source documents should be present
+        # Transaction was rolled back: nothing should be present
         assert db_session.query(NABHSourceDocument).count() == 0
         assert db_session.query(NABHRequirementCitation).count() == 0
-        # But ontology records were still seeded
-        assert db_session.query(NABHEdition).count() == 1
+        assert db_session.query(NABHEdition).count() == 0

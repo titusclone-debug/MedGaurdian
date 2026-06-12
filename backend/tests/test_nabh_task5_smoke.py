@@ -27,9 +27,9 @@ def test_citation_infrastructure_smoke(db_session):
     chapter = NABHChapter(
         id="chap-task5-smoke",
         edition_id="ed-task5-smoke",
-        code="HIC",
-        canonical_code="HIC-6.0-T5",
-        title="Hospital Infection Control"
+        code="IPC",
+        canonical_code="IPC-6.0-T5",
+        title="Infection Prevention and Control"
     )
     db_session.add(chapter)
     db_session.flush()
@@ -38,8 +38,8 @@ def test_citation_infrastructure_smoke(db_session):
         id="std-task5-smoke",
         edition_id="ed-task5-smoke",
         chapter_id="chap-task5-smoke",
-        code="HIC 1",
-        canonical_code="HIC-1-6.0-T5",
+        code="IPC 1",
+        canonical_code="IPC-1-6.0-T5",
         title="Infection Control Program"
     )
     db_session.add(standard)
@@ -50,7 +50,7 @@ def test_citation_infrastructure_smoke(db_session):
         edition_id="ed-task5-smoke",
         standard_id="std-task5-smoke",
         code="a",
-        canonical_code="HIC-1.a-6.0-T5",
+        canonical_code="IPC-1.a-6.0-T5",
         description="The organization has an infection control committee."
     )
     db_session.add(obj_el)
@@ -61,7 +61,7 @@ def test_citation_infrastructure_smoke(db_session):
         edition_id="ed-task5-smoke",
         objective_element_id="obj-task5-smoke",
         code="1",
-        canonical_code="HIC-1.a.1-6.0-T5",
+        canonical_code="IPC-1.a.1-6.0-T5",
         description="Infection control manual is updated.",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -71,7 +71,7 @@ def test_citation_infrastructure_smoke(db_session):
         edition_id="ed-task5-smoke",
         objective_element_id="obj-task5-smoke",
         code="2",
-        canonical_code="HIC-1.a.2-6.0-T5",
+        canonical_code="IPC-1.a.2-6.0-T5",
         description="Infection control committee meets regularly.",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -102,7 +102,7 @@ def test_citation_infrastructure_smoke(db_session):
         page_number="Page 89",
         clause_text_summary="Committee composition guidelines.",
         effective_date=datetime(2026, 3, 15), # Override date
-        file_path="/excerpts/HIC_committee_excerpt.png", # Local excerpt snippet path
+        file_path="/excerpts/IPC_committee_excerpt.png", # Local excerpt snippet path
         url="https://nabh.co/standards/6th_edition/hic_3_2" # Web reference link
     )
     # Citation B: No override date (will fallback to doc.effective_date)
@@ -135,7 +135,7 @@ def test_citation_infrastructure_smoke(db_session):
     assert cit_a["section"] == "Section 3.2"
     assert cit_a["page_number"] == "Page 89"
     assert cit_a["clause_text_summary"] == "Committee composition guidelines."
-    assert cit_a["file_path"] == "/excerpts/HIC_committee_excerpt.png"
+    assert cit_a["file_path"] == "/excerpts/IPC_committee_excerpt.png"
     assert cit_a["url"] == "https://nabh.co/standards/6th_edition/hic_3_2"
     assert cit_a["effective_date_override"] == "2026-03-15"
     assert cit_a["resolved_effective_date"] == "2026-03-15" # Resolves to override
@@ -145,10 +145,10 @@ def test_citation_infrastructure_smoke(db_session):
     assert cit_a["document"]["effective_date"] == "2026-01-01"
 
     # Assert Full Ontology Context
-    assert cit_a["ontology"]["chapter_code"] == "HIC"
-    assert cit_a["ontology"]["chapter_title"] == "Hospital Infection Control"
-    assert cit_a["ontology"]["standard_code"] == "HIC-1-6.0-T5"
-    assert cit_a["ontology"]["measurable_element_code"] == "HIC-1.a.1-6.0-T5"
+    assert cit_a["ontology"]["chapter_code"] == "IPC"
+    assert cit_a["ontology"]["chapter_title"] == "Infection Prevention and Control"
+    assert cit_a["ontology"]["standard_code"] == "IPC-1-6.0-T5"
+    assert cit_a["ontology"]["measurable_element_code"] == "IPC-1.a.1-6.0-T5"
 
     # Assert Citation B (date fallback)
     assert cit_b["id"] == "cit-task5-b"
@@ -168,14 +168,14 @@ def test_citation_infrastructure_smoke(db_session):
     # 6. Verification: format_citation_string
     formatted_str = CitationService.format_citation_string(cit_a)
     assert "[Citation]" in formatted_str
-    assert "HIC-1.a.1-6.0-T5" in formatted_str
-    assert "HIC" in formatted_str
+    assert "IPC-1.a.1-6.0-T5" in formatted_str
+    assert "IPC" in formatted_str
     assert "Official NABH 6th Edition Standards Manual" in formatted_str
     assert "2026-03-15" in formatted_str # Verifies override date format
     assert "Section 3.2" in formatted_str
     assert "Page 89" in formatted_str
     assert "Committee composition guidelines." in formatted_str
-    assert "/excerpts/HIC_committee_excerpt.png" in formatted_str
+    assert "/excerpts/IPC_committee_excerpt.png" in formatted_str
 
     # 7. Verification: Empty State Behavior
     empty_list = CitationService.get_citations_for_measurable_element(db_session, "meas-task5-empty")

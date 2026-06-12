@@ -19,7 +19,7 @@ def test_validation_errors(tmp_path):
         validate_ontology_seeds(data_dir, allow_missing_citations=True)
         
     # Write a base set of files but with missing keys
-    chapters = [{"code": "HIC", "title": "Infection Control"}] # missing other keys
+    chapters = [{"code": "IPC", "title": "Infection Control"}] # missing other keys
     with open(os.path.join(data_dir, "nabh_6th_chapters.json"), "w", encoding="utf-8") as f:
         json.dump(chapters, f)
     with open(os.path.join(data_dir, "nabh_6th_requirements.json"), "w", encoding="utf-8") as f:
@@ -37,8 +37,8 @@ def test_validation_coverage_mismatch(tmp_path):
     data_dir = str(tmp_path)
     
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Standards",
         "display_order": 1,
         "official_standards_count": 2,
@@ -46,11 +46,11 @@ def test_validation_coverage_mismatch(tmp_path):
         "is_fully_seeded": True
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "6.0",
         "standards": [
             {
-                "code": "HIC-1",
+                "code": "IPC-1",
                 "title": "Standard 1",
                 "description": "Desc",
                 "display_order": 1,
@@ -76,8 +76,8 @@ def test_validation_coverage_mismatch(tmp_path):
 def test_validation_mixed_versions(tmp_path):
     data_dir = str(tmp_path)
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Desc",
         "display_order": 1,
         "official_standards_count": 1,
@@ -85,7 +85,7 @@ def test_validation_mixed_versions(tmp_path):
         "is_fully_seeded": False
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "7.0", # mismatch version
         "standards": []
     }]
@@ -106,8 +106,8 @@ def test_validation_mixed_versions(tmp_path):
 def test_validation_dsl_contract(tmp_path):
     data_dir = str(tmp_path)
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Desc",
         "display_order": 1,
         "official_standards_count": 1,
@@ -115,23 +115,23 @@ def test_validation_dsl_contract(tmp_path):
         "is_fully_seeded": False
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "6.0",
         "standards": [
             {
-                "code": "HIC-1",
+                "code": "IPC-1",
                 "title": "Std 1",
                 "description": "Desc",
                 "display_order": 1,
                 "objective_elements": [
                     {
-                        "code": "HIC-1.a",
+                        "code": "IPC-1.a",
                         "description": "Obj a",
                         "severity": "major",
                         "display_order": 1,
                         "measurable_elements": [
                             {
-                                "code": "HIC-1.a.1",
+                                "code": "IPC-1.a.1",
                                 "description": "Meas 1",
                                 "applicability_default": "applicable",
                                 "scoring_weight": 1.0,
@@ -148,7 +148,7 @@ def test_validation_dsl_contract(tmp_path):
     
     # Bad rule operator
     rules = [{
-        "measurable_element_code": "HIC-1.a.1",
+        "measurable_element_code": "IPC-1.a.1",
         "edition_version": "6.0",
         "rule_code": "rule_triage",
         "rule_json": {
@@ -178,8 +178,8 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     data_dir = str(tmp_path)
     
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Standards for infection control.",
         "display_order": 1,
         "official_standards_count": 1,
@@ -187,23 +187,23 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
         "is_fully_seeded": True
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "6.0",
         "standards": [
             {
-                "code": "HIC-1",
+                "code": "IPC-1",
                 "title": "Std 1",
                 "description": "Infection Control Program",
                 "display_order": 1,
                 "objective_elements": [
                     {
-                        "code": "HIC-1.a",
+                        "code": "IPC-1.a",
                         "description": "Manual is updated.",
                         "severity": "major",
                         "display_order": 1,
                         "measurable_elements": [
                             {
-                                "code": "HIC-1.a.1",
+                                "code": "IPC-1.a.1",
                                 "description": "Triage checks exist.",
                                 "applicability_default": "applicable",
                                 "scoring_weight": 1.0,
@@ -218,9 +218,9 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
         ]
     }]
     evidence = [{
-        "measurable_element_code": "HIC-1.a.1",
+        "measurable_element_code": "IPC-1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "HIC-1.a.1-EV-SOP-01",
+        "evidence_code": "IPC-1.a.1-EV-SOP-01",
         "evidence_type": "sop",
         "description": "Standard Operating Procedure for Triage",
         "is_mandatory": True,
@@ -229,7 +229,7 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
         "default_owner_role": "officer"
     }]
     rules = [{
-        "measurable_element_code": "HIC-1.a.1",
+        "measurable_element_code": "IPC-1.a.1",
         "edition_version": "6.0",
         "rule_code": "rule_triage",
         "rule_json": {
@@ -241,6 +241,28 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
         "action_if_true": "applicable",
         "action_if_false": "not_applicable"
     }]
+    citations = {
+        "_meta": {
+            "description": "Mock citations",
+            "edition_version": "6.0",
+            "citation_complete": False
+        },
+        "citations": [
+            {
+                "measurable_element_code": "IPC-1.a.1",
+                "edition_version": "6.0",
+                "document_title": "Mock Reference Guide",
+                "document_publisher": "NABH",
+                "document_version": "6.0",
+                "section": "Chapter IPC",
+                "page_number": "1",
+                "clause_text_summary": "Triage protocols.",
+                "effective_date": "2026-01-01",
+                "file_path": None,
+                "url": "http://mock.com"
+            }
+        ]
+    }
 
     with open(os.path.join(data_dir, "nabh_6th_chapters.json"), "w", encoding="utf-8") as f:
         json.dump(chapters, f)
@@ -250,6 +272,8 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
         json.dump(evidence, f)
     with open(os.path.join(data_dir, "nabh_6th_applicability_rules.json"), "w", encoding="utf-8") as f:
         json.dump(rules, f)
+    with open(os.path.join(data_dir, "nabh_6th_citations.json"), "w", encoding="utf-8") as f:
+        json.dump(citations, f)
 
     # Clean existing data to ensure independent smoke test
     db_session.execute(text("DELETE FROM nabh_applicability_rules"))
@@ -261,14 +285,8 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     db_session.execute(text("DELETE FROM nabh_editions"))
     db_session.commit()
 
-    # 1. Run seeder (citations file not provided; test validates non-citation seeding)
-    from unittest.mock import patch as _patch
-    from app.nabh import validator as _val_mod
-    _orig_validate = _val_mod.validate_ontology_seeds
-    def _validate_no_cit(data_dir, target_version="6.0", allow_missing_citations=False):
-        return _orig_validate(data_dir, target_version, allow_missing_citations=True)
-    with _patch("app.nabh.seeder.validate_ontology_seeds", side_effect=_validate_no_cit):
-        seed_versioned_ontology(db_session, data_dir, "6.0")
+    # 1. Run seeder
+    seed_versioned_ontology(db_session, data_dir, "6.0")
 
     # Assert entities exist
     edition = db_session.query(NABHEdition).filter(NABHEdition.version == "6.0").first()
@@ -276,25 +294,25 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     
     chapter = db_session.query(NABHChapter).filter(NABHChapter.edition_id == edition.id).first()
     assert chapter is not None
-    assert chapter.code == "HIC"
+    assert chapter.code == "IPC"
     assert chapter.is_fully_seeded is True
     
     std = db_session.query(NABHStandard).filter(NABHStandard.edition_id == edition.id).first()
     assert std is not None
-    assert std.canonical_code == "HIC-1"
+    assert std.canonical_code == "IPC-1"
     assert std.code == "1"
 
     obj = db_session.query(NABHObjectiveElement).filter(NABHObjectiveElement.edition_id == edition.id).first()
     assert obj is not None
-    assert obj.canonical_code == "HIC-1.a"
+    assert obj.canonical_code == "IPC-1.a"
 
     meas = db_session.query(NABHMeasurableElement).filter(NABHMeasurableElement.edition_id == edition.id).first()
     assert meas is not None
-    assert meas.canonical_code == "HIC-1.a.1"
+    assert meas.canonical_code == "IPC-1.a.1"
 
     ev = db_session.query(NABHEvidenceRequirement).filter(NABHEvidenceRequirement.measurable_element_id == meas.id).first()
     assert ev is not None
-    assert ev.evidence_code == "HIC-1.a.1-EV-SOP-01"
+    assert ev.evidence_code == "IPC-1.a.1-EV-SOP-01"
 
     rule = db_session.query(NABHApplicabilityRule).filter(NABHApplicabilityRule.measurable_element_id == meas.id).first()
     assert rule is not None
@@ -302,8 +320,7 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     assert rule.rule_json["operator"] == "eq"
 
     # 2. Idempotency test (re-run seeder, counts must not change)
-    with _patch("app.nabh.seeder.validate_ontology_seeds", side_effect=_validate_no_cit):
-        seed_versioned_ontology(db_session, data_dir, "6.0")
+    seed_versioned_ontology(db_session, data_dir, "6.0")
     
     assert db_session.query(NABHChapter).count() == 1
     assert db_session.query(NABHStandard).count() == 1
@@ -313,7 +330,7 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     assert db_session.query(NABHApplicabilityRule).count() == 1
 
     # 3. In-place Update test
-    chapters[0]["title"] = "Hospital Infection Control UPDATED"
+    chapters[0]["title"] = "Infection Prevention and Control UPDATED"
     evidence[0]["minimum_lookback_days"] = 999
     
     with open(os.path.join(data_dir, "nabh_6th_chapters.json"), "w", encoding="utf-8") as f:
@@ -321,13 +338,12 @@ def test_seeding_happy_path_and_idempotency(db_session, tmp_path):
     with open(os.path.join(data_dir, "nabh_6th_evidence_requirements.json"), "w", encoding="utf-8") as f:
         json.dump(evidence, f)
 
-    with _patch("app.nabh.seeder.validate_ontology_seeds", side_effect=_validate_no_cit):
-        seed_versioned_ontology(db_session, data_dir, "6.0")
+    seed_versioned_ontology(db_session, data_dir, "6.0")
     
     db_session.refresh(chapter)
     db_session.refresh(ev)
     
-    assert chapter.title == "Hospital Infection Control UPDATED"
+    assert chapter.title == "Infection Prevention and Control UPDATED"
     assert ev.minimum_lookback_days == 999
 
 
@@ -335,8 +351,8 @@ def test_seeding_transaction_safety(db_session, tmp_path, monkeypatch):
     data_dir = str(tmp_path)
     
     chapters = [{
-        "code": "HIC",
-        "title": "Hospital Infection Control",
+        "code": "IPC",
+        "title": "Infection Prevention and Control",
         "description": "Standards for infection control.",
         "display_order": 1,
         "official_standards_count": 1,
@@ -344,23 +360,23 @@ def test_seeding_transaction_safety(db_session, tmp_path, monkeypatch):
         "is_fully_seeded": False
     }]
     requirements = [{
-        "chapter_code": "HIC",
+        "chapter_code": "IPC",
         "edition_version": "6.0",
         "standards": [
             {
-                "code": "HIC-1",
+                "code": "IPC-1",
                 "title": "Std 1",
                 "description": "Infection Control Program",
                 "display_order": 1,
                 "objective_elements": [
                     {
-                        "code": "HIC-1.a",
+                        "code": "IPC-1.a",
                         "description": "Manual is updated.",
                         "severity": "major",
                         "display_order": 1,
                         "measurable_elements": [
                             {
-                                "code": "HIC-1.a.1",
+                                "code": "IPC-1.a.1",
                                 "description": "Triage checks exist.",
                                 "applicability_default": "applicable",
                                 "scoring_weight": 1.0,
@@ -376,9 +392,9 @@ def test_seeding_transaction_safety(db_session, tmp_path, monkeypatch):
     }]
 
     evidence = [{
-        "measurable_element_code": "HIC-1.a.1",
+        "measurable_element_code": "IPC-1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "HIC-1.a.1-EV-SOP-01",
+        "evidence_code": "IPC-1.a.1-EV-SOP-01",
         "evidence_type": "sop",
         "description": "Standard Operating Procedure for Triage",
         "is_mandatory": True,
