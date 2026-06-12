@@ -156,6 +156,7 @@ class Hospital(Base):
     staff = relationship("Staff", back_populates="hospital")
     accreditation_profile = relationship("HospitalAccreditationProfile", back_populates="hospital", uselist=False, cascade="all, delete-orphan")
     nabh_requirements = relationship("HospitalNABHRequirement", back_populates="hospital", cascade="all, delete-orphan")
+    nabh_legacy_migration_maps = relationship("NABHLegacyMigrationMap", back_populates="hospital", cascade="all, delete-orphan")
 
 
 class Staff(Base):
@@ -1072,6 +1073,33 @@ class HospitalRequirementEvidenceLink(Base):
         Index("idx_evidence_link_evidence_req", "evidence_requirement_id"),
         Index("idx_evidence_link_uploader", "uploaded_by"),
         Index("idx_evidence_link_verifier", "verified_by"),
+    )
+
+
+class NABHLegacyMigrationMap(Base):
+    """Provenance for deterministic migration from legacy NABHObjective rows."""
+    __tablename__ = "nabh_legacy_migration_maps"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    hospital_id = Column(String, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False)
+    legacy_objective_id = Column(String, ForeignKey("nabh_objectives.id", ondelete="CASCADE"), nullable=False)
+    legacy_standard_code = Column(String(100), nullable=False)
+    new_requirement_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="SET NULL"), nullable=True)
+    mapping_level = Column(String(50), nullable=False)
+    mapping_status = Column(String(50), nullable=False)
+    reason = Column(Text, nullable=True)
+    migrated_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    hospital = relationship("Hospital", back_populates="nabh_legacy_migration_maps")
+    legacy_objective = relationship("NABHObjective")
+    measurable_element = relationship("NABHMeasurableElement")
+
+    __table_args__ = (
+        UniqueConstraint("legacy_objective_id", "new_requirement_id", "mapping_level", name="uq_legacy_migration_target"),
+        Index("idx_legacy_migration_hospital", "hospital_id"),
+        Index("idx_legacy_migration_legacy", "legacy_objective_id"),
+        Index("idx_legacy_migration_requirement", "new_requirement_id"),
+        Index("idx_legacy_migration_status", "mapping_status"),
     )
 
 

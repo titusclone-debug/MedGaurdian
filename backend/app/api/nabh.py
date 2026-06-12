@@ -22,6 +22,7 @@ from app.nabh.applicability import ApplicabilityEngine
 from app.nabh.readiness import calculate_hospital_readiness
 from app.nabh.explanation import build_requirement_explanation
 from app.nabh.quality import NABHQualityError, assert_compliant_status_allowed
+from app.nabh.migration_bridge import migrate_hospital_legacy_nabh_state
 
 from app.schemas.nabh import (
     NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
@@ -30,7 +31,7 @@ from app.schemas.nabh import (
     HospitalRequirementSummary as SchemaHospitalRequirementSummary,
     PaginatedHospitalRequirementSummary, HospitalRequirementDetail as SchemaHospitalRequirementDetail,
     HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema, HospitalReadinessResponse,
-    NABHRequirementExplanationResponse
+    NABHRequirementExplanationResponse, NABHLegacyMigrationReport
 )
 
 router = APIRouter()
@@ -1306,6 +1307,39 @@ async def get_hospital_readiness(
     """
     assert_hospital_access(current_user, hospital_id)
     return calculate_hospital_readiness(db, hospital_id, edition_version)
+
+
+@router.post("/migration/{hospital_id}/legacy-bridge", response_model=NABHLegacyMigrationReport)
+async def run_legacy_migration_bridge(
+    hospital_id: str,
+    edition_version: str = Query("6.0"),
+    dry_run: bool = Query(False),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER]))
+):
+    """
+    Deterministically bridge legacy NABHObjective rows into new v6 requirement state.
+
+    This is a compatibility bridge only: it preserves existing new requirement state,
+    records unmapped legacy rows, and never deletes legacy data.
+    """
+    assert_hospital_access(current_user, hospital_id)
+    try:
+        report = migrate_hospital_legacy_nabh_state(
+            db=db,
+            hospital_id=hospital_id,
+            edition_version=edition_version,
+            dry_run=dry_run,
+        )
+        if not dry_run:
+            db.commit()
+        return report
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception:
+        db.rollback()
+        raise
 
 
 @router.get(

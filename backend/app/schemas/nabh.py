@@ -357,3 +357,26 @@ class NABHRequirementExplanationResponse(BaseModel):
     limitations: List[str] = Field(default_factory=list)
 
 
+# --- Task 19: Legacy Migration Bridge Schemas ---
+
+class NABHLegacyMigrationUnmappedItem(BaseModel):
+    legacy_objective_id: str
+    legacy_standard_code: str
+    reason: str
+
+
+class NABHLegacyMigrationReport(BaseModel):
+    hospital_id: str
+    edition_version: str
+    dry_run: bool
+    legacy_records_seen: int = 0
+    mapped_legacy_records: int = 0
+    unmapped_legacy_records: int = 0
+    created_requirement_rows: int = 0
+    updated_requirement_rows: int = 0
+    skipped_existing_rows: int = 0
+    conflicts: int = 0
+    warnings: List[str] = Field(default_factory=list)
+    unmapped: List[NABHLegacyMigrationUnmappedItem] = Field(default_factory=list)
+
+
