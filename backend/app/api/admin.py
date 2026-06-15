@@ -55,3 +55,73 @@ async def get_nabh_fleet_summary(
         })
         
     return fleet_summary
+
+
+@router.get("/db-inspection")
+async def db_inspection(
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN])),
+):
+    import os
+    from app.core.config import settings
+    from app.models.database import (
+        NABHEdition, NABHChapter, NABHStandard,
+        NABHMeasurableElement, NABHEvidenceRequirement,
+        NABHRequirementCitation
+    )
+    
+    # Mask password in DATABASE_URL
+    db_url = settings.DATABASE_URL
+    masked_db_url = db_url
+    if "@" in db_url:
+        try:
+            prefix, rest = db_url.split("@", 1)
+            proto, credentials = prefix.split("://", 1)
+            if ":" in credentials:
+                user, _ = credentials.split(":", 1)
+                masked_db_url = f"{proto}://{user}:***@{rest}"
+        except Exception:
+            masked_db_url = "invalid-or-masked-url"
+            
+    # Count of editions and chapters specifically for 6.0
+    nabh_6_editions_count = db.query(NABHEdition).filter(NABHEdition.version == "6.0").count()
+    nabh_6_chapters_count = db.query(NABHChapter).join(NABHEdition).filter(NABHEdition.version == "6.0").count()
+    
+    return {
+        "database_url": masked_db_url,
+        "is_render": "RENDER" in os.environ,
+        "env_variables": {k: os.environ.get(k) for k in ["RENDER", "RENDER_SERVICE_ID", "RENDER_SERVICE_NAME"] if k in os.environ},
+        "counts": {
+            "editions": db.query(NABHEdition).count(),
+            "chapters": db.query(NABHChapter).count(),
+            "standards": db.query(NABHStandard).count(),
+            "measurable_elements": db.query(NABHMeasurableElement).count(),
+            "citations": db.query(NABHRequirementCitation).count(),
+            "evidence_requirements": db.query(NABHEvidenceRequirement).count(),
+        },
+        "nabh_6_editions_count": nabh_6_editions_count,
+        "nabh_6_chapters_count": nabh_6_chapters_count,
+    }
+
+
+@router.post("/seed-ontology")
+async def seed_ontology(
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN])),
+):
+    from app.nabh.seeder import seed_versioned_ontology
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    logger.info("Admin triggered ontology seeding...")
+    
+    try:
+        # Use official seeder
+        seed_versioned_ontology(db, "app/nabh/data", "6.0")
+        return {"status": "success", "message": "Ontology seeded successfully"}
+    except Exception as e:
+        logger.error(f"Error seeding ontology: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Seeding failed: {str(e)}"
+        )
