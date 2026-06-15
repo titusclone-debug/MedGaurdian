@@ -357,6 +357,47 @@ class NABHRequirementExplanationResponse(BaseModel):
     limitations: List[str] = Field(default_factory=list)
 
 
+class NABHEvidencePlanEvidenceItem(BaseModel):
+    evidence_code: Optional[str] = None
+    evidence_type: str
+    description: str
+    suggested_documentation: Optional[str] = None
+    is_mandatory: bool
+    evidence_frequency: Optional[str] = None
+    minimum_lookback_days: int = 90
+    default_owner_role: Optional[str] = None
+
+
+class NABHEvidencePlanItem(BaseModel):
+    requirement_id: str
+    requirement_code: str
+    title: str
+    chapter_code: str
+    standard_code: str
+    applicability_status: str
+    readiness_status: str
+    evidence_status: str
+    responsible_role: str
+    responsible_owner_id: Optional[str] = None
+    responsible_owner_name: Optional[str] = None
+    confidence: str
+    citation_count: int = 0
+    required_evidence: List[NABHEvidencePlanEvidenceItem] = Field(default_factory=list)
+    proof_burden_summary: NABHExplanationProofBurdenSummary
+    limitations: List[str] = Field(default_factory=list)
+
+
+class NABHEvidencePlanResponse(BaseModel):
+    hospital_id: str
+    edition_version: str
+    total_applicable_requirements: int
+    returned_requirements: int
+    evidence_item_count: int
+    limit: int
+    offset: int
+    items: List[NABHEvidencePlanItem] = Field(default_factory=list)
+
+
 # --- Task 19: Legacy Migration Bridge Schemas ---
 
 class NABHLegacyMigrationUnmappedItem(BaseModel):

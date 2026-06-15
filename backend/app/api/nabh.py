@@ -21,6 +21,7 @@ from app.nabh.citation_service import CitationService
 from app.nabh.applicability import ApplicabilityEngine
 from app.nabh.readiness import calculate_hospital_readiness
 from app.nabh.explanation import build_requirement_explanation
+from app.nabh.evidence_plan import build_hospital_evidence_plan
 from app.nabh.quality import NABHQualityError, assert_compliant_status_allowed
 from app.nabh.migration_bridge import migrate_hospital_legacy_nabh_state
 
@@ -31,7 +32,7 @@ from app.schemas.nabh import (
     HospitalRequirementSummary as SchemaHospitalRequirementSummary,
     PaginatedHospitalRequirementSummary, HospitalRequirementDetail as SchemaHospitalRequirementDetail,
     HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema, HospitalReadinessResponse,
-    NABHRequirementExplanationResponse, NABHLegacyMigrationReport
+    NABHRequirementExplanationResponse, NABHEvidencePlanResponse, NABHLegacyMigrationReport
 )
 
 router = APIRouter()
@@ -1045,6 +1046,31 @@ async def get_hospital_requirements(
         limit=limit,
         offset=offset,
         items=items
+    )
+
+
+@router.get("/requirements/{hospital_id}/evidence-plan", response_model=NABHEvidencePlanResponse)
+async def get_hospital_evidence_plan(
+    hospital_id: str,
+    edition_version: str = Query("6.0"),
+    limit: int = Query(100, ge=1, le=250),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user)
+):
+    """
+    Return a paged, bulk evidence plan for hospital-scoped requirements.
+
+    This endpoint is intentionally aggregated so the Phase 1 frontend does not
+    issue one explanation request per requirement when rendering Evidence Needed.
+    """
+    assert_hospital_access(current_user, hospital_id)
+    return build_hospital_evidence_plan(
+        db=db,
+        hospital_id=hospital_id,
+        edition_version=edition_version,
+        limit=limit,
+        offset=offset,
     )
 
 

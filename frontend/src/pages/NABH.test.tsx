@@ -172,6 +172,36 @@ const explanation = {
   limitations: [],
 }
 
+const evidencePlan = {
+  hospital_id: hospitalId,
+  edition_version: '6.0',
+  total_applicable_requirements: 1,
+  returned_requirements: 1,
+  evidence_item_count: 1,
+  limit: 200,
+  offset: 0,
+  items: [
+    {
+      requirement_id: explanation.requirement_id,
+      requirement_code: explanation.requirement_code,
+      title: explanation.title,
+      chapter_code: 'FMS',
+      standard_code: 'FMS-1',
+      applicability_status: 'applicable',
+      readiness_status: 'under_review',
+      evidence_status: 'missing',
+      responsible_role: 'facility_director',
+      responsible_owner_id: null,
+      responsible_owner_name: null,
+      confidence: 'source_cited',
+      citation_count: 1,
+      required_evidence: explanation.required_evidence,
+      proof_burden_summary: explanation.proof_burden_summary,
+      limitations: [],
+    },
+  ],
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return {
     ok: status >= 200 && status < 300,
@@ -193,17 +223,18 @@ function mockApi({ profile = profileMissing, requirements = [] as any[] } = {}) 
 
     if (url === '/api/nabh/ontology/coverage') return jsonResponse(coverage)
     if (url === '/api/nabh/ontology/chapters') return jsonResponse(chapters)
-    if (url === '/api/nabh/ontology/requirements?limit=1000') {
-      return jsonResponse({ total: ontologyRequirements.length, limit: 1000, offset: 0, items: ontologyRequirements })
+    if (url === '/api/nabh/ontology/requirements?limit=100') {
+      return jsonResponse({ total: ontologyRequirements.length, limit: 100, offset: 0, items: ontologyRequirements })
     }
     if (url === `/api/nabh/profile/${hospitalId}` && method === 'GET') return jsonResponse(profile)
     if (url === `/api/nabh/profile/${hospitalId}` && method === 'PUT') return jsonResponse({ ...profileSaved, exists: true })
     if (url === `/api/nabh/profile/${hospitalId}/compute-applicability`) {
       return jsonResponse({ total_requirements_evaluated: 1, status_counts: { applicable: 1 } })
     }
-    if (url === `/api/nabh/requirements/${hospitalId}?limit=1000`) {
-      return jsonResponse({ total: requirements.length, limit: 1000, offset: 0, items: requirements })
+    if (url === `/api/nabh/requirements/${hospitalId}?limit=100`) {
+      return jsonResponse({ total: requirements.length, limit: 100, offset: 0, items: requirements })
     }
+    if (url === `/api/nabh/requirements/${hospitalId}/evidence-plan?limit=200`) return jsonResponse(evidencePlan)
     if (url === `/api/nabh/readiness/${hospitalId}`) return jsonResponse(requirements.length ? readiness : { ...readiness, total_state_rows: 0, denominator: 0, readiness_score_percent: null })
     if (url === `/api/nabh/ontology/requirements/req-fms-1/explanation?hospital_id=${hospitalId}`) return jsonResponse(explanation)
     if (url === '/api/nabh/ontology/requirements/req-fms-1/explanation') return jsonResponse(explanation)
@@ -328,7 +359,8 @@ describe('NABH Phase 1 workspace', () => {
   })
 
   it('respects the evidence tab provided in the URL directly and does not redirect', async () => {
-    vi.stubGlobal('fetch', mockApi({ profile: profileSaved, requirements: [hospitalRequirement] }))
+    const fetchMock = mockApi({ profile: profileSaved, requirements: [hospitalRequirement] })
+    vi.stubGlobal('fetch', fetchMock)
 
     render(
       <MemoryRouter initialEntries={['/nabh?tab=evidence']}>
@@ -339,6 +371,13 @@ describe('NABH Phase 1 workspace', () => {
 
     expect(await screen.findByRole('button', { name: 'Evidence Needed' })).toBeDefined()
     expect(screen.getByTestId('current-tab').textContent).toBe('evidence')
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        `/api/nabh/requirements/${hospitalId}/evidence-plan?limit=200`,
+        expect.any(Object)
+      )
+    })
+    expect(await screen.findByText('Original Fire Safety NOC Certificate.')).toBeDefined()
   })
 
   it('computes default tab based on profile and scope state when no tab param is provided', async () => {

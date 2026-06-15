@@ -1,3 +1,4 @@
+from collections import defaultdict
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional, Dict, Any, List
@@ -6,7 +7,8 @@ from app.models.database import (
     HospitalAccreditationProfile, HospitalNABHRequirement,
     NABHMeasurableElement, NABHApplicabilityRule,
     ApplicabilityDefault, MaturityLevel, EvidenceStatus, ComplianceStatus,
-    NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement
+    NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement,
+    EditionStatus
 )
 
 PROFILE_WHITELIST = {
@@ -134,6 +136,7 @@ class ApplicabilityEngine:
         # 2. Get active edition (6.0)
         edition = db.query(NABHEdition).filter(
             NABHEdition.version == "6.0",
+            NABHEdition.status == EditionStatus.ACTIVE,
             NABHEdition.retired_at.is_(None)
         ).first()
         
@@ -162,6 +165,27 @@ class ApplicabilityEngine:
             NABHObjectiveElement.retired_at.is_(None),
             NABHMeasurableElement.retired_at.is_(None)
         ).all()
+
+        element_ids = [element.id for element in elements]
+        rules_by_element = defaultdict(list)
+        states_by_requirement = {}
+        if element_ids:
+            rules = db.query(NABHApplicabilityRule).filter(
+                NABHApplicabilityRule.measurable_element_id.in_(element_ids),
+                NABHApplicabilityRule.retired_at.is_(None)
+            ).all()
+            for rule in rules:
+                rules_by_element[rule.measurable_element_id].append(rule)
+
+            existing_states = db.query(HospitalNABHRequirement).filter(
+                HospitalNABHRequirement.hospital_id == hospital_id,
+                HospitalNABHRequirement.requirement_id.in_(element_ids),
+                HospitalNABHRequirement.retired_at.is_(None)
+            ).all()
+            states_by_requirement = {
+                state.requirement_id: state
+                for state in existing_states
+            }
         
         total_evaluated = len(elements)
         created_count = 0
@@ -186,10 +210,7 @@ class ApplicabilityEngine:
         }
         
         for element in elements:
-            rules = db.query(NABHApplicabilityRule).filter(
-                NABHApplicabilityRule.measurable_element_id == element.id,
-                NABHApplicabilityRule.retired_at.is_(None)
-            ).all()
+            rules = rules_by_element.get(element.id, [])
             
             winning_status = None
             winning_reason = None
@@ -239,11 +260,7 @@ class ApplicabilityEngine:
                 
             status_counts[winning_status.value] += 1
             
-            # Query existing requirement progress record
-            req_state = db.query(HospitalNABHRequirement).filter(
-                HospitalNABHRequirement.hospital_id == hospital_id,
-                HospitalNABHRequirement.requirement_id == element.id
-            ).first()
+            req_state = states_by_requirement.get(element.id)
             
             if not req_state:
                 req_state = HospitalNABHRequirement(

@@ -17,9 +17,12 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react'
-import LegacyNABHDashboard from '../components/nabh/LegacyNABHDashboard'
 
 type TabId = 'start' | 'profile' | 'applicable' | 'browser' | 'evidence' | 'dashboard'
+
+const REQUIREMENT_PAGE_SIZE = 100
+const ONTOLOGY_PAGE_SIZE = 100
+const EVIDENCE_PLAN_PAGE_SIZE = 200
 
 type ApiError = {
   message: string
@@ -195,6 +198,36 @@ type RequirementExplanation = {
     owner_role?: string | null
   } | null
   limitations: string[]
+}
+
+type EvidencePlanItem = {
+  requirement_id: string
+  requirement_code: string
+  title: string
+  chapter_code: string
+  standard_code: string
+  applicability_status: string
+  readiness_status: string
+  evidence_status: string
+  responsible_role: string
+  responsible_owner_id?: string | null
+  responsible_owner_name?: string | null
+  confidence: string
+  citation_count: number
+  required_evidence: EvidenceItem[]
+  proof_burden_summary: RequirementExplanation['proof_burden_summary']
+  limitations: string[]
+}
+
+type EvidencePlan = {
+  hospital_id: string
+  edition_version: string
+  total_applicable_requirements: number
+  returned_requirements: number
+  evidence_item_count: number
+  limit: number
+  offset: number
+  items: EvidencePlanItem[]
 }
 
 const TABS: Array<{ id: TabId; label: string; icon: any }> = [
@@ -373,7 +406,9 @@ export default function NABHPage() {
   const [coverage, setCoverage] = useState<Coverage | null>(null)
   const [chapters, setChapters] = useState<OntologyChapter[]>([])
   const [ontologyRequirements, setOntologyRequirements] = useState<OntologyRequirement[]>([])
+  const [ontologyRequirementsTotal, setOntologyRequirementsTotal] = useState(0)
   const [hospitalRequirements, setHospitalRequirements] = useState<HospitalRequirement[]>([])
+  const [hospitalRequirementsTotal, setHospitalRequirementsTotal] = useState(0)
   const [readiness, setReadiness] = useState<Readiness | null>(null)
   const [loading, setLoading] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
@@ -383,15 +418,11 @@ export default function NABHPage() {
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null)
   const [selectedExplanation, setSelectedExplanation] = useState<RequirementExplanation | null>(null)
   const [drawerLoading, setDrawerLoading] = useState(false)
-  const [evidenceExplanations, setEvidenceExplanations] = useState<RequirementExplanation[]>([])
+  const [evidencePlan, setEvidencePlan] = useState<EvidencePlan | null>(null)
   const [evidenceLoading, setEvidenceLoading] = useState(false)
   const hasChosenTabRef = useRef(false)
 
-  const scopedRequirements = useMemo(
-    () => hospitalRequirements.filter((req) => req.applicability_status !== 'not_applicable'),
-    [hospitalRequirements]
-  )
-  const hasComputedScope = hospitalRequirements.length > 0
+  const hasComputedScope = hospitalRequirementsTotal > 0
 
   const fetchHospitalData = useCallback(async () => {
     if (!hospitalId) {
@@ -403,21 +434,28 @@ export default function NABHPage() {
     setLoading(true)
     setError('')
     try {
-      const [profileData, requirementsData, readinessData] = await Promise.all([
+      const [profileData, requirementsData] = await Promise.all([
         apiFetch<HospitalProfile>(`/api/nabh/profile/${hospitalId}`),
-        apiFetch<{ total: number; items: HospitalRequirement[] }>(`/api/nabh/requirements/${hospitalId}?limit=1000`),
-        apiFetch<Readiness>(`/api/nabh/readiness/${hospitalId}`),
+        apiFetch<{ total: number; items: HospitalRequirement[] }>(`/api/nabh/requirements/${hospitalId}?limit=${REQUIREMENT_PAGE_SIZE}`),
       ])
+
+      let readinessData: Readiness | null = null
+      try {
+        readinessData = await apiFetch<Readiness>(`/api/nabh/readiness/${hospitalId}`)
+      } catch (readinessErr: any) {
+        if (readinessErr.status !== 404) throw readinessErr
+      }
 
       setProfile(profileData.exists ? profileData : emptyProfile(hospitalId))
       setHospitalRequirements(requirementsData.items || [])
+      setHospitalRequirementsTotal(requirementsData.total || 0)
       setReadiness(readinessData)
 
       if (!hasChosenTabRef.current) {
         if (!isValidTab) {
           let defaultTab: TabId = 'start'
           if (!profileData.exists) defaultTab = 'start'
-          else if ((requirementsData.items || []).length === 0) defaultTab = 'profile'
+          else if ((requirementsData.total || 0) === 0) defaultTab = 'profile'
           else defaultTab = 'applicable'
           setSearchParams({ tab: defaultTab }, { replace: true })
         }
@@ -435,11 +473,12 @@ export default function NABHPage() {
       const [coverageData, chapterData, requirementData] = await Promise.all([
         apiFetch<Coverage>('/api/nabh/ontology/coverage'),
         apiFetch<OntologyChapter[]>('/api/nabh/ontology/chapters'),
-        apiFetch<{ total: number; items: OntologyRequirement[] }>('/api/nabh/ontology/requirements?limit=1000'),
+        apiFetch<{ total: number; items: OntologyRequirement[] }>(`/api/nabh/ontology/requirements?limit=${ONTOLOGY_PAGE_SIZE}`),
       ])
       setCoverage(coverageData)
       setChapters(chapterData)
       setOntologyRequirements(requirementData.items || [])
+      setOntologyRequirementsTotal(requirementData.total || 0)
     } catch (err: any) {
       setError(err.message || 'Unable to load NABH ontology')
     }
@@ -451,21 +490,17 @@ export default function NABHPage() {
   }, [fetchHospitalData, fetchOntologyData])
 
   useEffect(() => {
-    if (activeTab !== 'evidence' || !hospitalId || scopedRequirements.length === 0 || evidenceExplanations.length > 0) {
+    if (activeTab !== 'evidence' || !hospitalId || !hasComputedScope || evidencePlan) {
       return
     }
 
     async function loadEvidencePlan() {
       setEvidenceLoading(true)
       try {
-        const explanations = await Promise.all(
-          scopedRequirements.map((req) =>
-            apiFetch<RequirementExplanation>(
-              `/api/nabh/ontology/requirements/${req.requirement_id}/explanation?hospital_id=${hospitalId}`
-            )
-          )
+        const plan = await apiFetch<EvidencePlan>(
+          `/api/nabh/requirements/${hospitalId}/evidence-plan?limit=${EVIDENCE_PLAN_PAGE_SIZE}`
         )
-        setEvidenceExplanations(explanations)
+        setEvidencePlan(plan)
       } catch (err: any) {
         setError(err.message || 'Unable to load evidence expectations')
       } finally {
@@ -474,7 +509,7 @@ export default function NABHPage() {
     }
 
     loadEvidencePlan()
-  }, [activeTab, evidenceExplanations.length, hospitalId, scopedRequirements])
+  }, [activeTab, evidencePlan, hasComputedScope, hospitalId])
 
   async function saveProfile() {
     if (!hospitalId || !profile) return
@@ -528,7 +563,7 @@ export default function NABHPage() {
       )
       hasChosenTabRef.current = true
       await fetchHospitalData()
-      setEvidenceExplanations([])
+      setEvidencePlan(null)
       setSearchParams({ tab: 'applicable' })
       setNotice(`Scope computed across ${result.total_requirements_evaluated} seeded requirements.`)
     } catch (err: any) {
@@ -644,6 +679,8 @@ export default function NABHPage() {
       {activeTab === 'applicable' && (
         <ApplicableRequirementsView
           requirements={hospitalRequirements}
+          totalCount={hospitalRequirementsTotal}
+          pageSize={REQUIREMENT_PAGE_SIZE}
           chapters={chapters}
           hasComputedScope={hasComputedScope}
           onOpenExplanation={openExplanation}
@@ -658,25 +695,23 @@ export default function NABHPage() {
           coverage={coverage}
           chapters={chapters}
           requirements={ontologyRequirements}
+          totalCount={ontologyRequirementsTotal}
+          pageSize={ONTOLOGY_PAGE_SIZE}
           onOpenExplanation={openExplanation}
         />
       )}
 
       {activeTab === 'evidence' && (
         <EvidenceNeededView
-          explanations={evidenceExplanations}
+          evidencePlan={evidencePlan}
           loading={evidenceLoading}
-          requirementCount={scopedRequirements.length}
           hasComputedScope={hasComputedScope}
           onGoApplicable={() => chooseTab('applicable')}
         />
       )}
 
       {activeTab === 'dashboard' && (
-        <div className="space-y-4">
-          <ReadinessStrip readiness={readiness} />
-          <LegacyNABHDashboard />
-        </div>
+        <PhaseOneDashboardView readiness={readiness} requirementCount={hospitalRequirementsTotal} />
       )}
 
       <RequirementExplanationDrawer
@@ -998,6 +1033,8 @@ function HospitalProfileView({
 
 function ApplicableRequirementsView({
   requirements,
+  totalCount,
+  pageSize,
   chapters,
   hasComputedScope,
   onOpenExplanation,
@@ -1006,6 +1043,8 @@ function ApplicableRequirementsView({
   computing,
 }: {
   requirements: HospitalRequirement[]
+  totalCount: number
+  pageSize: number
   chapters: OntologyChapter[]
   hasComputedScope: boolean
   onOpenExplanation: (id: string) => void
@@ -1049,7 +1088,9 @@ function ApplicableRequirementsView({
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Applicable Requirements</h3>
-            <p className="text-sm text-slate-500">{filtered.length} of {requirements.length} hospital-scoped rows shown</p>
+            <p className="text-sm text-slate-500">
+              {filtered.length} of {requirements.length} loaded rows shown. {totalCount > requirements.length ? `Showing first ${pageSize} of ${totalCount} hospital-scoped rows.` : `${totalCount} total hospital-scoped rows.`}
+            </p>
           </div>
           <button onClick={onCompute} disabled={computing} className="btn-secondary">
             {computing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
@@ -1146,11 +1187,15 @@ function StandardsBrowserView({
   coverage,
   chapters,
   requirements,
+  totalCount,
+  pageSize,
   onOpenExplanation,
 }: {
   coverage: Coverage | null
   chapters: OntologyChapter[]
   requirements: OntologyRequirement[]
+  totalCount: number
+  pageSize: number
   onOpenExplanation: (id: string) => void
 }) {
   const [selectedChapter, setSelectedChapter] = useState(chapters[0]?.canonical_code || '')
@@ -1199,7 +1244,7 @@ function StandardsBrowserView({
             <div>
               <h3 className="text-lg font-bold text-slate-900">{activeChapter || 'All Chapters'}</h3>
               <p className="text-sm text-slate-500">
-                {chapterRequirements.length} seeded requirements available in this browser.
+                {chapterRequirements.length} loaded seeded requirements in this chapter view. {totalCount > requirements.length ? `Showing first ${pageSize} of ${totalCount} seeded requirements overall.` : `${totalCount} seeded requirements loaded overall.`}
               </p>
             </div>
             {coverage && (
@@ -1238,24 +1283,22 @@ function StandardsBrowserView({
 }
 
 function EvidenceNeededView({
-  explanations,
+  evidencePlan,
   loading,
-  requirementCount,
   hasComputedScope,
   onGoApplicable,
 }: {
-  explanations: RequirementExplanation[]
+  evidencePlan: EvidencePlan | null
   loading: boolean
-  requirementCount: number
   hasComputedScope: boolean
   onGoApplicable: () => void
 }) {
-  const evidenceRows = explanations.flatMap((explanation) =>
-    explanation.required_evidence.map((evidence) => ({
+  const evidenceRows = (evidencePlan?.items || []).flatMap((item) =>
+    item.required_evidence.map((evidence) => ({
       ...evidence,
-      requirement_code: explanation.requirement_code,
-      responsible_role: evidence.default_owner_role || explanation.responsible_role,
-      confidence: explanation.confidence,
+      requirement_code: item.requirement_code,
+      responsible_role: evidence.default_owner_role || item.responsible_role,
+      confidence: item.confidence,
     }))
   )
 
@@ -1292,8 +1335,13 @@ function EvidenceNeededView({
       <div className="rounded-lg border border-slate-200 bg-white p-5">
         <h3 className="text-lg font-bold text-slate-900">Evidence Needed</h3>
         <p className="mt-1 text-sm text-slate-500">
-          Aggregated proof expectations across {requirementCount} applicable, conditional, or manual-review requirements. Uploads are intentionally deferred.
+          Aggregated proof expectations across {evidencePlan?.total_applicable_requirements || 0} applicable, conditional, or manual-review requirements. Uploads are intentionally deferred.
         </p>
+        {evidencePlan && evidencePlan.total_applicable_requirements > evidencePlan.returned_requirements && (
+          <p className="mt-2 text-xs font-semibold text-amber-700">
+            Showing first {evidencePlan.returned_requirements} requirements for a fast demo-safe view. Detailed requirement explanations remain available one at a time.
+          </p>
+        )}
       </div>
 
       {Object.entries(groupedByType).map(([type, rows]) => (
@@ -1334,6 +1382,38 @@ function EvidenceNeededView({
           body="The applicable scope exists, but no evidence requirements were returned for these seeded requirements."
         />
       )}
+    </section>
+  )
+}
+
+function PhaseOneDashboardView({
+  readiness,
+  requirementCount,
+}: {
+  readiness: Readiness | null
+  requirementCount: number
+}) {
+  return (
+    <section className="space-y-4">
+      <ReadinessStrip readiness={readiness} />
+      <div className="rounded-lg border border-slate-200 bg-white p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">Phase 1 Dashboard</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              This view is limited to the source-cited Phase 1 ontology, scoped requirement state, and readiness calculation.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <HeaderMetric label="Scoped Rows" value={`${requirementCount}`} tone="info" />
+            <HeaderMetric label="Applicable" value={`${readiness?.applicable_count || 0}`} tone="good" />
+            <HeaderMetric label="Review" value={`${readiness?.manual_review_count || 0}`} tone="warn" />
+          </div>
+        </div>
+        <p className="mt-4 text-xs leading-5 text-slate-500">
+          Legacy NABH agent/compliance panels are intentionally not mounted here because Phase 1 readiness must be computed from the new versioned ontology and hospital requirement state only.
+        </p>
+      </div>
     </section>
   )
 }
