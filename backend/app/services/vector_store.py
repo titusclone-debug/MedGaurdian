@@ -1,4 +1,8 @@
 """Vector Store — ChromaDB local-first vector database for RAG."""
+import os
+
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from typing import List, Dict, Any, Optional

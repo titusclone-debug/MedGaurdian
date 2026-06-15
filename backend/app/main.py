@@ -1,134 +1,194 @@
 """
-MedGuardian — Main Application
+MedGuardian - Main Application
 The Institutional Nervous System
 """
-from fastapi import FastAPI, HTTPException, Depends, status, Query
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
-from typing import Optional, List
+from datetime import datetime
 import logging
+import os
 
-from app.core.config import settings
-from app.models.database import (
-    Base, Hospital, Staff, FundAccount, FundTransaction,
-    ConsentRecord, BMWLog, License, ComplianceRecord,
-    RiskAlert, RegulatoryUpdate, AuditLog
-)
-from app.core.database import engine, get_db
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api import (
-    dashboard, fcra, dpdp, bmw, nabh, licenses,
-    risk, regulatory, auth, reports, admin
+    admin,
+    auth,
+    bmw,
+    dashboard,
+    dpdp,
+    fcra,
+    licenses,
+    nabh,
+    regulatory,
+    reports,
+    risk,
 )
 from app.api.auth import get_current_user
+from app.core.config import settings
+from app.core.database import engine, get_db
+from app.models.database import Base, Staff
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Startup and shutdown events."""
-    logger.info("🏥 MedGuardian — The Institutional Nervous System — Starting...")
-    logger.info(f"📊 Hospital: {settings.HOSPITAL_NAME}")
-    logger.info(f"📋 NABH Edition: 6th")
-    logger.info(f"🔒 DPDP Compliance: Active")
-    logger.info(f"💰 FCRA Guardian: Active")
-    
-    # Ensure database schema is created on startup
-    Base.metadata.create_all(bind=engine)
-    
-    # 1. ENFORCE PRODUCTION DATABASE PERSISTENCE
-    import os
-    is_render = os.environ.get("RENDER") == "true"
-    is_production = os.environ.get("APP_ENV") == "production"
+def _is_deployed_environment() -> tuple[bool, bool]:
+    """Return Render/production flags used for startup safety gates."""
+    return os.environ.get("RENDER") == "true", os.environ.get("APP_ENV") == "production"
+
+
+def _assert_durable_database_for_deployment() -> tuple[bool, bool]:
+    """
+    Prevent deployed environments from silently falling back to ephemeral SQLite.
+    This must run before any schema creation or seeding touches the database.
+    """
+    is_render, is_production = _is_deployed_environment()
+    detected_dialect = engine.dialect.name
     db_url = settings.DATABASE_URL
-    
-    if (is_render or is_production) and "sqlite" in db_url.lower():
-        detected_dialect = "sqlite"
+
+    if (is_render or is_production) and detected_dialect == "sqlite":
         is_default = db_url == "sqlite:///./medguardian.db"
         err_msg = (
-            f"❌ PRODUCTION SECURITY VIOLATION: MedGuardian is starting on Render/production, "
+            "PRODUCTION SECURITY VIOLATION: MedGuardian is starting on Render/production, "
             f"but detected database dialect is '{detected_dialect}' (ephemeral local storage). "
             f"DATABASE_URL missing/defaulted: {is_default}. "
-            f"REQUIRED ACTION: Configure a Managed PostgreSQL database in Render/production dashboard settings."
+            "REQUIRED ACTION: Configure a Managed PostgreSQL database in Render/production dashboard settings."
         )
         logger.critical(err_msg)
         raise RuntimeError(err_msg)
 
-    # 2. VALIDATE ONTOLOGY SEED INTEGRITY
-    from app.core.database import SessionLocal
+    return is_render, is_production
+
+
+def _seed_demo_data_if_allowed(staff_count: int, is_render: bool, is_production: bool) -> None:
+    """Bootstrap demo data only when local/dev or an explicit production bootstrap flag permits it."""
+    if staff_count > 0:
+        return
+
+    if is_render or is_production:
+        if os.environ.get("AUTO_SEED_DEMO_ON_STARTUP") != "true":
+            err_msg = (
+                "PRODUCTION STARTUP ABORTED: no staff records exist. "
+                "MedGuardian will not silently create demo users in a deployed environment. "
+                "REQUIRED ACTION: run an approved bootstrap/identity seeding step, or set "
+                "AUTO_SEED_DEMO_ON_STARTUP=true only for a controlled initial bootstrap."
+            )
+            logger.critical(err_msg)
+            raise RuntimeError(err_msg)
+
+        logger.warning(
+            "Production bootstrap is explicitly configured to run demo mock seeding "
+            "because AUTO_SEED_DEMO_ON_STARTUP=true."
+        )
+    else:
+        logger.info("Database empty. Triggering automated demo mock seeding...")
+
+    from scripts.seed_data import seed
+
+    seed()
+
+
+def _validate_nabh_seed_health(db, is_render: bool, is_production: bool) -> None:
+    """Validate the NABH truth layer and optionally run the explicit startup seeder."""
     from app.nabh.seed_health import check_nabh_seed_health
-    from app.models.database import Staff
-    
+
+    seed_health = check_nabh_seed_health(db)
+    if seed_health["is_healthy"]:
+        logger.info(f"NABH 6.0 ontology seed health verified: {seed_health}")
+        return
+
+    if os.environ.get("AUTO_SEED_NABH_ON_STARTUP") == "true":
+        logger.info("NABH 6.0 ontology is unseeded or incomplete. Triggering auto-seeding...")
+        from app.nabh.seeder import seed_versioned_ontology
+
+        seed_versioned_ontology(db, "app/nabh/data", "6.0")
+        seed_health = check_nabh_seed_health(db)
+        if seed_health["is_healthy"]:
+            logger.info(f"NABH 6.0 ontology seed health verified after auto-seed: {seed_health}")
+            return
+
+        err_msg = (
+            "PRODUCTION STARTUP ABORTED: NABH 6.0 ontology remained unhealthy after auto-seeding. "
+            f"Details: {seed_health}."
+        )
+        logger.critical(err_msg)
+        raise RuntimeError(err_msg)
+
+    if is_render or is_production:
+        err_msg = (
+            "PRODUCTION STARTUP ABORTED: NABH 6.0 ontology is unseeded or corrupted. "
+            f"Details: {seed_health}. "
+            "REQUIRED ACTION: Run the dedicated CLI seeding script: "
+            "'python backend/scripts/seed_nabh_ontology.py --edition 6.0' or configure "
+            "AUTO_SEED_NABH_ON_STARTUP=true for a controlled initial bootstrap."
+        )
+        logger.critical(err_msg)
+        raise RuntimeError(err_msg)
+
+    logger.warning(
+        "DATABASE LIFECYCLE WARNING: NABH 6.0 ontology is unseeded or corrupted. "
+        f"Details: {seed_health}."
+    )
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown events."""
+    logger.info("MedGuardian - The Institutional Nervous System - Starting...")
+    logger.info(f"Hospital: {settings.HOSPITAL_NAME}")
+    logger.info("NABH Edition: 6th")
+    logger.info("DPDP Compliance: Active")
+    logger.info("FCRA Guardian: Active")
+
+    is_render, is_production = _assert_durable_database_for_deployment()
+
+    # Ensure database schema is created on startup.
+    Base.metadata.create_all(bind=engine)
+
+    from app.core.database import SessionLocal
+
     db = SessionLocal()
     try:
-        # Check standard demo seeding (Mock data)
         staff_count = db.query(Staff).count()
-        if staff_count == 0:
-            logger.info("🗄️ Database empty. Triggering automated demo mock seeding...")
-            from scripts.seed_data import seed
-            seed()
-            
-        # Verify NABH ontology seed health
-        seed_health = check_nabh_seed_health(db)
-        if not seed_health["is_healthy"]:
-            # Auto-seed if explicitly configured via environment
-            if os.environ.get("AUTO_SEED_NABH_ON_STARTUP") == "true":
-                logger.info("🌱 NABH 6.0 ontology is unseeded or incomplete. Triggering auto-seeding...")
-                from app.nabh.seeder import seed_versioned_ontology
-                seed_versioned_ontology(db, "app/nabh/data", "6.0")
-            elif is_render or is_production:
-                # Abort startup in production if ontology is missing
-                err_msg = (
-                    f"❌ PRODUCTION STARTUP ABORTED: NABH 6.0 ontology is unseeded or corrupted. "
-                    f"Details: {seed_health}. "
-                    f"REQUIRED ACTION: Run the dedicated CLI seeding script: "
-                    f"'python backend/scripts/seed_nabh_ontology.py --edition 6.0' or configure AUTO_SEED_NABH_ON_STARTUP=true."
-                )
-                logger.critical(err_msg)
-                raise RuntimeError(err_msg)
-            else:
-                logger.warning(
-                    f"⚠️ DATABASE LIFECYCLE WARNING: NABH 6.0 ontology is unseeded or corrupted. "
-                    f"Details: {seed_health}."
-                )
+        _seed_demo_data_if_allowed(staff_count, is_render, is_production)
+        _validate_nabh_seed_health(db, is_render, is_production)
     except Exception as e:
         logger.error(f"Failed during database startup validation: {e}")
         if is_render or is_production:
-            raise e
+            raise
     finally:
         db.close()
-    
-    # Initialize ChromaDB collections
+
+    # Initialize ChromaDB collections.
     from app.services.vector_store import init_chromadb
+
     init_chromadb()
-    
-    # Start regulatory monitoring scheduler
+
+    # Start regulatory monitoring scheduler.
     from app.services.scheduler import start_scheduler
+
     start_scheduler()
-    
+
     yield
-    
-    logger.info("🏥 MedGuardian shutting down gracefully...")
+
+    logger.info("MedGuardian shutting down gracefully...")
 
 
 app = FastAPI(
     title="MedGuardian API",
     description="""
     ## The Institutional Nervous System for Hospital Administration
-    
-    MedGuardian automates compliance, asset protection, and operational excellence 
+
+    MedGuardian automates compliance, asset protection, and operational excellence
     for healthcare institutions. Built for the 2026 regulatory era.
-    
+
     ### Key Modules:
-    - **FCRA Guardian** — Foreign fund compliance and utilization tracking
-    - **DPDP Consent Manager** — Patient data protection and consent management
-    - **BMW Sentinel** — Bio-medical waste tracking and audit readiness
-    - **NABH Compliance Tracker** — 6th Edition accreditation management
-    - **Risk Weather Forecast** — Predictive institutional risk intelligence
-    - **Bureaucracy Engine** — Auto-drafted legal documents and renewals
+    - **FCRA Guardian** - Foreign fund compliance and utilization tracking
+    - **DPDP Consent Manager** - Patient data protection and consent management
+    - **BMW Sentinel** - Bio-medical waste tracking and audit readiness
+    - **NABH Compliance Tracker** - 6th Edition accreditation management
+    - **Risk Weather Forecast** - Predictive institutional risk intelligence
+    - **Bureaucracy Engine** - Auto-drafted legal documents and renewals
     """,
     version=settings.APP_VERSION,
     lifespan=lifespan,
@@ -175,7 +235,7 @@ async def root():
             "nabh_tracker": "active",
             "risk_forecast": "active",
             "bureaucracy_engine": "active",
-        }
+        },
     }
 
 
@@ -183,13 +243,13 @@ async def root():
 async def health_check():
     """System health check with component status."""
     from sqlalchemy import text
-    
+
     health = {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "components": {}
+        "components": {},
     }
-    
+
     # Database check
     try:
         db = next(get_db())
@@ -198,14 +258,15 @@ async def health_check():
     except Exception as e:
         health["components"]["database"] = f"unhealthy: {str(e)}"
         health["status"] = "degraded"
-    
+
     # ChromaDB check
     try:
         from app.services.vector_store import get_chroma_client
+
         get_chroma_client()
         health["components"]["vector_store"] = "healthy"
     except Exception as e:
         health["components"]["vector_store"] = f"unhealthy: {str(e)}"
         health["status"] = "degraded"
-    
+
     return health
