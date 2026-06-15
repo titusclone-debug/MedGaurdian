@@ -320,6 +320,39 @@ async def validate_readiness(page, hospital_id: str):
         record_failure(f"Readiness denominator mismatch: got {denominator}, expected {expected}.")
 
 
+async def validate_database_durability(page):
+    print("\n[9] Database Durability & Seed Integrity Handshake")
+
+    result = await api_get(page, "/api/admin/nabh-health")
+    if not result["ok"]:
+        record_failure(f"Diagnostic API /api/admin/nabh-health failed with status {result['status']}. Body: {result['body']}")
+        return
+
+    data = result["body"] or {}
+    db_type = data.get("database_type")
+    is_render = data.get("is_render")
+    seed_status = data.get("nabh_seed_status", {})
+    is_healthy = seed_status.get("is_healthy", False)
+
+    print(f"  - Detected DB Dialect: {db_type}")
+    print(f"  - Is Render Environment: {is_render}")
+    print(f"  - Seeding Health Status: {'HEALTHY' if is_healthy else 'UNHEALTHY'}")
+
+    if is_render:
+        # Enforce Postgres on Render (no SQLite in prod)
+        if db_type == "postgresql":
+            record_pass("Durable database backend verified: Managed PostgreSQL is active.")
+        else:
+            record_failure(f"Production durability violation: Ephemeral database type '{db_type}' detected on Render.")
+    else:
+        record_pass(f"Non-production backend type '{db_type}' verified.")
+
+    if is_healthy:
+        record_pass("NABH Phase 1 seed integrity verified: 10 chapters, active edition, and requirement coverage active.")
+    else:
+        record_failure(f"NABH ontology seed health check failed. Details: {seed_status}")
+
+
 async def main():
     print("=" * 72)
     print("Task 20 NABH Phase 1 Acceptance Gate")
@@ -340,6 +373,7 @@ async def main():
 
         hospital_id = user["hospital_id"]
 
+        await validate_database_durability(page)
         await validate_workspace_mount(page)
         await validate_seed_prerequisites(page)
 

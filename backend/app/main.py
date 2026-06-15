@@ -39,18 +39,65 @@ async def lifespan(app: FastAPI):
     # Ensure database schema is created on startup
     Base.metadata.create_all(bind=engine)
     
-    # Automatically seed database if empty for instant cloud demo readiness
+    # 1. ENFORCE PRODUCTION DATABASE PERSISTENCE
+    import os
+    is_render = os.environ.get("RENDER") == "true"
+    is_production = os.environ.get("APP_ENV") == "production"
+    db_url = settings.DATABASE_URL
+    
+    if (is_render or is_production) and "sqlite" in db_url.lower():
+        detected_dialect = "sqlite"
+        is_default = db_url == "sqlite:///./medguardian.db"
+        err_msg = (
+            f"❌ PRODUCTION SECURITY VIOLATION: MedGuardian is starting on Render/production, "
+            f"but detected database dialect is '{detected_dialect}' (ephemeral local storage). "
+            f"DATABASE_URL missing/defaulted: {is_default}. "
+            f"REQUIRED ACTION: Configure a Managed PostgreSQL database in Render/production dashboard settings."
+        )
+        logger.critical(err_msg)
+        raise RuntimeError(err_msg)
+
+    # 2. VALIDATE ONTOLOGY SEED INTEGRITY
     from app.core.database import SessionLocal
+    from app.nabh.seed_health import check_nabh_seed_health
     from app.models.database import Staff
+    
     db = SessionLocal()
     try:
+        # Check standard demo seeding (Mock data)
         staff_count = db.query(Staff).count()
         if staff_count == 0:
-            logger.info("🗄️ Database empty. Triggering automated seed...")
+            logger.info("🗄️ Database empty. Triggering automated demo mock seeding...")
             from scripts.seed_data import seed
             seed()
+            
+        # Verify NABH ontology seed health
+        seed_health = check_nabh_seed_health(db)
+        if not seed_health["is_healthy"]:
+            # Auto-seed if explicitly configured via environment
+            if os.environ.get("AUTO_SEED_NABH_ON_STARTUP") == "true":
+                logger.info("🌱 NABH 6.0 ontology is unseeded or incomplete. Triggering auto-seeding...")
+                from app.nabh.seeder import seed_versioned_ontology
+                seed_versioned_ontology(db, "app/nabh/data", "6.0")
+            elif is_render or is_production:
+                # Abort startup in production if ontology is missing
+                err_msg = (
+                    f"❌ PRODUCTION STARTUP ABORTED: NABH 6.0 ontology is unseeded or corrupted. "
+                    f"Details: {seed_health}. "
+                    f"REQUIRED ACTION: Run the dedicated CLI seeding script: "
+                    f"'python backend/scripts/seed_nabh_ontology.py --edition 6.0' or configure AUTO_SEED_NABH_ON_STARTUP=true."
+                )
+                logger.critical(err_msg)
+                raise RuntimeError(err_msg)
+            else:
+                logger.warning(
+                    f"⚠️ DATABASE LIFECYCLE WARNING: NABH 6.0 ontology is unseeded or corrupted. "
+                    f"Details: {seed_health}."
+                )
     except Exception as e:
-        logger.error(f"Failed to auto-seed database: {e}")
+        logger.error(f"Failed during database startup validation: {e}")
+        if is_render or is_production:
+            raise e
     finally:
         db.close()
     

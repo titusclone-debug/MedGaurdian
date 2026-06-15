@@ -56,3 +56,34 @@ async def get_nabh_fleet_summary(
         
     return fleet_summary
 
+
+@router.get("/nabh-health")
+async def get_nabh_health(
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN])),
+):
+    """
+    Exposes system-level database and seeding health status.
+    Protected endpoint strictly for authenticated Super Admins.
+    """
+    import os
+    from app.core.config import settings
+    from app.nabh.seed_health import check_nabh_seed_health
+    from app.models.database import HospitalNABHRequirement
+
+    db_url = settings.DATABASE_URL
+    database_type = "sqlite"
+    if "postgresql" in db_url.lower():
+        database_type = "postgresql"
+
+    seed_health = check_nabh_seed_health(db)
+    
+    total_requirements = db.query(HospitalNABHRequirement).count()
+
+    return {
+        "database_type": database_type,
+        "is_render": os.environ.get("RENDER") == "true",
+        "nabh_seed_status": seed_health,
+        "total_requirements_count": total_requirements
+    }
+
