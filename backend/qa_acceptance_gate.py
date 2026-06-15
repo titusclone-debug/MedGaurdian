@@ -170,29 +170,30 @@ async def validate_workspace_mount(page):
     print("\n[3] NABH Workspace Mount")
     start = time.perf_counter()
 
-    await page.goto(f"{BASE_URL}/nabh", wait_until="domcontentloaded")
     try:
+        # Navigate to home and click sidebar link to handle client-side SPA routing safely
+        await page.click("text=NABH Compliance")
         await page.wait_for_selector("text=Hospital Profile", timeout=20000)
         seconds = time.perf_counter() - start
         if seconds > MAX_NABH_LOAD_SECONDS:
             record_failure(f"NABH workspace load critically slow: {seconds:.2f}s.")
         else:
             record_pass(f"NABH workspace mounted in {seconds:.2f}s.")
-    except Exception:
-        record_failure("NABH workspace failed to mount.")
+    except Exception as e:
+        record_failure(f"NABH workspace failed to mount: {e}")
 
 
 async def validate_profile_and_scope(page, hospital_id: str):
     print("\n[4] Hospital Profile & Applicability")
 
-    await page.goto(f"{BASE_URL}/nabh?tab=profile", wait_until="domcontentloaded")
     try:
+        await page.click("button:has-text('Hospital Profile')")
         await page.wait_for_selector("text=Hospital Accreditation Profile", timeout=10000)
         await page.wait_for_selector("text=ICU", timeout=5000)
         await page.wait_for_selector("text=Operation Theatre", timeout=5000)
         record_pass("Profile scoping fields are visible.")
-    except Exception:
-        record_failure("Profile scoping fields are not visible.")
+    except Exception as e:
+        record_failure(f"Profile scoping fields are not visible: {e}")
 
     before = time.perf_counter()
     result = await api_post(page, f"/api/nabh/profile/{hospital_id}/compute-applicability")
@@ -208,6 +209,14 @@ async def validate_profile_and_scope(page, hospital_id: str):
     else:
         record_failure(f"Applicability computation failed with {result['status']}.")
 
+    # Refresh frontend state by going to home and re-entering workspace
+    try:
+        await page.goto(BASE_URL)
+        await page.click("text=NABH Compliance")
+        await page.wait_for_selector("text=Hospital Profile", timeout=20000)
+    except Exception as e:
+        record_failure(f"Failed to refresh frontend state after computing applicability: {e}")
+
     req_state = await api_get(page, f"/api/nabh/requirements/{hospital_id}?limit=100")
     total = (req_state["body"] or {}).get("total", 0)
     if req_state["ok"] and total > 0:
@@ -219,13 +228,13 @@ async def validate_profile_and_scope(page, hospital_id: str):
 async def validate_browser_dom(page):
     print("\n[5] Standards Browser DOM")
 
-    await page.goto(f"{BASE_URL}/nabh?tab=browser", wait_until="domcontentloaded")
     try:
+        await page.click("button:has-text('Standards Browser')")
         await page.wait_for_selector("text=Official Chapters", timeout=10000)
         await page.wait_for_selector("text=Standards Browser", timeout=10000)
         record_pass("Standards Browser rendered.")
-    except Exception:
-        record_failure("Standards Browser did not render.")
+    except Exception as e:
+        record_failure(f"Standards Browser did not render: {e}")
 
 
 async def validate_evidence_performance(page):
@@ -235,18 +244,17 @@ async def validate_evidence_performance(page):
     network["explanation_calls"] = 0
 
     start = time.perf_counter()
-    await page.goto(f"{BASE_URL}/nabh?tab=evidence", wait_until="domcontentloaded")
-
     try:
-        await page.wait_for_selector("text=/.*Aggregated proof expectations.*/i", timeout=15000)
+        await page.click("button:has-text('Evidence Needed')")
+        await page.wait_for_selector("text=Aggregated proof expectations", timeout=15000)
         seconds = time.perf_counter() - start
         if seconds > MAX_EVIDENCE_TAB_SECONDS:
             record_failure(f"Evidence tab too slow: {seconds:.2f}s.")
         else:
             record_pass(f"Evidence tab rendered in {seconds:.2f}s.")
-    except Exception:
+    except Exception as e:
         seconds = time.perf_counter() - start
-        record_failure(f"Evidence tab did not render aggregated proof expectations after {seconds:.2f}s.")
+        record_failure(f"Evidence tab did not render aggregated proof expectations after {seconds:.2f}s: {e}")
 
     await page.wait_for_timeout(1500)
 
@@ -269,8 +277,8 @@ async def validate_evidence_performance(page):
 async def validate_single_explanation(page):
     print("\n[7] Source-Cited Explanation Single-Call Check")
 
-    await page.goto(f"{BASE_URL}/nabh?tab=applicable", wait_until="domcontentloaded")
     try:
+        await page.click("button:has-text('Applicable Requirements')")
         await page.wait_for_selector("button:has-text('Explain')", timeout=10000)
         before = network["explanation_calls"]
         await page.click("button:has-text('Explain')")
@@ -282,8 +290,8 @@ async def validate_single_explanation(page):
             record_pass("Intentional explanation opened with exactly one /explanation request.")
         else:
             record_failure(f"Explanation click made {after - before} /explanation requests; expected 1.")
-    except Exception:
-        record_failure("Could not open a single source-cited explanation from Applicable Requirements.")
+    except Exception as e:
+        record_failure(f"Could not open a single source-cited explanation from Applicable Requirements: {e}")
 
 
 async def validate_readiness(page, hospital_id: str):
