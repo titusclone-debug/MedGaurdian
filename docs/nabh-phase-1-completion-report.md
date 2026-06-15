@@ -1,22 +1,26 @@
-# NABH Phase 1 Tasks 1-19 Completion Report
+# NABH Phase 1 Completion Report
 
-Date: 2026-06-12
+Date: 2026-06-15
 
 ## Purpose
 
-This document records what the first 19 tasks of the NABH Phase 1 checklist accomplished.
+This document records what the 20 tasks of the NABH Phase 1 checklist accomplished.
 
 Phase 1 is the foundation-and-truth-layer phase for the NABH domain. Its north star is to move a hospital admin from "I do not understand NABH" to "we are survey-ready with defensible evidence" through a guided, source-cited, agent-assisted workflow.
 
-The first 19 tasks do not complete the full product vision. They build the reliable substrate needed before Task 20, the Phase 1 demo milestone, and before later Phase 2 work such as evidence vault workflows, agents, document generation, OCR, and mock surveyor flows.
+The 20 tasks do not complete the full product vision. They build and validate the reliable substrate needed before later Phase 2 work such as evidence vault workflows, agents, document generation, OCR, mock surveyor flows, and deeper institutional memory.
 
 ## Current Phase 1 Position
 
-- Tasks completed: 1-19 of 20.
-- Remaining Phase 1 task: Task 20, the demo milestone.
+- Tasks completed: 20 of 20.
+- Phase 1 status: complete for the NABH foundation and demo milestone.
 - Verification status: the CTO reported 168 backend tests passing after Task 19, including 9 dedicated Task 19 migration bridge tests.
+- Task 20 production acceptance status: passed on Render after production DB seeding and E2E QA acceptance-gate execution.
+- Task 20 acceptance gate: `backend/qa_acceptance_gate.py`.
 - Important scope note: the NABH 6th Edition ontology infrastructure models the official 10-chapter, 100-standard, 638-measurable-element universe, while the current seed set is intentionally partial and source-backed for Phase 1 validation.
+- Production demo seed note: Render was seeded with the Phase 1 subset of 3 standards, 3 measurable elements, 3 citations, and 3 evidence requirements.
 - Refactor status: a modularization/refactor pass is still planned before Phase 2, but is outside the original 20-task Phase 1 checklist.
+- Production infrastructure note: the Task 20 demo used Render's internal SQLite application database. This is acceptable for demo validation, but a managed PostgreSQL database is still required before serious production use.
 
 ## Phase 1 Checklist Summary
 
@@ -41,6 +45,7 @@ The first 19 tasks do not complete the full product vision. They build the relia
 | 17 | Add regression tests | Complete |
 | 18 | Add data quality guardrails | Complete |
 | 19 | Add migration bridge | Complete |
+| 20 | Complete Phase 1 demo milestone | Complete |
 
 ## Task 1: Freeze The Current Simplified NABH Model As Legacy
 
@@ -510,7 +515,57 @@ Key repo proof points:
 Why it matters:
 This lets the project move real hospitals from the old simplified NABH model into the new official architecture without making unsupported claims. It is the final bridge before the Phase 1 demo milestone.
 
-## Cross-Cutting Outcomes After Tasks 1-19
+## Task 20: Complete Phase 1 Demo Milestone
+
+Original intent:
+Prove the complete Phase 1 NABH workflow in a deployed environment, not merely in local tests. The demo milestone needed to show that a hospital admin could enter the NABH workspace, scope the hospital, browse official requirements, see evidence expectations, open source-cited explanations, and view readiness without the legacy model corrupting the new flow.
+
+What was completed:
+- Deployed latest Phase 1 code to Render.
+- Seeded the Render application database with the official idempotent NABH 6.0 Phase 1 seed subset.
+- Confirmed Render environment and initial empty NABH database state before mutation.
+- Ran the official `seed_versioned_ontology(db, "app/nabh/data", "6.0")` path.
+- Verified post-seed counts:
+  - 1 NABH 6.0 edition,
+  - 10 canonical NABH 6th Edition chapters,
+  - 3 seeded standards,
+  - 3 seeded measurable elements,
+  - 3 citations,
+  - 3 evidence requirements.
+- Added and executed the rigorous Playwright acceptance gate against `https://medgaurdian.onrender.com`.
+- Verified login, workspace mount, seed availability, profile fields, applicability computation, hospital requirement state, standards browser rendering, evidence plan rendering, single explanation loading, and readiness denominator logic.
+- Verified the Evidence Needed tab used the bulk `evidence-plan` endpoint.
+- Verified zero `/explanation` N+1 calls during Evidence Needed tab load.
+- Verified the legacy `/api/nabh/compliance/{hospital_id}` endpoint was not mounted by the new Phase 1 dashboard flow.
+- Removed temporary administrative database diagnostic/seeding endpoints after seeding and pushed the cleanup.
+
+Acceptance gate result:
+
+```text
+FINAL VERDICT: PASSED
+```
+
+Key acceptance observations:
+- Login/app shell ready in 3.11 seconds.
+- NABH workspace mounted in 0.89 seconds.
+- Applicability computed across 3 seeded requirements in 0.30 seconds.
+- Evidence tab rendered in 0.32 seconds.
+- Bulk evidence-plan endpoint fired once.
+- No explanation request storm occurred during Evidence Needed tab load.
+- Intentional explanation click fired exactly one explanation request.
+- Readiness denominator was correct: applicable + conditional + manual_review, with not_applicable excluded.
+
+Key repo proof points:
+- `backend/qa_acceptance_gate.py`: Task 20 deployed acceptance gate.
+- `backend/app/nabh/evidence_plan.py`: bulk evidence-plan service used by the Evidence Needed tab.
+- `backend/app/nabh/applicability.py`: bulk-loaded rules and hospital states for scope computation.
+- `frontend/src/pages/NABH.tsx`: Phase 1 workspace uses bounded page sizes, bulk evidence plan, and Phase 1-only dashboard.
+- `backend/tests/test_nabh_task20_performance_hardening.py`: focused backend coverage for the bulk evidence plan.
+
+Why it matters:
+Task 20 proved that the Phase 1 foundation can survive a real deployed workflow. It also forced the performance bottlenecks into the open and verified the fix: Evidence Needed now renders through a bulk endpoint rather than triggering a browser and database request storm.
+
+## Cross-Cutting Outcomes After Tasks 1-20
 
 The NABH domain now has:
 
@@ -526,12 +581,15 @@ The NABH domain now has:
 - Regression coverage over seed integrity, applicability, readiness, legacy isolation, explanations, quality gates, and migration.
 - Runtime quality guardrails to avoid source-free or evidence-free official-looking output.
 - A deterministic migration bridge from old hospital NABH data to new hospital requirement state.
+- A deployed Render acceptance gate proving the Phase 1 workflow over seeded production demo data.
+- Bulk evidence-plan and applicability performance hardening for realistic NABH payloads.
 
 ## What Is Deliberately Not Claimed Yet
 
-Tasks 1-19 do not claim that:
+Tasks 1-20 do not claim that:
 
 - the full 638 measurable elements have all been seeded,
+- the current SQLite-backed Render demo database is sufficient for serious production use,
 - autonomous NABH agents are production-ready,
 - OCR evidence ingestion exists,
 - evidence vault workflows are complete,
@@ -542,18 +600,12 @@ Tasks 1-19 do not claim that:
 
 These are later roadmap concerns.
 
-## Task 20 Readiness
+## Phase 1 Closure
 
-The remaining Phase 1 demo milestone should prove the following flow:
+Phase 1 should now be considered closed for the NABH foundation track.
 
-1. Admin opens the NABH tab.
-2. Admin completes or reviews the hospital profile.
-3. System computes applicable requirements.
-4. Admin browses official chapters.
-5. Admin sees evidence required per requirement.
-6. Admin opens deterministic source-cited explanations.
-7. Readiness score is calculated only from applicable requirements.
-8. Displayed requirements are source-cited.
-9. Legacy data can be bridged through the migration report without silent mutation.
+The next work should be sequenced as:
 
-If Task 20 demonstrates those flows cleanly, Phase 1 has achieved its intended foundation.
+1. Do the planned refactor/modularization pass.
+2. Formalize the expert-insight architecture plan for evidence artifacts, institutional memory, readiness v2, applicability trace, and agent provenance.
+3. Draft the Phase 2 implementation plan on top of the cleaned foundation.

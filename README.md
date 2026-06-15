@@ -215,7 +215,7 @@ Exit criteria:
 
 Phase 1 is the current build track. It exists to create a trustworthy NABH brainstem before advanced agents, OCR, document generation, or mock surveyor workflows.
 
-For a detailed completion report covering Tasks 1-19, see `docs/nabh-phase-1-tasks-1-19-completion-report.md`.
+For the detailed Phase 1 completion report, see `docs/nabh-phase-1-completion-report.md`.
 
 1. Freeze the current simplified NABH model as legacy.
 2. Design the NABH ontology schema.
@@ -239,6 +239,8 @@ For a detailed completion report covering Tasks 1-19, see `docs/nabh-phase-1-tas
 20. Complete Phase 1 demo milestone.
 
 Phase 1 deliberately does not build autonomous agents, OCR, PPT generation, mock surveyor, or advanced dashboards. Those are downstream. Phase 1 succeeds only if the product has a reliable, source-cited, hospital-specific NABH foundation.
+
+Task 20 has passed on the Render demo environment using the Phase 1 seeded NABH subset and the Playwright acceptance gate in `backend/qa_acceptance_gate.py`. The next NABH work is a modularization pass before Phase 2 planning.
 
 ## Current NABH Architecture
 
