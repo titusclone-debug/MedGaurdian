@@ -75,3 +75,8 @@ class Settings(BaseSettings):
     }
     
 settings = Settings()
+
+# Normalize postgres:// to postgresql:// for SQLAlchemy 2.0 compatibility
+if settings.DATABASE_URL.startswith("postgres://"):
+    settings.DATABASE_URL = settings.DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
