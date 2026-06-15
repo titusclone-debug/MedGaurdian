@@ -215,6 +215,8 @@ Exit criteria:
 
 Phase 1 is the current build track. It exists to create a trustworthy NABH brainstem before advanced agents, OCR, document generation, or mock surveyor workflows.
 
+For a detailed completion report covering Tasks 1-19, see `docs/nabh-phase-1-tasks-1-19-completion-report.md`.
+
 1. Freeze the current simplified NABH model as legacy.
 2. Design the NABH ontology schema.
 3. Design hospital accreditation profile schema.
