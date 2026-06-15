@@ -84,6 +84,7 @@ def seed():
         ]
         for s in staff_members:
             db.add(s)
+        db.commit()
         
         # === FCRA ACCOUNTS ===
         fcra_acc1 = FundAccount(id="acc-001", hospital_id="hospital-001", account_name="FCRA Designated Account", account_number="3847562910", bank_name="State Bank of India", branch="Kottayam Main", fund_type=FundType.FCRA_FOREIGN, is_fcra_designated=True, fcra_utilization_purpose="Healthcare services, medical equipment, and community health programs", current_balance=2450000, annual_budget=5000000, ytd_expenditure=1850000, last_reconciliation=datetime(2026, 5, 1), compliance_status=ComplianceStatus.COMPLIANT)
