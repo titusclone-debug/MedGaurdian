@@ -182,6 +182,18 @@ async def validate_workspace_mount(page):
     except Exception as e:
         record_failure(f"NABH workspace failed to mount: {e}")
 
+    try:
+        await page.goto(f"{BASE_URL}/nabh?tab=evidence", wait_until="domcontentloaded")
+        await page.wait_for_selector("text=NABH Accreditation Workspace", timeout=20000)
+        await page.wait_for_selector("text=Evidence Needed", timeout=10000)
+        body_text = await page.inner_text("body")
+        if body_text.strip() == "Not Found":
+            record_failure("Direct NABH deep link returned Render's Not Found page.")
+        else:
+            record_pass("Direct NABH deep link renders through the SPA fallback.")
+    except Exception as e:
+        record_failure(f"Direct NABH deep link failed to render: {e}")
+
 
 async def validate_profile_and_scope(page, hospital_id: str):
     print("\n[4] Hospital Profile & Applicability")
