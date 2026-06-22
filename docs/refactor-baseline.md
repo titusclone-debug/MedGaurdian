@@ -7,7 +7,7 @@ Baseline captured on June 23, 2026.
 | `backend/app/api/nabh.py` | 1,397 lines before extraction |
 | `frontend/src/pages/NABH.tsx` | 1,594 lines before extraction |
 | `backend/app/models/database.py` | 1,105 lines |
-| Alembic revisions | 8 |
+| Alembic revisions | 9 |
 | `datetime.utcnow()` occurrences in backend app | 67 |
 
 ## Public-contract guardrails
