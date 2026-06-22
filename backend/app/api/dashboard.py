@@ -168,13 +168,6 @@ async def get_dashboard_overview(
         weather = "☀️ Clear Skies"
     
     return {
-        "hospital": {
-            "id": hospital.id,
-            "name": hospital.name,
-            "type": hospital.hospital_type,
-            "bed_count": hospital.bed_count,
-            "is_rural": hospital.is_rural,
-        },
         "risk_weather": {
             "overall_score": round(overall_risk, 1),
             "level": risk_level,
@@ -208,6 +201,9 @@ async def get_dashboard_overview(
         "hospital": {
             "id": hospital.id,
             "name": hospital.name,
+            "type": hospital.hospital_type,
+            "bed_count": hospital.bed_count,
+            "is_rural": hospital.is_rural,
             "onboarding_stage": hospital.onboarding_stage or "profile"
         }
     }

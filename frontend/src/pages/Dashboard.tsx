@@ -35,7 +35,7 @@ const MOCK_DASHBOARD = {
 }
 
 export default function Dashboard() {
-  const [dashboard, setDashboard] = useState<any>(MOCK_DASHBOARD)
+  const [dashboard, setDashboard] = useState<any | null>(null)
   const [actions, setActions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -111,6 +111,7 @@ export default function Dashboard() {
       }
     } catch (err: any) {
       console.error('Dashboard synchronization error:', err)
+      setError('Unable to load the institutional dashboard. Please retry or contact support.')
       // If it's a new database partition, it might have empty values.
       // We will read onboardingStage from user object if backend fails
       const userString = localStorage.getItem('medguardian_user')
@@ -184,6 +185,10 @@ export default function Dashboard() {
         </button>
       </div>
     )
+  }
+
+  if (!dashboard) {
+    return null
   }
 
   // GUIDED ONBOARDING INTERACTIVE VIEW

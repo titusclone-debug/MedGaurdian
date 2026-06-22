@@ -1,16 +1,27 @@
 """Authentication and Authorization — JWT + RBAC."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
 
+from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import create_access_token, hash_password, verify_password
-from app.models.database import Staff, UserRole, Hospital, RiskLevel
+from app.core.rate_limit import SlidingWindowRateLimiter
+from app.core.security import (
+    create_access_token,
+    hash_password,
+    validate_password_strength,
+    verify_password,
+)
+from app.models.database import AuditLog, Staff, UserRole, Hospital, RiskLevel
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+login_limiter = SlidingWindowRateLimiter(
+    limit=settings.LOGIN_RATE_LIMIT_ATTEMPTS,
+    window_seconds=settings.LOGIN_RATE_LIMIT_WINDOW_SECONDS,
+)
 
 
 class UserCreate(BaseModel):
@@ -47,6 +58,7 @@ class HospitalOnboard(BaseModel):
 class ResetPasswordSchema(BaseModel):
     target_email: str
     new_password: str
+    current_password: str
 
 
 class HospitalOnboardUpdate(BaseModel):
@@ -118,14 +130,26 @@ def assert_hospital_access(current_user: Staff, hospital_id: str) -> None:
 
 @router.post("/login", response_model=Token)
 async def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
     """Authenticate user and return JWT token."""
+    client_ip = request.client.host if request.client else "unknown"
+    limiter_key = f"{client_ip}:{form_data.username.strip().lower()}"
+    decision = login_limiter.check(limiter_key)
+    if not decision.allowed:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many failed login attempts. Try again later.",
+            headers={"Retry-After": str(decision.retry_after_seconds)},
+        )
+
     # Find user by email
     user = db.query(Staff).filter(Staff.email == form_data.username).first()
     
     if not user:
+        login_limiter.record_failure(limiter_key)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -133,6 +157,7 @@ async def login(
         )
     
     if not user.hashed_password or not verify_password(form_data.password, user.hashed_password):
+        login_limiter.record_failure(limiter_key)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -140,11 +165,13 @@ async def login(
         )
     
     if not user.is_active:
+        login_limiter.record_failure(limiter_key)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is deactivated"
         )
     
+    login_limiter.clear(limiter_key)
     access_token = create_access_token(user.id, {
         "email": user.email,
         "role": user.role.value,
@@ -179,6 +206,10 @@ async def register_user(
     existing = db.query(Staff).filter(Staff.email == user_data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
+    try:
+        validate_password_strength(user_data.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
     
     new_user = Staff(
         hospital_id=user_data.hospital_id,
@@ -217,6 +248,10 @@ async def onboard_hospital(
     """
     import re
     import uuid
+    try:
+        validate_password_strength(onboard_data.admin_password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
     # Check if registration number already exists
     existing_hospital = db.query(Hospital).filter(Hospital.registration_number == onboard_data.registration_number).first()
@@ -323,6 +358,7 @@ async def get_hospitals(
 @router.post("/reset-staff-password")
 async def reset_staff_password(
     data: ResetPasswordSchema,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_user),
 ):
@@ -334,6 +370,16 @@ async def reset_staff_password(
     target = db.query(Staff).filter(Staff.email == data.target_email).first()
     if not target:
         raise HTTPException(status_code=404, detail="Target user not found.")
+
+    if not current_user.hashed_password or not verify_password(
+        data.current_password,
+        current_user.hashed_password,
+    ):
+        raise HTTPException(status_code=403, detail="Current administrator password is incorrect.")
+    try:
+        validate_password_strength(data.new_password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
         
     # Security gates
     if current_user.role == UserRole.SUPER_ADMIN:
@@ -349,6 +395,19 @@ async def reset_staff_password(
         raise HTTPException(status_code=403, detail="Access denied.")
         
     target.hashed_password = hash_password(data.new_password)
+    db.add(AuditLog(
+        user_id=current_user.id,
+        action="staff_password_reset",
+        resource_type="staff",
+        resource_id=target.id,
+        details={
+            "target_email": target.email,
+            "target_role": target.role.value,
+            "target_hospital_id": target.hospital_id,
+        },
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    ))
     db.commit()
     return {"status": "success", "message": f"Password for {data.target_email} updated successfully."}
 
@@ -433,6 +492,10 @@ async def create_hospital_staff(
         
     if assigned_role in [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN]:
         raise HTTPException(status_code=403, detail="Cannot assign administrative roles.")
+    try:
+        validate_password_strength(data.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
         
     import uuid
     new_staff = Staff(

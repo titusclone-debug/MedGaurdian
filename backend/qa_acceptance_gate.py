@@ -10,7 +10,7 @@ from playwright.async_api import async_playwright
 
 BASE_URL = os.getenv("BASE_URL", "https://medgaurdian.onrender.com").rstrip("/")
 MEDGUARDIAN_EMAIL = os.getenv("MEDGUARDIAN_EMAIL", "admin@stmarys.org")
-MEDGUARDIAN_PASSWORD = os.getenv("MEDGUARDIAN_PASSWORD", "admin123")
+MEDGUARDIAN_PASSWORD = os.getenv("MEDGUARDIAN_PASSWORD")
 HEADLESS = os.getenv("HEADLESS", "1") == "1"
 SLOW_MO = 0 if HEADLESS else 100
 
@@ -366,6 +366,9 @@ async def validate_database_durability(page):
 
 
 async def main():
+    if not MEDGUARDIAN_PASSWORD:
+        print("MEDGUARDIAN_PASSWORD must be provided through the environment.")
+        sys.exit(2)
     print("=" * 72)
     print("Task 20 NABH Phase 1 Acceptance Gate")
     print(f"Target: {BASE_URL}")

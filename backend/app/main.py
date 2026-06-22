@@ -4,6 +4,7 @@ The Institutional Nervous System
 """
 from contextlib import asynccontextmanager
 from datetime import datetime
+import json
 import logging
 import os
 
@@ -65,8 +66,9 @@ def _seed_demo_data_if_allowed(staff_count: int, is_render: bool, is_production:
     if staff_count > 0:
         return
 
+    auto_seed_enabled = os.environ.get("AUTO_SEED_DEMO_ON_STARTUP") == "true"
     if is_render or is_production:
-        if os.environ.get("AUTO_SEED_DEMO_ON_STARTUP") != "true":
+        if not auto_seed_enabled:
             err_msg = (
                 "PRODUCTION STARTUP ABORTED: no staff records exist. "
                 "MedGuardian will not silently create demo users in a deployed environment. "
@@ -80,8 +82,14 @@ def _seed_demo_data_if_allowed(staff_count: int, is_render: bool, is_production:
             "Production bootstrap is explicitly configured to run demo mock seeding "
             "because AUTO_SEED_DEMO_ON_STARTUP=true."
         )
+    elif not auto_seed_enabled:
+        logger.warning(
+            "Database has no staff records. Demo seeding is disabled; "
+            "set AUTO_SEED_DEMO_ON_STARTUP=true explicitly for local demo data."
+        )
+        return
     else:
-        logger.info("Database empty. Triggering automated demo mock seeding...")
+        logger.info("Database empty. Triggering explicitly enabled demo mock seeding...")
 
     from scripts.seed_data import seed
 
@@ -141,9 +149,32 @@ async def lifespan(app: FastAPI):
     logger.info("FCRA Guardian: Active")
 
     is_render, is_production = _assert_durable_database_for_deployment()
+    logger.info(json.dumps({
+        "event": "application_startup",
+        "app": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "environment": settings.APP_ENV,
+        "render": is_render,
+        "commit": os.environ.get("RENDER_GIT_COMMIT") or os.environ.get("APP_COMMIT", "unknown"),
+        "database_dialect": engine.dialect.name,
+        "migration_check_mode": settings.MIGRATION_CHECK_MODE,
+    }))
 
-    # Ensure database schema is created on startup.
-    Base.metadata.create_all(bind=engine)
+    # Production schema changes are owned by Alembic. Local/test environments
+    # retain create_all for lightweight developer workflows and isolated tests.
+    if not (is_render or is_production):
+        Base.metadata.create_all(bind=engine)
+
+    from app.core.migrations import inspect_migration_state
+
+    migration_state = inspect_migration_state(engine)
+    logger.info(json.dumps({"event": "migration_state", **migration_state}))
+    if not migration_state["is_current"] and settings.MIGRATION_CHECK_MODE == "enforce":
+        raise RuntimeError(f"Database migrations are not current: {migration_state}")
+    if not migration_state["is_current"]:
+        logger.warning(
+            "Database migrations are not current. Production remains in migration warning mode."
+        )
 
     from app.core.database import SessionLocal
 
@@ -196,6 +227,19 @@ app = FastAPI(
     redoc_url="/redoc" if settings.DEBUG else None,
     openapi_url="/openapi.json" if settings.DEBUG else None,
 )
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if settings.APP_ENV == "production" or os.environ.get("RENDER") == "true":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
 
 # CORS
 app.add_middleware(

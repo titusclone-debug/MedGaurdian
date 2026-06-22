@@ -23,6 +23,7 @@ export default function SuperAdminPage() {
   // Password Reset Modal State
   const [resetEmail, setResetEmail] = useState('')
   const [resetPassword, setResetPassword] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
   const [resetSuccess, setResetSuccess] = useState<string | null>(null)
   const [resetError, setResetError] = useState<string | null>(null)
@@ -119,7 +120,8 @@ export default function SuperAdminPage() {
         },
         body: JSON.stringify({
           target_email: resetEmail,
-          new_password: resetPassword
+          new_password: resetPassword,
+          current_password: currentPassword
         })
       })
 
@@ -130,6 +132,7 @@ export default function SuperAdminPage() {
 
       setResetSuccess(`Password for ${resetEmail} successfully updated to your selection!`)
       setResetPassword('')
+      setCurrentPassword('')
     } catch (err: any) {
       setResetError(err.message || 'Failed to execute password reset.')
     } finally {
@@ -454,6 +457,19 @@ export default function SuperAdminPage() {
                   placeholder="Enter a strong custom password override"
                   value={resetPassword}
                   onChange={e => setResetPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 mb-1">YOUR CURRENT PASSWORD</label>
+                <input
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  placeholder="Confirm your administrator password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder:text-slate-400"
                 />
               </div>

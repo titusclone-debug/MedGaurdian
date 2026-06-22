@@ -5,6 +5,7 @@ import {
   FileText, Cloud, LogOut, Bell, Search, Menu, X
 } from 'lucide-react'
 import { useState } from 'react'
+import type { SessionUser } from '../types/session'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard, description: 'Risk Weather Forecast' },
@@ -18,7 +19,7 @@ const navigation = [
 
 interface LayoutProps {
   children: ReactNode
-  user: any
+  user: SessionUser
   onLogout: () => void
 }
 

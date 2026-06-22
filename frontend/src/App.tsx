@@ -11,10 +11,12 @@ import RiskPage from './pages/Risk'
 import LoginPage from './pages/Login'
 import SuperAdminPage from './pages/SuperAdmin'
 import StaffPage from './pages/Staff'
+import type { SessionUser } from './types/session'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [authReady, setAuthReady] = useState(false)
+  const [user, setUser] = useState<SessionUser | null>(null)
   
   useEffect(() => {
     const token = localStorage.getItem('medguardian_token')
@@ -23,9 +25,10 @@ function App() {
       setIsAuthenticated(true)
       setUser(JSON.parse(savedUser))
     }
+    setAuthReady(true)
   }, [])
   
-  const handleLogin = (token: string, userData: any) => {
+  const handleLogin = (token: string, userData: SessionUser) => {
     localStorage.setItem('medguardian_token', token)
     localStorage.setItem('medguardian_user', JSON.stringify(userData))
     setIsAuthenticated(true)
@@ -39,30 +42,30 @@ function App() {
     setUser(null)
   }
   
-  if (!isAuthenticated) {
-    return <LoginPage onLogin={handleLogin} />
-  }
-  
   return (
     <Router>
-      <Layout user={user} onLogout={handleLogout}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/fcra" element={<FCRAPage />} />
-          <Route path="/dpdp" element={<DPDPPage />} />
-          <Route path="/bmw" element={<BMWPage />} />
-          <Route path="/nabh" element={<NABHPage />} />
-          <Route path="/licenses" element={<LicensesPage />} />
-          <Route path="/risk" element={<RiskPage />} />
-          {user?.role === 'super_admin' && (
-            <Route path="/hq" element={<SuperAdminPage />} />
-          )}
-          {user?.role === 'hospital_admin' && (
-            <Route path="/staff" element={<StaffPage />} />
-          )}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
+      {!authReady ? null : !isAuthenticated || !user ? (
+        <LoginPage onLogin={handleLogin} />
+      ) : (
+        <Layout user={user} onLogout={handleLogout}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/fcra" element={<FCRAPage />} />
+            <Route path="/dpdp" element={<DPDPPage />} />
+            <Route path="/bmw" element={<BMWPage />} />
+            <Route path="/nabh" element={<NABHPage />} />
+            <Route path="/licenses" element={<LicensesPage />} />
+            <Route path="/risk" element={<RiskPage />} />
+            {user.role === 'super_admin' && (
+              <Route path="/hq" element={<SuperAdminPage />} />
+            )}
+            {user.role === 'hospital_admin' && (
+              <Route path="/staff" element={<StaffPage />} />
+            )}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      )}
     </Router>
   )
 }

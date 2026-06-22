@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     # Application
     APP_NAME: str = "MedGuardian"
     APP_VERSION: str = "1.0.0"
+    APP_ENV: str = "development"
     DEBUG: bool = False
     SECRET_KEY: str = "change-me-in-production"
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
@@ -32,6 +33,9 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "change-me-jwt-secret"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 480  # 8 hour shifts
+    LOGIN_RATE_LIMIT_ATTEMPTS: int = 5
+    LOGIN_RATE_LIMIT_WINDOW_SECONDS: int = 300
+    MIGRATION_CHECK_MODE: str = "warn"
     
     # Hospital Identity
     HOSPITAL_NAME: str = "Mission Hospital"

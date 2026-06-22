@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Lock, Mail, Eye, EyeOff, Hospital } from 'lucide-react'
+import type { SessionUser } from '../types/session'
 
 interface LoginPageProps {
-  onLogin: (token: string, user: any) => void
+  onLogin: (token: string, user: SessionUser) => void
 }
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
@@ -113,7 +114,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           </form>
           
           <p className="text-xs text-slate-400 text-center mt-6">
-            Use a seeded staff account, for example admin@stmarys.org / admin123.
+            Use credentials issued by your MedGuardian administrator.
           </p>
         </div>
         

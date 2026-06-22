@@ -69,7 +69,7 @@ echo -e "   Frontend:  ${BLUE}http://localhost:3000${NC}"
 echo -e "   Backend:   ${BLUE}http://localhost:8000${NC}"
 echo -e "   API Docs:  ${BLUE}http://localhost:8000/docs${NC}"
 echo ""
-echo -e "${YELLOW}Seeded Login: admin@stmarys.org / admin123${NC}"
+echo -e "${YELLOW}Use credentials issued through the approved bootstrap process.${NC}"
 echo ""
 echo "Press Ctrl+C to stop both servers"
 

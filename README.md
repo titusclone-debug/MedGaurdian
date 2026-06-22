@@ -406,7 +406,15 @@ frontend/
 
 The application is mid-rebuild. NABH Phase 1 is the active track and is intended to establish the architectural pattern for the rest of the product.
 
-The current priority is to complete the Phase 1 NABH milestone, verify the migration bridge, then do a deliberate modularization pass before expanding into evidence vault, agents, and document generation.
+NABH Phase 1 and its production acceptance gate are complete. The current
+priority is the controlled hardening and modularization pass before expanding
+into the evidence vault, agents, and document-generation phases.
+
+The post-Phase-1 hardening baseline and operating procedures are documented in:
+
+- [`docs/refactor-baseline.md`](docs/refactor-baseline.md)
+- [`docs/production-operations.md`](docs/production-operations.md)
+- [`docs/production-data-protection.md`](docs/production-data-protection.md)
 
 ## License
 

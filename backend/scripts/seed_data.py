@@ -18,6 +18,16 @@ from app.models.database import (
 )
 
 
+def _seed_password(name: str) -> str:
+    value = os.environ.get(name)
+    if not value:
+        raise RuntimeError(
+            f"{name} is required for sample-data seeding. "
+            "Passwords are never embedded in source control."
+        )
+    return value
+
+
 def seed():
     """Seed the database with realistic sample data."""
     print("Seeding MedGuardian database...")
@@ -29,20 +39,7 @@ def seed():
     try:
         existing_hospital = db.query(Hospital).filter(Hospital.id == "hospital-001").first()
         if existing_hospital:
-            password_updates = {
-                "ceo@medguardian.org": "master123",
-                "admin@stmarys.org": "admin123",
-                "thomas@stmarys.org": "doctor123",
-                "priya@stmarys.org": "nurse123",
-                "mary@stmarys.org": "compliance123",
-                "james@stmarys.org": "accounts123",
-            }
-            for email, password in password_updates.items():
-                staff = db.query(Staff).filter(Staff.email == email).first()
-                if staff:
-                    staff.hashed_password = hash_password(password)
-            db.commit()
-            print("Sample database already exists; refreshed seeded staff password hashes.")
+            print("Sample database already exists; no credentials or records were changed.")
             return
 
         # === HOSPITAL ===
@@ -75,12 +72,12 @@ def seed():
         
         # === STAFF ===
         staff_members = [
-            Staff(id="staff-000", hospital_id="hospital-001", employee_id="SUPER001", name="CEO Master Admin", role=UserRole.SUPER_ADMIN, department="HQ Governance", email="ceo@medguardian.org", phone="+91-9999999999", hashed_password=hash_password("master123"), qualification="MedGuardian Executive Founder", is_active=True),
-            Staff(id="staff-001", hospital_id="hospital-001", employee_id="EMP001", name="Dr. Sarah Chen", role=UserRole.HOSPITAL_ADMIN, department="Administration", email="admin@stmarys.org", phone="+91-9487000001", hashed_password=hash_password("admin123"), qualification="MBBS, MD (Hospital Administration)", is_active=True),
-            Staff(id="staff-002", hospital_id="hospital-001", employee_id="EMP002", name="Dr. Thomas Mathew", role=UserRole.DOCTOR, department="General Medicine", email="thomas@stmarys.org", phone="+91-9487000002", hashed_password=hash_password("doctor123"), qualification="MBBS, MD (General Medicine)", registration_number="KMC/2015/4521", is_active=True),
-            Staff(id="staff-003", hospital_id="hospital-001", employee_id="EMP003", name="Nurse Priya Joseph", role=UserRole.NURSE, department="Surgery", email="priya@stmarys.org", phone="+91-9487000003", hashed_password=hash_password("nurse123"), qualification="B.Sc Nursing", registration_number="KNR/2018/7832", is_active=True),
-            Staff(id="staff-004", hospital_id="hospital-001", employee_id="EMP004", name="Dr. Mary Varghese", role=UserRole.COMPLIANCE_OFFICER, department="Quality", email="mary@stmarys.org", phone="+91-9487000004", hashed_password=hash_password("compliance123"), qualification="MBBS, PGDHM", is_active=True),
-            Staff(id="staff-005", hospital_id="hospital-001", employee_id="EMP005", name="James Kurien", role=UserRole.ACCOUNTANT, department="Finance", email="james@stmarys.org", phone="+91-9487000005", hashed_password=hash_password("accounts123"), qualification="CA, MBA", is_active=True),
+            Staff(id="staff-000", hospital_id="hospital-001", employee_id="SUPER001", name="CEO Master Admin", role=UserRole.SUPER_ADMIN, department="HQ Governance", email="ceo@medguardian.org", phone="+91-9999999999", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_SUPER_ADMIN_PASSWORD")), qualification="MedGuardian Executive Founder", is_active=True),
+            Staff(id="staff-001", hospital_id="hospital-001", employee_id="EMP001", name="Dr. Sarah Chen", role=UserRole.HOSPITAL_ADMIN, department="Administration", email="admin@stmarys.org", phone="+91-9487000001", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_HOSPITAL_ADMIN_PASSWORD")), qualification="MBBS, MD (Hospital Administration)", is_active=True),
+            Staff(id="staff-002", hospital_id="hospital-001", employee_id="EMP002", name="Dr. Thomas Mathew", role=UserRole.DOCTOR, department="General Medicine", email="thomas@stmarys.org", phone="+91-9487000002", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_DOCTOR_PASSWORD")), qualification="MBBS, MD (General Medicine)", registration_number="KMC/2015/4521", is_active=True),
+            Staff(id="staff-003", hospital_id="hospital-001", employee_id="EMP003", name="Nurse Priya Joseph", role=UserRole.NURSE, department="Surgery", email="priya@stmarys.org", phone="+91-9487000003", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_NURSE_PASSWORD")), qualification="B.Sc Nursing", registration_number="KNR/2018/7832", is_active=True),
+            Staff(id="staff-004", hospital_id="hospital-001", employee_id="EMP004", name="Dr. Mary Varghese", role=UserRole.COMPLIANCE_OFFICER, department="Quality", email="mary@stmarys.org", phone="+91-9487000004", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_COMPLIANCE_PASSWORD")), qualification="MBBS, PGDHM", is_active=True),
+            Staff(id="staff-005", hospital_id="hospital-001", employee_id="EMP005", name="James Kurien", role=UserRole.ACCOUNTANT, department="Finance", email="james@stmarys.org", phone="+91-9487000005", hashed_password=hash_password(_seed_password("MEDGUARDIAN_SEED_ACCOUNTANT_PASSWORD")), qualification="CA, MBA", is_active=True),
         ]
         for s in staff_members:
             db.add(s)

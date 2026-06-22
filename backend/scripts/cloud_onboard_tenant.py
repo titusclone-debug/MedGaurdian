@@ -2,16 +2,21 @@
 Secure Cloud Onboarding Tool — MedGuardian Admin CLI.
 Runs locally to safely onboard new hospital tenants onto your live cloud server.
 """
+import getpass
+import os
+
 import requests
-import json
-import re
 
 # Live Server URL configuration
-LIVE_BACKEND_URL = "https://medgaurdian-backend.onrender.com"
-SUPER_ADMIN_EMAIL = "ceo@medguardian.org"
-SUPER_ADMIN_PASSWORD = "master123"
+LIVE_BACKEND_URL = os.environ.get("MEDGUARDIAN_BACKEND_URL", "https://medgaurdian-backend.onrender.com")
+SUPER_ADMIN_EMAIL = os.environ.get("MEDGUARDIAN_SUPER_ADMIN_EMAIL")
 
 def onboard_new_tenant():
+    if not SUPER_ADMIN_EMAIL:
+        raise RuntimeError("MEDGUARDIAN_SUPER_ADMIN_EMAIL must be set.")
+    super_admin_password = os.environ.get("MEDGUARDIAN_SUPER_ADMIN_PASSWORD")
+    if not super_admin_password:
+        super_admin_password = getpass.getpass("Super administrator password: ")
     print("=" * 60)
     print(" 🏥  MEDGUARDIAN SECURE TENANT ONBOARDING WIZARD  🛡️")
     print("=" * 60)
@@ -29,7 +34,7 @@ def onboard_new_tenant():
     print("\n[+] Create Primary Hospital Administrator:")
     admin_name = input("    Admin Full Name (e.g. Dr. Ramesh Mehta): ").strip()
     admin_email = input("    Admin Official Email: ").strip()
-    admin_password = input("    Admin Password (strong): ").strip()
+    admin_password = getpass.getpass("    Admin Password (strong): ").strip()
     
     if not (name and reg_number and admin_email and admin_password):
         print("\n[❌] Error: Hospital Name, Registration ID, Admin Email and Password are mandatory!")
@@ -43,7 +48,7 @@ def onboard_new_tenant():
             f"{LIVE_BACKEND_URL}/api/auth/login",
             data={
                 "username": SUPER_ADMIN_EMAIL,
-                "password": SUPER_ADMIN_PASSWORD
+                "password": super_admin_password
             },
             timeout=15
         )
@@ -98,7 +103,7 @@ def onboard_new_tenant():
         print(f"    🏥  Hospital Name : {name}")
         print(f"    🔑  Hospital ID   : {data['hospital_id']}")
         print(f"    👤  Admin Account : {admin_email}")
-        print(f"    🔑  Admin Password: {admin_password}")
+        print("    Admin Password: deliver through the approved secure channel.")
         print("-" * 60)
         print(" 👉  To log in and test, visit your live cockpit:")
         print("     https://medgaurdian.onrender.com")

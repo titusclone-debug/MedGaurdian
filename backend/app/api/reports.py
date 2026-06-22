@@ -118,7 +118,44 @@ async def generate_compliance_summary(
             headers={"Content-Disposition": f"attachment; filename=compliance_report_{hospital_id}.csv"}
         )
     else:
-        return report  # PDF generation would use reportlab
+        from reportlab.lib.pagesizes import A4
+        from reportlab.pdfgen import canvas
+
+        output = io.BytesIO()
+        pdf = canvas.Canvas(output, pagesize=A4)
+        width, height = A4
+        y = height - 48
+
+        pdf.setTitle(f"MedGuardian Compliance Summary - {hospital.name}")
+        pdf.setFont("Helvetica-Bold", 16)
+        pdf.drawString(48, y, "MedGuardian Compliance Summary")
+        y -= 24
+        pdf.setFont("Helvetica", 10)
+        pdf.drawString(48, y, f"Hospital: {hospital.name}")
+        y -= 16
+        pdf.drawString(48, y, f"Generated: {report['generated_at']}")
+        y -= 28
+
+        for section, data in report["sections"].items():
+            if y < 90:
+                pdf.showPage()
+                y = height - 48
+            pdf.setFont("Helvetica-Bold", 12)
+            pdf.drawString(48, y, section.replace("_", " ").title())
+            y -= 18
+            pdf.setFont("Helvetica", 10)
+            for key, value in data.items():
+                pdf.drawString(64, y, f"{key.replace('_', ' ').title()}: {value}")
+                y -= 15
+            y -= 8
+
+        pdf.save()
+        output.seek(0)
+        return StreamingResponse(
+            output,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=compliance_report_{hospital_id}.pdf"},
+        )
 
 
 @router.get("/audit-trail/{hospital_id}")

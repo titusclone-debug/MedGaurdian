@@ -7,6 +7,11 @@ from pydantic import BaseModel
 
 from app.core.database import get_db
 from app.api.auth import assert_hospital_access, get_current_user, require_role
+from app.api.nabh_helpers import (
+    assert_staff_belongs_to_hospital,
+    build_evidence_burden_summary,
+)
+from app.api import nabh_evidence, nabh_explanation, nabh_operations
 from app.models.database import (
     ComplianceRecord, Hospital, Staff, ComplianceStatus, UserRole,
     RiskAlert, NABHObjective, MaturityLevel, SeverityLevel,
@@ -19,11 +24,7 @@ from app.nabh.service import ComplianceService, NABH_STANDARDS, LEGACY_NABH_MODE
 from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
 from app.nabh.citation_service import CitationService
 from app.nabh.applicability import ApplicabilityEngine
-from app.nabh.readiness import calculate_hospital_readiness
-from app.nabh.explanation import build_requirement_explanation
-from app.nabh.evidence_plan import build_hospital_evidence_plan
 from app.nabh.quality import NABHQualityError, assert_compliant_status_allowed
-from app.nabh.migration_bridge import migrate_hospital_legacy_nabh_state
 
 from app.schemas.nabh import (
     NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
@@ -31,44 +32,13 @@ from app.schemas.nabh import (
     CitationResponse, HospitalProfileResponse, HospitalProfileUpdate, ApplicabilityComputeResponse,
     HospitalRequirementSummary as SchemaHospitalRequirementSummary,
     PaginatedHospitalRequirementSummary, HospitalRequirementDetail as SchemaHospitalRequirementDetail,
-    HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema, HospitalReadinessResponse,
-    NABHRequirementExplanationResponse, NABHEvidencePlanResponse, NABHLegacyMigrationReport
+    HospitalRequirementPatch, HospitalRequirementEvidenceLinkSchema
 )
 
 router = APIRouter()
-
-
-def _assert_staff_belongs_to_hospital(db: Session, staff_id: Optional[str], hospital_id: str, field_name: str) -> None:
-    """Validate staff references used on hospital-scoped requirement state."""
-    if staff_id is None:
-        return
-
-    staff = db.query(Staff).filter(
-        Staff.id == staff_id,
-        Staff.is_active == True
-    ).first()
-    if not staff or staff.hospital_id != hospital_id:
-        raise HTTPException(
-            status_code=400,
-            detail=f"{field_name} must reference an active staff member in the same hospital."
-        )
-
-
-def _build_evidence_burden_summary(evidences: List) -> dict:
-    """Helper to construct Proof Burden Summary dict from a list of NABHEvidenceRequirement objects."""
-    mandatory_count = sum(1 for ev in evidences if ev.is_mandatory)
-    optional_count = sum(1 for ev in evidences if not ev.is_mandatory)
-    evidence_types = list(set(
-        (ev.evidence_type.value if hasattr(ev.evidence_type, "value") else str(ev.evidence_type))
-        for ev in evidences
-    ))
-    lookback_days = max([ev.minimum_lookback_days for ev in evidences] + [0])
-    return {
-        "mandatory_evidence_count": mandatory_count,
-        "optional_evidence_count": optional_count,
-        "evidence_types_required": evidence_types,
-        "lookback_days_required": lookback_days
-    }
+router.include_router(nabh_evidence.router)
+router.include_router(nabh_explanation.router)
+router.include_router(nabh_operations.router)
 
 
 class ComplianceUpdate(BaseModel):
@@ -755,7 +725,7 @@ async def get_ontology_requirement_detail(
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
     
-    summary_data = _build_evidence_burden_summary(evidences)
+    summary_data = build_evidence_burden_summary(evidences)
     return NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -1049,31 +1019,6 @@ async def get_hospital_requirements(
     )
 
 
-@router.get("/requirements/{hospital_id}/evidence-plan", response_model=NABHEvidencePlanResponse)
-async def get_hospital_evidence_plan(
-    hospital_id: str,
-    edition_version: str = Query("6.0"),
-    limit: int = Query(100, ge=1, le=250),
-    offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db),
-    current_user: Staff = Depends(get_current_user)
-):
-    """
-    Return a paged, bulk evidence plan for hospital-scoped requirements.
-
-    This endpoint is intentionally aggregated so the Phase 1 frontend does not
-    issue one explanation request per requirement when rendering Evidence Needed.
-    """
-    assert_hospital_access(current_user, hospital_id)
-    return build_hospital_evidence_plan(
-        db=db,
-        hospital_id=hospital_id,
-        edition_version=edition_version,
-        limit=limit,
-        offset=offset,
-    )
-
-
 @router.get("/requirements/{hospital_id}/{requirement_id}", response_model=SchemaHospitalRequirementDetail)
 async def get_hospital_requirement_detail(
     hospital_id: str,
@@ -1140,7 +1085,7 @@ async def get_hospital_requirement_detail(
         HospitalRequirementEvidenceLink.retired_at.is_(None)
     ).all()
     
-    summary_data = _build_evidence_burden_summary(evidences)
+    summary_data = build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -1222,8 +1167,8 @@ async def patch_hospital_requirement(
     req = req_result
         
     patch_data = patch.model_dump(exclude_unset=True)
-    _assert_staff_belongs_to_hospital(db, patch_data.get("owner_id"), hospital_id, "owner_id")
-    _assert_staff_belongs_to_hospital(db, patch_data.get("last_reviewed_by"), hospital_id, "last_reviewed_by")
+    assert_staff_belongs_to_hospital(db, patch_data.get("owner_id"), hospital_id, "owner_id")
+    assert_staff_belongs_to_hospital(db, patch_data.get("last_reviewed_by"), hospital_id, "last_reviewed_by")
     try:
         assert_compliant_status_allowed(db, requirement_id, patch_data.get("readiness_status"))
     except NABHQualityError as exc:
@@ -1282,7 +1227,7 @@ async def patch_hospital_requirement(
         HospitalRequirementEvidenceLink.retired_at.is_(None)
     ).all()
     
-    summary_data = _build_evidence_burden_summary(evidences)
+    summary_data = build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
         id=el.id,
         code=el.code,
@@ -1318,79 +1263,6 @@ async def patch_hospital_requirement(
         readiness_status=req.readiness_status,
         ontology_requirement=ont_detail,
         evidence_links=[HospitalRequirementEvidenceLinkSchema.model_validate(l) for l in links]
-    )
-
-
-@router.get("/readiness/{hospital_id}", response_model=HospitalReadinessResponse)
-async def get_hospital_readiness(
-    hospital_id: str,
-    edition_version: str = Query("6.0"),
-    db: Session = Depends(get_db),
-    current_user: Staff = Depends(get_current_user)
-):
-    """
-    Get the new ontology/applicability-based readiness score and per-chapter breakdown.
-    """
-    assert_hospital_access(current_user, hospital_id)
-    return calculate_hospital_readiness(db, hospital_id, edition_version)
-
-
-@router.post("/migration/{hospital_id}/legacy-bridge", response_model=NABHLegacyMigrationReport)
-async def run_legacy_migration_bridge(
-    hospital_id: str,
-    edition_version: str = Query("6.0"),
-    dry_run: bool = Query(False),
-    db: Session = Depends(get_db),
-    current_user: Staff = Depends(require_role([UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN, UserRole.COMPLIANCE_OFFICER]))
-):
-    """
-    Deterministically bridge legacy NABHObjective rows into new v6 requirement state.
-
-    This is a compatibility bridge only: it preserves existing new requirement state,
-    records unmapped legacy rows, and never deletes legacy data.
-    """
-    assert_hospital_access(current_user, hospital_id)
-    try:
-        report = migrate_hospital_legacy_nabh_state(
-            db=db,
-            hospital_id=hospital_id,
-            edition_version=edition_version,
-            dry_run=dry_run,
-        )
-        if not dry_run:
-            db.commit()
-        return report
-    except ValueError as exc:
-        db.rollback()
-        raise HTTPException(status_code=404, detail=str(exc))
-    except Exception:
-        db.rollback()
-        raise
-
-
-@router.get(
-    "/ontology/requirements/{requirement_id}/explanation",
-    response_model=NABHRequirementExplanationResponse
-)
-async def get_requirement_explanation(
-    requirement_id: str,
-    hospital_id: Optional[str] = Query(None),
-    edition_version: str = Query("6.0"),
-    db: Session = Depends(get_db),
-    current_user: Staff = Depends(get_current_user)
-):
-    """
-    Get a deterministic, source-cited explanation of a specific requirement,
-    including plain language instructions, why it matters, citations, and optional hospital-specific state.
-    """
-    if hospital_id:
-        assert_hospital_access(current_user, hospital_id)
-
-    return build_requirement_explanation(
-        db=db,
-        requirement_id=requirement_id,
-        hospital_id=hospital_id,
-        edition_version=edition_version
     )
 
 

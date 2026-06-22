@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: medguardian_admin
-      POSTGRES_PASSWORD: secure_db_password_change_me
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       POSTGRES_DB: medguardian
     ports:
       - "5432:5432"
@@ -23,9 +23,9 @@ services:
     container_name: medguardian_backend
     restart: always
     environment:
-      - DATABASE_URL=postgresql://medguardian_admin:secure_db_password_change_me@postgres:5432/medguardian
-      - JWT_SECRET_KEY=highly_secure_jwt_secret_change_me_in_prod
-      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://medguardian_admin:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/medguardian
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}
+      - APP_ENV=production
     ports:
       - "8000:8000"
     depends_on:

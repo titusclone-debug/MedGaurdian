@@ -27,7 +27,7 @@ def test_onboard_hospital_success(client, db_session):
         "pincode": "400001",
         "admin_name": "Dr. Admin",
         "admin_email": "admin@testgeneral.com",
-        "admin_password": "supersecurepassword"
+        "admin_password": "StrongPassword123"
     }
 
     response = client.post("/api/auth/onboard-hospital", json=payload)
@@ -49,7 +49,7 @@ def test_onboard_hospital_success(client, db_session):
     assert admin_staff.role == UserRole.HOSPITAL_ADMIN
     assert admin_staff.name == "Dr. Admin"
     assert admin_staff.hashed_password is not None
-    assert admin_staff.hashed_password != "supersecurepassword" # it should be hashed!
+    assert admin_staff.hashed_password != "StrongPassword123" # it should be hashed!
 
     app.dependency_overrides.pop(get_current_user, None)
 
@@ -77,7 +77,7 @@ def test_onboard_hospital_forbidden_for_other_roles(client, db_session):
         "pincode": "400001",
         "admin_name": "Dr. Admin 2",
         "admin_email": "admin2@testgeneral.com",
-        "admin_password": "supersecurepassword"
+        "admin_password": "StrongPassword123"
     }
 
     response = client.post("/api/auth/onboard-hospital", json=payload)
