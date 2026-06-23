@@ -4,7 +4,7 @@ Comprehensive models for hospital administration and compliance tracking.
 """
 from sqlalchemy import (
     Column, Integer, String, Float, Boolean, DateTime, Text, JSON,
-    ForeignKey, Enum as SQLEnum, Index, UniqueConstraint
+    ForeignKey, Enum as SQLEnum, Index, UniqueConstraint, CheckConstraint
 )
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql import func
@@ -680,6 +680,41 @@ class EvidenceType(enum.Enum):
     CAPA = "capa"
 
 
+class NABHRequirementClassification(enum.Enum):
+    CORE = "core"
+    COMMITMENT = "commitment"
+    ACHIEVEMENT = "achievement"
+    EXCELLENCE = "excellence"
+
+
+class KnowledgeAuthorityLevel(enum.Enum):
+    NORMATIVE = "normative"
+    OFFICIAL_INTERPRETATION = "official_interpretation"
+    MEDGUARDIAN_INTERPRETATION = "medguardian_interpretation"
+    IMPLEMENTATION_GUIDANCE = "implementation_guidance"
+
+
+class KnowledgePublicationStatus(enum.Enum):
+    DISCOVERED = "discovered"
+    EXTRACTED = "extracted"
+    UNDER_REVIEW = "under_review"
+    VERIFIED = "verified"
+    APPROVED = "approved"
+    PUBLISHED = "published"
+    SUPERSEDED = "superseded"
+    RETIRED = "retired"
+    REJECTED = "rejected"
+
+
+class SourceRightsStatus(enum.Enum):
+    UNKNOWN = "unknown"
+    REFERENCE_ONLY = "reference_only"
+    RESTRICTED_INTERNAL = "restricted_internal"
+    EXTRACT_ONLY = "extract_only"
+    FULL_TEXT_PERMITTED = "full_text_permitted"
+    PERMISSION_REQUIRED = "permission_required"
+
+
 class NABHEdition(Base):
     """Accreditation standards edition."""
     __tablename__ = "nabh_editions"
@@ -710,6 +745,43 @@ class NABHSourceDocument(Base):
     edition_version = Column(String(50), nullable=False)
     file_path_or_url = Column(String(500), nullable=True)
     checksum = Column(String(64), nullable=True)
+    file_size_bytes = Column(Integer, nullable=True)
+    pdf_page_count = Column(Integer, nullable=True)
+    printed_page_start = Column(Integer, nullable=True)
+    printed_page_end = Column(Integer, nullable=True)
+    isbn = Column(String(50), nullable=True)
+    document_type = Column(String(100), nullable=True)
+    programme = Column(String(100), nullable=True)
+    acquisition_method = Column(String(100), nullable=True)
+    acquired_at = Column(DateTime, nullable=True)
+    authority_level = Column(
+        SQLEnum(KnowledgeAuthorityLevel),
+        default=KnowledgeAuthorityLevel.NORMATIVE,
+        nullable=False,
+    )
+    rights_status = Column(
+        SQLEnum(SourceRightsStatus),
+        default=SourceRightsStatus.UNKNOWN,
+        nullable=False,
+    )
+    rights_note = Column(Text, nullable=True)
+    may_store_full_text = Column(Boolean, default=False, nullable=False)
+    may_display_full_text = Column(Boolean, default=False, nullable=False)
+    may_create_embeddings = Column(Boolean, default=False, nullable=False)
+    verification_status = Column(
+        SQLEnum(KnowledgePublicationStatus),
+        default=KnowledgePublicationStatus.DISCOVERED,
+        nullable=False,
+    )
+    verified_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    approved_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    approved_at = Column(DateTime, nullable=True)
+    superseded_by_document_id = Column(
+        String,
+        ForeignKey("nabh_source_documents.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     publication_date = Column(DateTime, nullable=True)
     effective_date = Column(DateTime, nullable=True)
     
@@ -720,14 +792,153 @@ class NABHSourceDocument(Base):
     # Relationships
     edition = relationship("NABHEdition", back_populates="source_documents")
     citations = relationship("NABHRequirementCitation", back_populates="document")
+    superseded_by = relationship("NABHSourceDocument", remote_side=[id])
+    verifier = relationship("Staff", foreign_keys=[verified_by])
+    approver = relationship("Staff", foreign_keys=[approved_by])
 
     __table_args__ = (
         Index("idx_source_doc_edition", "edition_id"),
     )
 
 
+class NABHSourceAnomaly(Base):
+    """A source-authored inconsistency preserved without silent correction."""
+    __tablename__ = "nabh_source_anomalies"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    document_id = Column(String, ForeignKey("nabh_source_documents.id", ondelete="CASCADE"), nullable=False)
+    anomaly_code = Column(String(100), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    source_locator = Column(String(255), nullable=False)
+    observed_value = Column(Text, nullable=True)
+    reconciled_value = Column(Text, nullable=True)
+    reconciliation_basis = Column(Text, nullable=True)
+    status = Column(String(50), default="open", nullable=False)
+    verified_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    document = relationship("NABHSourceDocument")
+    verifier = relationship("Staff")
+
+    __table_args__ = (
+        UniqueConstraint("document_id", "anomaly_code", name="uq_nabh_source_anomaly"),
+        Index("idx_nabh_source_anomaly_document", "document_id"),
+        Index("idx_nabh_source_anomaly_status", "status"),
+    )
+
+
+class NABHKnowledgeChange(Base):
+    """Institutional memory for governed knowledge publication changes."""
+    __tablename__ = "nabh_knowledge_changes"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    change_code = Column(String(100), nullable=False, unique=True)
+    what_changed = Column(Text, nullable=False)
+    why_changed = Column(Text, nullable=False)
+    supporting_source_ids = Column(JSON, default=list, nullable=False)
+    impacted_requirement_ids = Column(JSON, default=list, nullable=False)
+    hospitals_requiring_recompute = Column(JSON, default=list, nullable=False)
+    hospitals_requiring_notification = Column(JSON, default=list, nullable=False)
+    proposed_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    reviewed_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    approved_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    published_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    status = Column(
+        SQLEnum(KnowledgePublicationStatus),
+        default=KnowledgePublicationStatus.DISCOVERED,
+        nullable=False,
+    )
+    effective_date = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        Index("idx_nabh_knowledge_change_edition", "edition_id"),
+        Index("idx_nabh_knowledge_change_status", "status"),
+    )
+
+
+class NABHKnowledgeContent(Base):
+    """Versioned interpretation or guidance kept separate from normative text."""
+    __tablename__ = "nabh_knowledge_content"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(
+        String,
+        ForeignKey("nabh_editions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    requirement_id = Column(
+        String,
+        ForeignKey("nabh_requirements.id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    hospital_id = Column(
+        String,
+        ForeignKey("hospitals.id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    source_document_id = Column(
+        String,
+        ForeignKey("nabh_source_documents.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    citation_id = Column(
+        String,
+        ForeignKey("nabh_requirement_citations.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    content_type = Column(String(100), nullable=False)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
+    content_checksum = Column(String(64), nullable=False)
+    version = Column(Integer, default=1, nullable=False)
+    authority_level = Column(SQLEnum(KnowledgeAuthorityLevel), nullable=False)
+    publication_status = Column(
+        SQLEnum(KnowledgePublicationStatus),
+        default=KnowledgePublicationStatus.DISCOVERED,
+        nullable=False,
+    )
+    change_reason = Column(Text, nullable=False)
+    supersedes_content_id = Column(
+        String,
+        ForeignKey("nabh_knowledge_content.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    proposed_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    reviewed_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    approved_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    published_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    approved_at = Column(DateTime, nullable=True)
+    published_at = Column(DateTime, nullable=True)
+    effective_from = Column(DateTime, nullable=True)
+    effective_to = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    supersedes = relationship("NABHKnowledgeContent", remote_side=[id])
+
+    __table_args__ = (
+        CheckConstraint(
+            "authority_level <> 'NORMATIVE'",
+            name="ck_nabh_knowledge_content_not_normative",
+        ),
+        Index("idx_nabh_knowledge_content_edition", "edition_id"),
+        Index("idx_nabh_knowledge_content_requirement", "requirement_id"),
+        Index("idx_nabh_knowledge_content_hospital", "hospital_id"),
+        Index("idx_nabh_knowledge_content_status", "publication_status"),
+        Index("idx_nabh_knowledge_content_authority", "authority_level"),
+    )
+
+
 class NABHChapter(Base):
-    """High-level chapters (e.g. ACC, HIC, MOM)."""
+    """Official edition chapters (for example AAC, IPC, and MOM)."""
     __tablename__ = "nabh_chapters"
     
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -739,6 +950,7 @@ class NABHChapter(Base):
     display_order = Column(Integer, default=0, nullable=False)
     
     official_standards_count = Column(Integer, nullable=True)
+    official_requirements_count = Column(Integer, nullable=True)
     official_measurable_elements_count = Column(Integer, nullable=True)
     is_fully_seeded = Column(Boolean, default=False, nullable=False)
 
@@ -782,6 +994,7 @@ class NABHStandard(Base):
     # Relationships
     chapter = relationship("NABHChapter", back_populates="standards")
     objective_elements = relationship("NABHObjectiveElement", back_populates="standard", cascade="all, delete-orphan")
+    requirements = relationship("NABHRequirement", back_populates="standard", cascade="all, delete-orphan")
 
     __table_args__ = (
         UniqueConstraint("edition_id", "canonical_code", name="uq_standard_edition_code"),
@@ -791,7 +1004,11 @@ class NABHStandard(Base):
 
 
 class NABHObjectiveElement(Base):
-    """Accreditation Objective Elements (e.g. AAC 1a, FMS 1b)."""
+    """Deprecated Phase 1 compatibility tier.
+
+    Official NABH 6th Edition Objective Elements are represented by
+    NABHRequirement. This table remains temporarily for legacy seed migration.
+    """
     __tablename__ = "nabh_objective_elements"
     
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -819,7 +1036,7 @@ class NABHObjectiveElement(Base):
 
 
 class NABHMeasurableElement(Base):
-    """Granular measurable requirements (e.g. AAC 1a.1)."""
+    """Deprecated synthetic Phase 1 requirement tier."""
     __tablename__ = "nabh_measurable_elements"
     
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -852,12 +1069,93 @@ class NABHMeasurableElement(Base):
     )
 
 
+class NABHRequirement(Base):
+    """Canonical NABH requirement: one official Objective Element."""
+    __tablename__ = "nabh_requirements"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    edition_id = Column(String, ForeignKey("nabh_editions.id", ondelete="CASCADE"), nullable=False)
+    standard_id = Column(String, ForeignKey("nabh_standards.id", ondelete="CASCADE"), nullable=False)
+    official_code = Column(String(100), nullable=False)
+    canonical_code = Column(String(100), nullable=False)
+    official_text = Column(Text, nullable=True)
+    display_text = Column(Text, nullable=False)
+    classification = Column(SQLEnum(NABHRequirementClassification), nullable=True)
+    documentation_required = Column(Boolean, nullable=True)
+    applicability_default = Column(
+        SQLEnum(ApplicabilityDefault),
+        default=ApplicabilityDefault.APPLICABLE,
+        nullable=False,
+    )
+    scoring_weight = Column(Float, default=1.0, nullable=False)
+    risk_weight = Column(Float, default=1.0, nullable=False)
+    default_owner_role = Column(String(100), nullable=True)
+    display_order = Column(Integer, default=0, nullable=False)
+    authority_level = Column(
+        SQLEnum(KnowledgeAuthorityLevel),
+        default=KnowledgeAuthorityLevel.MEDGUARDIAN_INTERPRETATION,
+        nullable=False,
+    )
+    publication_status = Column(
+        SQLEnum(KnowledgePublicationStatus),
+        default=KnowledgePublicationStatus.DISCOVERED,
+        nullable=False,
+    )
+    source_status = Column(String(50), default="official", nullable=False)
+    effective_from = Column(DateTime, nullable=True)
+    effective_to = Column(DateTime, nullable=True)
+    verified_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    approved_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    approved_at = Column(DateTime, nullable=True)
+    change_reason = Column(Text, nullable=True)
+    legacy_measurable_element_id = Column(
+        String,
+        ForeignKey("nabh_measurable_elements.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    retired_at = Column(DateTime, nullable=True)
+
+    standard = relationship("NABHStandard", back_populates="requirements")
+    legacy_measurable_element = relationship("NABHMeasurableElement")
+    verifier = relationship("Staff", foreign_keys=[verified_by])
+    approver = relationship("Staff", foreign_keys=[approved_by])
+    evidence_requirements = relationship(
+        "NABHEvidenceRequirement",
+        back_populates="requirement",
+    )
+    citations = relationship(
+        "NABHRequirementCitation",
+        back_populates="requirement",
+    )
+    applicability_rules = relationship(
+        "NABHApplicabilityRule",
+        back_populates="requirement",
+    )
+    hospital_states = relationship(
+        "HospitalNABHRequirement",
+        back_populates="canonical_requirement",
+    )
+
+    __table_args__ = (
+        UniqueConstraint("edition_id", "canonical_code", name="uq_nabh_requirement_edition_code"),
+        UniqueConstraint("legacy_measurable_element_id", name="uq_nabh_requirement_legacy_meas"),
+        Index("idx_nabh_requirement_edition", "edition_id"),
+        Index("idx_nabh_requirement_standard", "standard_id"),
+        Index("idx_nabh_requirement_classification", "classification"),
+        Index("idx_nabh_requirement_publication", "publication_status"),
+    )
+
+
 class NABHEvidenceRequirement(Base):
     """Evidentiary path details needed for audit readiness verification."""
     __tablename__ = "nabh_evidence_requirements"
     
     id = Column(String, primary_key=True, default=generate_uuid)
-    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=True)
+    requirement_id = Column(String, ForeignKey("nabh_requirements.id", ondelete="CASCADE"), nullable=True)
     evidence_type = Column(SQLEnum(EvidenceType), nullable=False)
     description = Column(Text, nullable=False)
     suggested_documentation = Column(Text, nullable=True)
@@ -874,11 +1172,18 @@ class NABHEvidenceRequirement(Base):
 
     # Relationships
     measurable_element = relationship("NABHMeasurableElement", back_populates="evidence_requirements")
+    requirement = relationship("NABHRequirement", back_populates="evidence_requirements")
     evidence_links = relationship("HospitalRequirementEvidenceLink", back_populates="evidence_requirement", cascade="all, delete-orphan")
 
     __table_args__ = (
+        CheckConstraint(
+            "measurable_element_id IS NOT NULL OR requirement_id IS NOT NULL",
+            name="ck_evidence_requirement_parent",
+        ),
         UniqueConstraint("measurable_element_id", "evidence_code", name="uq_evidence_req_element_code"),
+        UniqueConstraint("requirement_id", "evidence_code", name="uq_evidence_req_requirement_code"),
         Index("idx_evidence_req_meas_el", "measurable_element_id"),
+        Index("idx_evidence_req_requirement", "requirement_id"),
     )
 
 
@@ -887,10 +1192,19 @@ class NABHRequirementCitation(Base):
     __tablename__ = "nabh_requirement_citations"
     
     id = Column(String, primary_key=True, default=generate_uuid)
-    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=True)
+    requirement_id = Column(String, ForeignKey("nabh_requirements.id", ondelete="CASCADE"), nullable=True)
     document_id = Column(String, ForeignKey("nabh_source_documents.id", ondelete="SET NULL"), nullable=True)
     section = Column(String(100), nullable=True)
     page_number = Column(String(50), nullable=True)
+    printed_page_number = Column(String(50), nullable=True)
+    pdf_page_index = Column(Integer, nullable=True)
+    source_heading = Column(String(255), nullable=True)
+    passage_checksum = Column(String(64), nullable=True)
+    extraction_method = Column(String(100), nullable=True)
+    human_verified = Column(Boolean, default=False, nullable=False)
+    verified_by = Column(String, ForeignKey("staff.id", ondelete="SET NULL"), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
     clause_text_summary = Column(Text, nullable=True)
     effective_date = Column(DateTime, nullable=True)
     file_path = Column(String(500), nullable=True)
@@ -902,10 +1216,17 @@ class NABHRequirementCitation(Base):
 
     # Relationships
     measurable_element = relationship("NABHMeasurableElement", back_populates="citations")
+    requirement = relationship("NABHRequirement", back_populates="citations")
     document = relationship("NABHSourceDocument", back_populates="citations")
+    verifier = relationship("Staff", foreign_keys=[verified_by])
 
     __table_args__ = (
+        CheckConstraint(
+            "measurable_element_id IS NOT NULL OR requirement_id IS NOT NULL",
+            name="ck_requirement_citation_parent",
+        ),
         Index("idx_citation_meas_el", "measurable_element_id"),
+        Index("idx_citation_requirement", "requirement_id"),
         Index("idx_citation_document", "document_id"),
     )
 
@@ -915,7 +1236,8 @@ class NABHApplicabilityRule(Base):
     __tablename__ = "nabh_applicability_rules"
     
     id = Column(String, primary_key=True, default=generate_uuid)
-    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    measurable_element_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=True)
+    requirement_id = Column(String, ForeignKey("nabh_requirements.id", ondelete="CASCADE"), nullable=True)
     rule_code = Column(String(100), nullable=False)
     rule_json = Column(JSON, nullable=False)
     description = Column(Text, nullable=True)
@@ -928,9 +1250,15 @@ class NABHApplicabilityRule(Base):
 
     # Relationships
     measurable_element = relationship("NABHMeasurableElement", back_populates="applicability_rules")
+    requirement = relationship("NABHRequirement", back_populates="applicability_rules")
 
     __table_args__ = (
+        CheckConstraint(
+            "measurable_element_id IS NOT NULL OR requirement_id IS NOT NULL",
+            name="ck_applicability_rule_parent",
+        ),
         Index("idx_app_rule_meas_el", "measurable_element_id"),
+        Index("idx_app_rule_requirement", "requirement_id"),
     )
 
 
@@ -1006,7 +1334,12 @@ class HospitalNABHRequirement(Base):
     
     id = Column(String, primary_key=True, default=generate_uuid)
     hospital_id = Column(String, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False)
-    requirement_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=False)
+    requirement_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="CASCADE"), nullable=True)
+    canonical_requirement_id = Column(
+        String,
+        ForeignKey("nabh_requirements.id", ondelete="CASCADE"),
+        nullable=True,
+    )
     
     applicability_status = Column(SQLEnum(ApplicabilityDefault), default=ApplicabilityDefault.APPLICABLE, nullable=False)
     applicability_reason = Column(Text, nullable=True)
@@ -1026,14 +1359,25 @@ class HospitalNABHRequirement(Base):
     # Relationships
     hospital = relationship("Hospital", back_populates="nabh_requirements")
     measurable_element = relationship("NABHMeasurableElement", back_populates="hospital_states")
+    canonical_requirement = relationship("NABHRequirement", back_populates="hospital_states")
     owner = relationship("Staff", foreign_keys=[owner_id])
     reviewer = relationship("Staff", foreign_keys=[last_reviewed_by])
     evidence_links = relationship("HospitalRequirementEvidenceLink", back_populates="hospital_requirement", cascade="all, delete-orphan")
 
     __table_args__ = (
+        CheckConstraint(
+            "requirement_id IS NOT NULL OR canonical_requirement_id IS NOT NULL",
+            name="ck_hospital_requirement_parent",
+        ),
         UniqueConstraint("hospital_id", "requirement_id", name="uq_hospital_requirement"),
+        UniqueConstraint(
+            "hospital_id",
+            "canonical_requirement_id",
+            name="uq_hospital_canonical_requirement",
+        ),
         Index("idx_hosp_req_hospital", "hospital_id"),
         Index("idx_hosp_req_requirement", "requirement_id"),
+        Index("idx_hosp_req_canonical_requirement", "canonical_requirement_id"),
         Index("idx_hosp_req_owner", "owner_id"),
         Index("idx_hosp_req_reviewer", "last_reviewed_by"),
     )
@@ -1085,6 +1429,11 @@ class NABHLegacyMigrationMap(Base):
     legacy_objective_id = Column(String, ForeignKey("nabh_objectives.id", ondelete="CASCADE"), nullable=False)
     legacy_standard_code = Column(String(100), nullable=False)
     new_requirement_id = Column(String, ForeignKey("nabh_measurable_elements.id", ondelete="SET NULL"), nullable=True)
+    canonical_requirement_id = Column(
+        String,
+        ForeignKey("nabh_requirements.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     mapping_level = Column(String(50), nullable=False)
     mapping_status = Column(String(50), nullable=False)
     reason = Column(Text, nullable=True)
@@ -1093,12 +1442,14 @@ class NABHLegacyMigrationMap(Base):
     hospital = relationship("Hospital", back_populates="nabh_legacy_migration_maps")
     legacy_objective = relationship("NABHObjective")
     measurable_element = relationship("NABHMeasurableElement")
+    canonical_requirement = relationship("NABHRequirement")
 
     __table_args__ = (
         UniqueConstraint("legacy_objective_id", "new_requirement_id", "mapping_level", name="uq_legacy_migration_target"),
         Index("idx_legacy_migration_hospital", "hospital_id"),
         Index("idx_legacy_migration_legacy", "legacy_objective_id"),
         Index("idx_legacy_migration_requirement", "new_requirement_id"),
+        Index("idx_legacy_migration_canonical_requirement", "canonical_requirement_id"),
         Index("idx_legacy_migration_status", "mapping_status"),
     )
 

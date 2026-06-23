@@ -4,9 +4,10 @@ from fastapi import HTTPException
 from collections import defaultdict
 from app.models.database import (
     Hospital, NABHEdition, HospitalNABHRequirement,
-    NABHMeasurableElement, NABHObjectiveElement,
+    NABHRequirement,
     NABHStandard, NABHChapter
 )
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
 
 def calculate_hospital_readiness(
     db: Session,
@@ -36,22 +37,22 @@ def calculate_hospital_readiness(
             detail=f"NABH Edition version '{edition_version}' does not exist or is retired."
         )
 
-    # Join the models as specified in Task 13 requirements
+    ensure_canonical_compatibility(db, edition.id)
+
+    # Join hospital state to the canonical Objective Element requirement.
     official_chapters = ["AAC", "COP", "MOM", "PRE", "IPC", "PSQ", "ROM", "FMS", "HRM", "IMS"]
     
     rows = db.query(
         HospitalNABHRequirement,
-        NABHMeasurableElement,
-        NABHObjectiveElement,
+        NABHRequirement,
         NABHStandard,
         NABHChapter,
         NABHEdition
     ).join(
-        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).join(
@@ -60,8 +61,8 @@ def calculate_hospital_readiness(
         HospitalNABHRequirement.hospital_id == hospital_id,
         NABHEdition.version == edition_version,
         HospitalNABHRequirement.retired_at.is_(None),
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None),
         NABHEdition.retired_at.is_(None),

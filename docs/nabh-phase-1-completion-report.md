@@ -12,15 +12,21 @@ The 20 tasks do not complete the full product vision. They build and validate th
 
 ## Current Phase 1 Position
 
+> Phase 1.5 correction, 2026-06-23: direct review of the official 6th Edition
+> source established that the normative hierarchy ends at Objective Element
+> and the reconciled total is 639 Objective Elements. References below to 638
+> measurable elements describe the earlier Phase 1 understanding and are
+> superseded by `docs/nabh-phase-1-5-knowledge-ingestion.md`.
+
 - Tasks completed: 20 of 20.
 - Phase 1 status: complete for the NABH foundation and demo milestone.
 - Verification status: the CTO reported 168 backend tests passing after Task 19, including 9 dedicated Task 19 migration bridge tests.
 - Task 20 production acceptance status: passed on Render after production DB seeding and E2E QA acceptance-gate execution.
 - Task 20 acceptance gate: `backend/qa_acceptance_gate.py`.
-- Important scope note: the NABH 6th Edition ontology infrastructure models the official 10-chapter, 100-standard, 638-measurable-element universe, while the current seed set is intentionally partial and source-backed for Phase 1 validation.
+- Important scope note: the corrected NABH 6th Edition universe is 10 chapters, 100 standards, and 639 Objective Elements; the live Phase 1 seed remains intentionally partial.
 - Production demo seed note: Render was seeded with the Phase 1 subset of 3 standards, 3 measurable elements, 3 citations, and 3 evidence requirements.
 - Refactor status: a modularization/refactor pass is still planned before Phase 2, but is outside the original 20-task Phase 1 checklist.
-- Production infrastructure note: the Task 20 demo used Render's internal SQLite application database. This is acceptable for demo validation, but a managed PostgreSQL database is still required before serious production use.
+- Production infrastructure note: the original Task 20 run exposed ephemeral SQLite. The deployment was subsequently moved to managed PostgreSQL with production SQLite prohibition and startup durability guards.
 
 ## Phase 1 Checklist Summary
 
@@ -218,7 +224,7 @@ What was completed:
   - FMS
   - HRM
   - IMS
-- Preserved official aggregate counts of 100 standards and 638 measurable elements.
+- Preserved the then-understood aggregate count; Phase 1.5 later reconciled the official total to 100 standards and 639 Objective Elements.
 - Seeded a minimum viable official subset of requirements, evidence, applicability rules, and citations for Phase 1 validation.
 - Added ontology coverage API support to expose seeded-versus-official coverage and partial status.
 
@@ -228,7 +234,7 @@ Key repo proof points:
 - `backend/tests/test_nabh_task8_smoke.py`: verifies chapter set, official counts, seeded partial status, evidence, and citations.
 
 Why it matters:
-This created an honest MVP: enough official data to prove the system architecture, without falsely claiming the entire 638-element corpus had been fully seeded.
+This created an honest initial substrate: enough data to prove the system architecture, without falsely claiming the entire 639-Objective-Element corpus had been fully seeded.
 
 ## Task 9: Build Applicability Engine
 
@@ -588,8 +594,8 @@ The NABH domain now has:
 
 Tasks 1-20 do not claim that:
 
-- the full 638 measurable elements have all been seeded,
-- the current SQLite-backed Render demo database is sufficient for serious production use,
+- the full 639 Objective Elements have all been published,
+- the earlier SQLite-backed Render state is still the production architecture,
 - autonomous NABH agents are production-ready,
 - OCR evidence ingestion exists,
 - evidence vault workflows are complete,
@@ -606,6 +612,6 @@ Phase 1 should now be considered closed for the NABH foundation track.
 
 The next work should be sequenced as:
 
-1. Do the planned refactor/modularization pass.
+1. Complete Phase 1.5 source-governed canonical ingestion.
 2. Formalize the expert-insight architecture plan for evidence artifacts, institutional memory, readiness v2, applicability trace, and agent provenance.
-3. Draft the Phase 2 implementation plan on top of the cleaned foundation.
+3. Draft canonical Phase 2 on top of the complete governed knowledge base.

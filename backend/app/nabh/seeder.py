@@ -1,5 +1,7 @@
 """Database seeder to initialize NABH 6th Edition standards and objective elements."""
+import json
 import logging
+import os
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.models.database import (
@@ -8,13 +10,90 @@ from app.models.database import (
     NABHObjectiveElement, NABHMeasurableElement, 
     NABHEvidenceRequirement, NABHApplicabilityRule,
     NABHSourceDocument, NABHRequirementCitation,
-    EditionStatus, ApplicabilityDefault, EvidenceType
+    EditionStatus, ApplicabilityDefault, EvidenceType,
+    KnowledgeAuthorityLevel, KnowledgePublicationStatus, SourceRightsStatus,
+    NABHSourceAnomaly
 )
 from app.nabh.service import LEGACY_NABH_MODEL_NOTICE
 from app.nabh.validator import validate_ontology_seeds
 from app.nabh.quality import assert_seeded_requirements_runtime_quality
+from app.nabh.canonical import mirror_legacy_requirement
 
 logger = logging.getLogger(__name__)
+
+
+def _upsert_official_source_manifest(
+    db: Session,
+    edition: NABHEdition,
+    data_dir: str,
+) -> NABHSourceDocument | None:
+    """Register protected source metadata without copying source text or path."""
+    manifest_path = os.path.join(data_dir, "nabh_6th_source_manifest.json")
+    if not os.path.exists(manifest_path):
+        return None
+
+    with open(manifest_path, "r", encoding="utf-8") as handle:
+        manifest = json.load(handle)
+
+    document = db.query(NABHSourceDocument).filter(
+        NABHSourceDocument.edition_id == edition.id,
+        NABHSourceDocument.checksum == manifest["sha256"],
+    ).first()
+    if not document:
+        document = NABHSourceDocument(
+            edition_id=edition.id,
+            title=manifest["title"],
+            publisher=manifest["issuer"],
+            edition_version=manifest["edition_label"],
+            file_path_or_url=None,
+            checksum=manifest["sha256"],
+        )
+        db.add(document)
+
+    document.title = manifest["title"]
+    document.publisher = manifest["issuer"]
+    document.edition_version = manifest["edition_label"]
+    document.file_size_bytes = manifest["file_size_bytes"]
+    document.pdf_page_count = manifest["pdf_page_count"]
+    document.printed_page_start = manifest["printed_page_start"]
+    document.printed_page_end = manifest["printed_page_end"]
+    document.isbn = manifest["isbn"]
+    document.document_type = manifest["document_type"]
+    document.programme = manifest["programme"]
+    document.acquisition_method = "operator_provided_protected_copy"
+    document.effective_date = datetime.strptime(
+        manifest["effective_date"],
+        "%Y-%m-%d",
+    )
+    document.authority_level = KnowledgeAuthorityLevel.NORMATIVE
+    document.rights_status = SourceRightsStatus.PERMISSION_REQUIRED
+    document.rights_note = manifest["copyright_notice"]
+    document.may_store_full_text = False
+    document.may_display_full_text = False
+    document.may_create_embeddings = False
+    document.verification_status = KnowledgePublicationStatus.VERIFIED
+    db.flush()
+
+    for anomaly in manifest.get("known_anomalies", []):
+        record = db.query(NABHSourceAnomaly).filter(
+            NABHSourceAnomaly.document_id == document.id,
+            NABHSourceAnomaly.anomaly_code == anomaly["code"],
+        ).first()
+        if not record:
+            record = NABHSourceAnomaly(
+                document_id=document.id,
+                anomaly_code=anomaly["code"],
+                title=anomaly["code"].replace("-", " ").title(),
+                description=anomaly["basis"],
+                source_locator=anomaly["source_locator"],
+            )
+            db.add(record)
+        record.observed_value = anomaly["observed_value"]
+        record.reconciled_value = anomaly["reconciled_value"]
+        record.reconciliation_basis = anomaly["basis"]
+        record.status = "reconciled"
+    db.flush()
+    return document
 
 # WARNING: LEGACY STRUCTURE
 # Do not build new features on this model; use the upcoming versioned ontology models.
@@ -133,14 +212,15 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 name=f"NABH {target_version} Edition",
                 version=target_version,
                 status=EditionStatus.ACTIVE,
-                effective_date=datetime(2026, 1, 1)
+                effective_date=datetime(2025, 1, 1)
             )
             db.add(edition)
             db.flush()
         else:
             edition.status = EditionStatus.ACTIVE
-            edition.effective_date = datetime(2026, 1, 1)
+            edition.effective_date = datetime(2025, 1, 1)
             db.flush()
+        _upsert_official_source_manifest(db, edition, data_dir)
 
         # 2. Upsert Chapters
         chapter_id_map = {}
@@ -160,6 +240,10 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                     description=chap_data["description"],
                     display_order=chap_data["display_order"],
                     official_standards_count=chap_data["official_standards_count"],
+                    official_requirements_count=chap_data.get(
+                        "official_requirements_count",
+                        chap_data["official_measurable_elements_count"],
+                    ),
                     official_measurable_elements_count=chap_data["official_measurable_elements_count"],
                     is_fully_seeded=chap_data["is_fully_seeded"],
                     core_count=chap_data.get("core_count"),
@@ -173,6 +257,10 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 chap.description = chap_data["description"]
                 chap.display_order = chap_data["display_order"]
                 chap.official_standards_count = chap_data["official_standards_count"]
+                chap.official_requirements_count = chap_data.get(
+                    "official_requirements_count",
+                    chap_data["official_measurable_elements_count"],
+                )
                 chap.official_measurable_elements_count = chap_data["official_measurable_elements_count"]
                 chap.is_fully_seeded = chap_data["is_fully_seeded"]
                 chap.core_count = chap_data.get("core_count")
@@ -286,6 +374,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                         
                         db.flush()
                         meas_id_map[meas_canonical] = meas.id
+                        mirror_legacy_requirement(db, meas)
 
         # 4. Upsert Evidence Requirements
         for ev_data in loaded_data["evidence_requirements"]:
@@ -308,6 +397,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
             if not ev_record:
                 ev_record = NABHEvidenceRequirement(
                     measurable_element_id=meas_id,
+                    requirement_id=meas_id,
                     evidence_code=ev_code,
                     evidence_type=ev_type_enum,
                     description=ev_data["description"],
@@ -319,6 +409,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 )
                 db.add(ev_record)
             else:
+                ev_record.requirement_id = meas_id
                 ev_record.evidence_type = ev_type_enum
                 ev_record.description = ev_data["description"]
                 ev_record.suggested_documentation = suggested_documentation
@@ -343,6 +434,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
             if not rule_record:
                 rule_record = NABHApplicabilityRule(
                     measurable_element_id=meas_id,
+                    requirement_id=meas_id,
                     rule_code=rule_code,
                     rule_json=rule_data["rule_json"],
                     description=rule_data["description"],
@@ -351,6 +443,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 )
                 db.add(rule_record)
             else:
+                rule_record.requirement_id = meas_id
                 rule_record.rule_json = rule_data["rule_json"]
                 rule_record.description = rule_data["description"]
                 rule_record.action_if_true = rule_data["action_if_true"]
@@ -416,6 +509,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
             if not cit_record:
                 cit_record = NABHRequirementCitation(
                     measurable_element_id=meas_id,
+                    requirement_id=meas_id,
                     document_id=doc_record.id,
                     section=section,
                     page_number=page_number,
@@ -426,6 +520,7 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
                 )
                 db.add(cit_record)
             else:
+                cit_record.requirement_id = meas_id
                 cit_record.clause_text_summary = cit_data.get("clause_text_summary")
                 cit_record.effective_date = datetime.strptime(cit_data["effective_date"], "%Y-%m-%d")
                 cit_record.file_path = file_path_val

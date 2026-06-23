@@ -33,7 +33,7 @@ import type {
 } from '../features/nabh/types'
 
 const REQUIREMENT_PAGE_SIZE = 100
-const ONTOLOGY_PAGE_SIZE = 100
+const ONTOLOGY_CHAPTER_PAGE_SIZE = 200
 const EVIDENCE_PLAN_PAGE_SIZE = 200
 
 
@@ -169,8 +169,11 @@ export default function NABHPage() {
   const [chapters, setChapters] = useState<OntologyChapter[]>([])
   const [ontologyRequirements, setOntologyRequirements] = useState<OntologyRequirement[]>([])
   const [ontologyRequirementsTotal, setOntologyRequirementsTotal] = useState(0)
+  const [selectedOntologyChapter, setSelectedOntologyChapter] = useState('')
+  const [ontologyRequirementsLoading, setOntologyRequirementsLoading] = useState(false)
   const [hospitalRequirements, setHospitalRequirements] = useState<HospitalRequirement[]>([])
   const [hospitalRequirementsTotal, setHospitalRequirementsTotal] = useState(0)
+  const [hospitalRequirementsLoadingMore, setHospitalRequirementsLoadingMore] = useState(false)
   const [readiness, setReadiness] = useState<Readiness | null>(null)
   const [loading, setLoading] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
@@ -182,6 +185,7 @@ export default function NABHPage() {
   const [drawerLoading, setDrawerLoading] = useState(false)
   const [evidencePlan, setEvidencePlan] = useState<EvidencePlan | null>(null)
   const [evidenceLoading, setEvidenceLoading] = useState(false)
+  const [evidenceLoadingMore, setEvidenceLoadingMore] = useState(false)
   const hasChosenTabRef = useRef(false)
 
   const hasComputedScope = hospitalRequirementsTotal > 0
@@ -230,21 +234,38 @@ export default function NABHPage() {
     }
   }, [hospitalId])
 
+  const fetchOntologyRequirements = useCallback(async (chapterCode: string) => {
+    if (!chapterCode) return
+    setOntologyRequirementsLoading(true)
+    try {
+      const requirementData = await apiFetch<{ total: number; items: OntologyRequirement[] }>(
+        `/api/nabh/ontology/requirements?chapter_code=${encodeURIComponent(chapterCode)}&limit=${ONTOLOGY_CHAPTER_PAGE_SIZE}`
+      )
+      setOntologyRequirements(requirementData.items || [])
+      setOntologyRequirementsTotal(requirementData.total || 0)
+      setSelectedOntologyChapter(chapterCode)
+    } catch (err: any) {
+      setError(err.message || 'Unable to load chapter requirements')
+    } finally {
+      setOntologyRequirementsLoading(false)
+    }
+  }, [])
+
   const fetchOntologyData = useCallback(async () => {
     try {
-      const [coverageData, chapterData, requirementData] = await Promise.all([
+      const [coverageData, chapterData] = await Promise.all([
         apiFetch<Coverage>('/api/nabh/ontology/coverage'),
         apiFetch<OntologyChapter[]>('/api/nabh/ontology/chapters'),
-        apiFetch<{ total: number; items: OntologyRequirement[] }>(`/api/nabh/ontology/requirements?limit=${ONTOLOGY_PAGE_SIZE}`),
       ])
       setCoverage(coverageData)
       setChapters(chapterData)
-      setOntologyRequirements(requirementData.items || [])
-      setOntologyRequirementsTotal(requirementData.total || 0)
+      if (chapterData.length > 0) {
+        await fetchOntologyRequirements(chapterData[0].canonical_code)
+      }
     } catch (err: any) {
       setError(err.message || 'Unable to load NABH ontology')
     }
-  }, [])
+  }, [fetchOntologyRequirements])
 
   useEffect(() => {
     fetchOntologyData()
@@ -327,11 +348,52 @@ export default function NABHPage() {
       await fetchHospitalData()
       setEvidencePlan(null)
       setSearchParams({ tab: 'applicable' })
-      setNotice(`Scope computed across ${result.total_requirements_evaluated} seeded requirements.`)
+      setNotice(`Scope computed across ${result.total_requirements_evaluated} published requirements.`)
     } catch (err: any) {
       setError(err.message || 'Unable to compute applicability')
     } finally {
       setComputingScope(false)
+    }
+  }
+
+  async function loadMoreHospitalRequirements() {
+    if (!hospitalId || hospitalRequirements.length >= hospitalRequirementsTotal) return
+    setHospitalRequirementsLoadingMore(true)
+    try {
+      const data = await apiFetch<{ total: number; items: HospitalRequirement[] }>(
+        `/api/nabh/requirements/${hospitalId}?limit=${REQUIREMENT_PAGE_SIZE}&offset=${hospitalRequirements.length}`
+      )
+      setHospitalRequirements((current) => [...current, ...(data.items || [])])
+      setHospitalRequirementsTotal(data.total || 0)
+    } catch (err: any) {
+      setError(err.message || 'Unable to load more hospital requirements')
+    } finally {
+      setHospitalRequirementsLoadingMore(false)
+    }
+  }
+
+  async function loadMoreEvidencePlan() {
+    if (
+      !hospitalId
+      || !evidencePlan
+      || evidencePlan.returned_requirements >= evidencePlan.total_applicable_requirements
+    ) return
+    setEvidenceLoadingMore(true)
+    try {
+      const next = await apiFetch<EvidencePlan>(
+        `/api/nabh/requirements/${hospitalId}/evidence-plan?limit=${EVIDENCE_PLAN_PAGE_SIZE}&offset=${evidencePlan.returned_requirements}`
+      )
+      setEvidencePlan((current) => current ? {
+        ...next,
+        returned_requirements: current.returned_requirements + next.returned_requirements,
+        evidence_item_count: current.evidence_item_count + next.evidence_item_count,
+        offset: 0,
+        items: [...current.items, ...next.items],
+      } : next)
+    } catch (err: any) {
+      setError(err.message || 'Unable to load more evidence expectations')
+    } finally {
+      setEvidenceLoadingMore(false)
     }
   }
 
@@ -442,13 +504,14 @@ export default function NABHPage() {
         <ApplicableRequirementsView
           requirements={hospitalRequirements}
           totalCount={hospitalRequirementsTotal}
-          pageSize={REQUIREMENT_PAGE_SIZE}
           chapters={chapters}
           hasComputedScope={hasComputedScope}
           onOpenExplanation={openExplanation}
           onGoProfile={() => chooseTab('profile')}
           onCompute={computeScope}
           computing={computingScope}
+          onLoadMore={loadMoreHospitalRequirements}
+          loadingMore={hospitalRequirementsLoadingMore}
         />
       )}
 
@@ -458,7 +521,9 @@ export default function NABHPage() {
           chapters={chapters}
           requirements={ontologyRequirements}
           totalCount={ontologyRequirementsTotal}
-          pageSize={ONTOLOGY_PAGE_SIZE}
+          selectedChapter={selectedOntologyChapter}
+          loading={ontologyRequirementsLoading}
+          onSelectChapter={fetchOntologyRequirements}
           onOpenExplanation={openExplanation}
         />
       )}
@@ -467,8 +532,10 @@ export default function NABHPage() {
         <EvidenceNeededView
           evidencePlan={evidencePlan}
           loading={evidenceLoading}
+          loadingMore={evidenceLoadingMore}
           hasComputedScope={hasComputedScope}
           onGoApplicable={() => chooseTab('applicable')}
+          onLoadMore={loadMoreEvidencePlan}
         />
       )}
 
@@ -515,7 +582,7 @@ function WorkspaceHeader({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <HeaderMetric label="Profile" value={profile?.exists ? 'Saved' : 'Missing'} tone={profile?.exists ? 'good' : 'warn'} />
           <HeaderMetric label="Scope" value={hasComputedScope ? 'Computed' : 'Pending'} tone={hasComputedScope ? 'good' : 'warn'} />
-          <HeaderMetric label="Seeded" value={`${coverage?.seeded_total_elements || 0} reqs`} tone="info" />
+          <HeaderMetric label="Published" value={`${coverage?.seeded_total_elements || 0} reqs`} tone="info" />
           <HeaderMetric label="Ready" value={readiness?.readiness_score_percent == null ? 'Not scoped' : `${readiness.readiness_score_percent}%`} tone="info" />
         </div>
       </div>
@@ -523,7 +590,7 @@ function WorkspaceHeader({
         <div className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
           <AlertTriangle size={16} className="mt-0.5 shrink-0" />
           <span>
-            Ontology is intentionally partial: {coverage.seeded_total_standards} seeded standards and {coverage.seeded_total_elements} seeded requirements are available for Phase 1 validation.
+            The live ontology is partial: {coverage.seeded_total_standards} published standards and {coverage.seeded_total_elements} published requirements are currently available.
           </span>
         </div>
       )}
@@ -796,23 +863,25 @@ function HospitalProfileView({
 function ApplicableRequirementsView({
   requirements,
   totalCount,
-  pageSize,
   chapters,
   hasComputedScope,
   onOpenExplanation,
   onGoProfile,
   onCompute,
   computing,
+  onLoadMore,
+  loadingMore,
 }: {
   requirements: HospitalRequirement[]
   totalCount: number
-  pageSize: number
   chapters: OntologyChapter[]
   hasComputedScope: boolean
   onOpenExplanation: (id: string) => void
   onGoProfile: () => void
   onCompute: () => void
   computing: boolean
+  onLoadMore: () => void
+  loadingMore: boolean
 }) {
   const [chapterFilter, setChapterFilter] = useState('')
   const [appFilter, setAppFilter] = useState('')
@@ -851,7 +920,7 @@ function ApplicableRequirementsView({
           <div>
             <h3 className="text-lg font-bold text-slate-900">Applicable Requirements</h3>
             <p className="text-sm text-slate-500">
-              {filtered.length} of {requirements.length} loaded rows shown. {totalCount > requirements.length ? `Showing first ${pageSize} of ${totalCount} hospital-scoped rows.` : `${totalCount} total hospital-scoped rows.`}
+              {filtered.length} of {requirements.length} loaded rows shown. {requirements.length} of {totalCount} hospital-scoped rows loaded.
             </p>
           </div>
           <button onClick={onCompute} disabled={computing} className="btn-secondary">
@@ -917,6 +986,14 @@ function ApplicableRequirementsView({
           </tbody>
         </table>
       </div>
+      {totalCount > requirements.length && (
+        <div className="flex justify-center border-t border-slate-200 p-4">
+          <button onClick={onLoadMore} disabled={loadingMore} className="btn-secondary">
+            {loadingMore ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+            Load More Requirements
+          </button>
+        </div>
+      )}
     </section>
   )
 }
@@ -950,27 +1027,26 @@ function StandardsBrowserView({
   chapters,
   requirements,
   totalCount,
-  pageSize,
+  selectedChapter,
+  loading,
+  onSelectChapter,
   onOpenExplanation,
 }: {
   coverage: Coverage | null
   chapters: OntologyChapter[]
   requirements: OntologyRequirement[]
   totalCount: number
-  pageSize: number
+  selectedChapter: string
+  loading: boolean
+  onSelectChapter: (chapterCode: string) => void
   onOpenExplanation: (id: string) => void
 }) {
-  const [selectedChapter, setSelectedChapter] = useState(chapters[0]?.canonical_code || '')
   const activeChapter = selectedChapter || chapters[0]?.canonical_code || ''
-  const chapterRequirements = requirements.filter((req) => !activeChapter || req.chapter_code === activeChapter)
+  const chapterRequirements = requirements
   const coverageByCode = useMemo(
     () => new Map((coverage?.chapters || []).map((chapter) => [chapter.chapter_code, chapter])),
     [coverage]
   )
-
-  useEffect(() => {
-    if (!selectedChapter && chapters.length > 0) setSelectedChapter(chapters[0].canonical_code)
-  }, [chapters, selectedChapter])
 
   return (
     <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
@@ -986,12 +1062,13 @@ function StandardsBrowserView({
             return (
               <button
                 key={chapter.id}
-                onClick={() => setSelectedChapter(chapter.canonical_code)}
+                onClick={() => onSelectChapter(chapter.canonical_code)}
+                disabled={loading && chapter.canonical_code === activeChapter}
                 className={`block w-full px-4 py-3 text-left transition-colors ${active ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <span className={`text-sm font-bold ${active ? 'text-brand-700' : 'text-slate-800'}`}>{chapter.canonical_code}</span>
-                  <span className="text-xs text-slate-400">{stats?.seeded_objective_elements_count || 0} seeded</span>
+                  <span className="text-xs text-slate-400">{stats?.seeded_objective_elements_count || 0} published</span>
                 </div>
                 <div className="mt-1 text-xs text-slate-500">{chapter.title}</div>
               </button>
@@ -1006,7 +1083,9 @@ function StandardsBrowserView({
             <div>
               <h3 className="text-lg font-bold text-slate-900">{activeChapter || 'All Chapters'}</h3>
               <p className="text-sm text-slate-500">
-                {chapterRequirements.length} loaded seeded requirements in this chapter view. {totalCount > requirements.length ? `Showing first ${pageSize} of ${totalCount} seeded requirements overall.` : `${totalCount} seeded requirements loaded overall.`}
+                {loading
+                  ? 'Loading this chapter...'
+                  : `${chapterRequirements.length} of ${totalCount} published requirements loaded for this chapter.`}
               </p>
             </div>
             {coverage && (
@@ -1020,7 +1099,13 @@ function StandardsBrowserView({
           </div>
         </div>
         <div className="divide-y divide-slate-100">
-          {chapterRequirements.map((req) => (
+          {loading && (
+            <div className="flex items-center justify-center gap-2 p-10 text-sm text-slate-500">
+              <Loader2 size={16} className="animate-spin" />
+              Loading chapter requirements
+            </div>
+          )}
+          {!loading && chapterRequirements.map((req) => (
             <div key={req.id} className="p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div>
@@ -1035,8 +1120,8 @@ function StandardsBrowserView({
               </div>
             </div>
           ))}
-          {chapterRequirements.length === 0 && (
-            <div className="p-10 text-center text-sm text-slate-400">No seeded requirements are available for this chapter yet.</div>
+          {!loading && chapterRequirements.length === 0 && (
+            <div className="p-10 text-center text-sm text-slate-400">No published requirements are available for this chapter yet.</div>
           )}
         </div>
       </section>
@@ -1047,13 +1132,17 @@ function StandardsBrowserView({
 function EvidenceNeededView({
   evidencePlan,
   loading,
+  loadingMore,
   hasComputedScope,
   onGoApplicable,
+  onLoadMore,
 }: {
   evidencePlan: EvidencePlan | null
   loading: boolean
+  loadingMore: boolean
   hasComputedScope: boolean
   onGoApplicable: () => void
+  onLoadMore: () => void
 }) {
   const evidenceRows = (evidencePlan?.items || []).flatMap((item) =>
     item.required_evidence.map((evidence) => ({
@@ -1100,9 +1189,15 @@ function EvidenceNeededView({
           Aggregated proof expectations across {evidencePlan?.total_applicable_requirements || 0} applicable, conditional, or manual-review requirements. Uploads are intentionally deferred.
         </p>
         {evidencePlan && evidencePlan.total_applicable_requirements > evidencePlan.returned_requirements && (
-          <p className="mt-2 text-xs font-semibold text-amber-700">
-            Showing first {evidencePlan.returned_requirements} requirements for a fast demo-safe view. Detailed requirement explanations remain available one at a time.
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold text-amber-700">
+              {evidencePlan.returned_requirements} of {evidencePlan.total_applicable_requirements} scoped requirements loaded.
+            </p>
+            <button onClick={onLoadMore} disabled={loadingMore} className="btn-secondary px-3 py-1.5 text-xs">
+              {loadingMore ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+              Load More Evidence
+            </button>
+          </div>
         )}
       </div>
 

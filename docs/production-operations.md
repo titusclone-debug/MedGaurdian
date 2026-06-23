@@ -27,7 +27,10 @@ complete and verified.
 
 1. CI backend and frontend quality gates pass.
 2. Database backup is successful.
-3. Alembic upgrade runs as a release/pre-deploy operation.
+3. Alembic upgrade runs as a release/pre-deploy operation. The current
+   container entrypoint uses `scripts/run_migrations.py`, which holds a
+   PostgreSQL advisory transaction lock and supplies that locked connection to
+   Alembic before Gunicorn starts.
 4. Backend deploys.
 5. `/health` and `/api/admin/nabh-health` pass.
 6. Browser acceptance gate passes.

@@ -39,7 +39,7 @@ The NABH module is being rebuilt as a full accreditation operating system, not m
 
 Core pillars:
 
-- **Truth Layer:** official NABH 6th Edition ontology, chapters, standards, objective elements, measurable elements, evidence requirements, applicability rules, citations, versioning, and retired-state handling.
+- **Truth Layer:** official NABH 6th Edition ontology, chapters, standards, Objective Element requirements, evidence expectations, applicability rules, citations, versioning, and retired-state handling.
 - **Learning Layer:** beginner-friendly NABH guidance embedded inside the workflow.
 - **Accreditation Workspace:** hospital profile, applicable scope, requirement state, readiness diagnosis, owners, due dates, and evidence expectations.
 - **Evidence Vault:** uploads, metadata, OCR/text extraction, clause mapping, sufficiency scoring, versioning, approvals, and audit trail.
@@ -74,6 +74,38 @@ Exit criteria:
 - every displayed production-facing requirement has citation and evidence expectations,
 - readiness is based only on applicable hospital-specific requirement state,
 - the old simplified model no longer acts as the product source of truth.
+
+### Phase 1.5: NABH Knowledge And Source Ingestion
+
+Goal: expand the Phase 1 truth-layer architecture into a complete, governed,
+source-verifiable NABH 6th Edition knowledge base before beginner guidance is
+built on top of it.
+
+Deliverables:
+
+- correct the canonical hierarchy to Chapter -> Standard -> Objective Element,
+- register the verified official source without committing the protected PDF,
+- reconcile the official 100-standard and 639-requirement universe,
+- preserve source anomalies and their reconciliation basis,
+- add authority levels, publication states, rights metadata, and institutional
+  knowledge-change history,
+- add a strict independently reviewed 639-record release-package contract,
+- add read-only validation and transactionally locked CLI publication,
+- move ontology, applicability, readiness, explanation, evidence-plan, and
+  hospital-state APIs to canonical requirements,
+- preserve the Phase 1 synthetic hierarchy only as a superseded compatibility
+  layer.
+
+Exit criteria:
+
+- all 639 Objective Elements are independently reviewed and source-located,
+- legal rights permit the intended storage and use,
+- the canonical package passes every structural and governance gate,
+- production publication and post-publication acceptance checks pass,
+- the live product reports complete coverage without counting legacy sample
+  records.
+
+See [`docs/nabh-phase-1-5-knowledge-ingestion.md`](docs/nabh-phase-1-5-knowledge-ingestion.md).
 
 ### Phase 2: Beginner Guided NABH Journey
 
@@ -240,7 +272,10 @@ For the detailed Phase 1 completion report, see `docs/nabh-phase-1-completion-re
 
 Phase 1 deliberately does not build autonomous agents, OCR, PPT generation, mock surveyor, or advanced dashboards. Those are downstream. Phase 1 succeeds only if the product has a reliable, source-cited, hospital-specific NABH foundation.
 
-Task 20 has passed on the Render demo environment using the Phase 1 seeded NABH subset and the Playwright acceptance gate in `backend/qa_acceptance_gate.py`. The next NABH work is a modularization pass before Phase 2 planning.
+Task 20 passed on the Render environment using the Phase 1 seeded NABH subset
+and the Playwright acceptance gate in `backend/qa_acceptance_gate.py`. The
+post-Phase-1 modularization pass is complete. Phase 1.5 now governs expansion
+from that subset to the complete official corpus before canonical Phase 2.
 
 ## Current NABH Architecture
 
@@ -248,6 +283,8 @@ Backend truth and workflow modules:
 
 - `backend/app/nabh/validator.py` validates structured seed files before database writes.
 - `backend/app/nabh/seeder.py` idempotently seeds the versioned NABH ontology.
+- `backend/app/nabh/canonical.py` provides the canonical Objective Element access layer and temporary legacy mirroring.
+- `backend/app/nabh/canonical_package.py` validates and transactionally publishes an approved full-corpus release.
 - `backend/app/nabh/applicability.py` computes hospital-specific requirement applicability.
 - `backend/app/nabh/readiness.py` calculates readiness from `HospitalNABHRequirement`.
 - `backend/app/nabh/explanation.py` builds deterministic, source-cited explanations.
@@ -263,6 +300,7 @@ Key Phase 1 API surfaces:
 
 - `GET /api/nabh/ontology/coverage`
 - `GET /api/nabh/ontology/chapters`
+- `GET /api/nabh/ontology/sources`
 - `GET /api/nabh/ontology/requirements`
 - `GET /api/nabh/ontology/requirements/{requirement_id}`
 - `GET /api/nabh/ontology/requirements/{requirement_id}/explanation`
@@ -404,17 +442,20 @@ frontend/
 
 ## Status
 
-The application is mid-rebuild. NABH Phase 1 is the active track and is intended to establish the architectural pattern for the rest of the product.
+The application is mid-rebuild. NABH Phase 1 and the post-Phase-1
+modularization baseline are complete.
 
-NABH Phase 1 and its production acceptance gate are complete. The current
-priority is the controlled hardening and modularization pass before expanding
-into the evidence vault, agents, and document-generation phases.
+The current NABH track is Phase 1.5: controlled knowledge and source ingestion.
+Its code substrate is being established now; completion of the content track
+still requires an independently reviewed, rights-approved 639-record canonical
+package and production acceptance.
 
 The post-Phase-1 hardening baseline and operating procedures are documented in:
 
 - [`docs/refactor-baseline.md`](docs/refactor-baseline.md)
 - [`docs/production-operations.md`](docs/production-operations.md)
 - [`docs/production-data-protection.md`](docs/production-data-protection.md)
+- [`docs/nabh-phase-1-5-knowledge-ingestion.md`](docs/nabh-phase-1-5-knowledge-ingestion.md)
 
 ## License
 

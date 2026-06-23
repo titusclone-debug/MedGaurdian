@@ -12,13 +12,13 @@ from app.models.database import (
     NABHChapter,
     NABHEdition,
     NABHEvidenceRequirement,
-    NABHMeasurableElement,
-    NABHObjectiveElement,
+    NABHRequirement,
     NABHRequirementCitation,
     NABHSourceDocument,
     NABHStandard,
     Staff,
 )
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
 from app.nabh.quality import citation_has_locator
 
 
@@ -49,7 +49,7 @@ def _proof_burden_summary(evidences: List[NABHEvidenceRequirement]) -> Dict[str,
 
 def _resolve_responsible_role(
     hospital_req: HospitalNABHRequirement,
-    requirement: NABHMeasurableElement,
+    requirement: NABHRequirement,
     evidences: List[NABHEvidenceRequirement],
     staff_by_id: Dict[str, Staff],
 ) -> Dict[str, Optional[str]]:
@@ -120,21 +120,18 @@ def build_hospital_evidence_plan(
             detail=f"Active NABH edition version '{edition_version}' not found.",
         )
 
+    ensure_canonical_compatibility(db, edition.id)
     base_query = db.query(
         HospitalNABHRequirement,
-        NABHMeasurableElement,
-        NABHObjectiveElement,
+        NABHRequirement,
         NABHStandard,
         NABHChapter,
     ).join(
-        NABHMeasurableElement,
-        HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id,
-    ).join(
-        NABHObjectiveElement,
-        NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id,
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id,
     ).join(
         NABHStandard,
-        NABHObjectiveElement.standard_id == NABHStandard.id,
+        NABHRequirement.standard_id == NABHStandard.id,
     ).join(
         NABHChapter,
         NABHStandard.chapter_id == NABHChapter.id,
@@ -142,9 +139,9 @@ def build_hospital_evidence_plan(
         HospitalNABHRequirement.hospital_id == hospital_id,
         HospitalNABHRequirement.applicability_status.in_(SCOPED_APPLICABILITY_STATUSES),
         HospitalNABHRequirement.retired_at.is_(None),
-        NABHMeasurableElement.edition_id == edition.id,
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.edition_id == edition.id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None),
         NABHChapter.canonical_code.in_(OFFICIAL_CHAPTER_CODES),
@@ -154,24 +151,23 @@ def build_hospital_evidence_plan(
     rows = base_query.order_by(
         NABHChapter.display_order,
         NABHStandard.display_order,
-        NABHObjectiveElement.display_order,
-        NABHMeasurableElement.display_order,
+        NABHRequirement.display_order,
     ).offset(offset).limit(limit).all()
 
-    requirement_ids = [row.NABHMeasurableElement.id for row in rows]
+    requirement_ids = [row.NABHRequirement.id for row in rows]
     evidences_by_requirement: Dict[str, List[NABHEvidenceRequirement]] = defaultdict(list)
     active_citation_counts: Dict[str, int] = defaultdict(int)
 
     if requirement_ids:
         evidences = db.query(NABHEvidenceRequirement).filter(
-            NABHEvidenceRequirement.measurable_element_id.in_(requirement_ids),
+            NABHEvidenceRequirement.requirement_id.in_(requirement_ids),
             NABHEvidenceRequirement.retired_at.is_(None),
         ).order_by(
             NABHEvidenceRequirement.evidence_code,
             NABHEvidenceRequirement.id,
         ).all()
         for evidence in evidences:
-            evidences_by_requirement[evidence.measurable_element_id].append(evidence)
+            evidences_by_requirement[evidence.requirement_id].append(evidence)
 
         citation_rows = db.query(
             NABHRequirementCitation,
@@ -180,13 +176,13 @@ def build_hospital_evidence_plan(
             NABHSourceDocument,
             NABHRequirementCitation.document_id == NABHSourceDocument.id,
         ).filter(
-            NABHRequirementCitation.measurable_element_id.in_(requirement_ids),
+            NABHRequirementCitation.requirement_id.in_(requirement_ids),
             NABHRequirementCitation.retired_at.is_(None),
             NABHSourceDocument.retired_at.is_(None),
         ).all()
         for citation, _document in citation_rows:
             if citation_has_locator(citation):
-                active_citation_counts[citation.measurable_element_id] += 1
+                active_citation_counts[citation.requirement_id] += 1
 
     owner_ids = {
         row.HospitalNABHRequirement.owner_id
@@ -204,7 +200,7 @@ def build_hospital_evidence_plan(
 
     items = []
     evidence_item_count = 0
-    for hospital_req, requirement, _objective, standard, chapter in rows:
+    for hospital_req, requirement, standard, chapter in rows:
         requirement_evidences = evidences_by_requirement.get(requirement.id, [])
         evidence_item_count += len(requirement_evidences)
         responsibility = _resolve_responsible_role(
@@ -223,7 +219,7 @@ def build_hospital_evidence_plan(
         items.append({
             "requirement_id": requirement.id,
             "requirement_code": requirement.canonical_code,
-            "title": requirement.description,
+            "title": requirement.display_text,
             "chapter_code": chapter.canonical_code,
             "standard_code": standard.canonical_code,
             "applicability_status": _enum_value(hospital_req.applicability_status),

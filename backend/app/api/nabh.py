@@ -1,5 +1,6 @@
 """NABH 6th Edition Compliance Tracker."""
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional, List
@@ -15,19 +16,23 @@ from app.api import nabh_evidence, nabh_explanation, nabh_operations
 from app.models.database import (
     ComplianceRecord, Hospital, Staff, ComplianceStatus, UserRole,
     RiskAlert, NABHObjective, MaturityLevel, SeverityLevel,
-    NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement,
-    NABHMeasurableElement, NABHRequirementCitation, NABHSourceDocument,
-    EvidenceStatus, ApplicabilityDefault
+    NABHEdition, NABHChapter, NABHStandard, NABHRequirement,
+    NABHRequirementCitation, NABHSourceDocument, NABHSourceAnomaly,
+    NABHApplicabilityRule, NABHEvidenceRequirement,
+    HospitalNABHRequirement, HospitalRequirementEvidenceLink,
+    EvidenceStatus, ApplicabilityDefault, KnowledgePublicationStatus,
 )
 from app.nabh.repository import ComplianceRepository
 from app.nabh.service import ComplianceService, NABH_STANDARDS, LEGACY_NABH_MODEL_NOTICE
 from app.nabh.agent import InspectorAgent, ConsultantAgent, simulate_tracer_audit
 from app.nabh.citation_service import CitationService
 from app.nabh.applicability import ApplicabilityEngine
+from app.nabh.canonical import ensure_canonical_compatibility
 from app.nabh.quality import NABHQualityError, assert_compliant_status_allowed
 
 from app.schemas.nabh import (
-    NABHEditionSummary, NABHChapterSummary, NABHRequirementSummary, PaginatedRequirementSummary,
+    NABHEditionSummary, NABHChapterSummary, NABHSourceDocumentSummary,
+    NABHSourceAnomalySchema, NABHRequirementSummary, PaginatedRequirementSummary,
     NABHRuleSchema, NABHEvidenceRequirementSchema, NABHCitationSchema, NABHRequirementDetail,
     CitationResponse, HospitalProfileResponse, HospitalProfileUpdate, ApplicabilityComputeResponse,
     HospitalRequirementSummary as SchemaHospitalRequirementSummary,
@@ -404,110 +409,114 @@ async def get_daily_brief(
 
 @router.get("/ontology/coverage")
 async def get_ontology_coverage(db: Session = Depends(get_db)):
-    """
-    Get the official reference ontology coverage statistics for NABH 6th Edition.
-    """
-    import os
-    import json
-    
-    # 1. Read citation complete status from nabh_6th_citations.json
-    api_dir = os.path.dirname(os.path.abspath(__file__))
-    citations_path = os.path.abspath(os.path.join(api_dir, "..", "nabh", "data", "nabh_6th_citations.json"))
-    
-    citation_complete = False
-    if os.path.exists(citations_path):
-        try:
-            with open(citations_path, "r", encoding="utf-8") as f:
-                raw_data = json.load(f)
-                if isinstance(raw_data, dict):
-                    citation_complete = raw_data.get("_meta", {}).get("citation_complete", False)
-        except Exception:
-            pass
-
-    # 2. Get the active edition (6.0)
-    edition = db.query(NABHEdition).filter(NABHEdition.version == "6.0").first()
+    """Return reconciled official totals and live canonical corpus coverage."""
+    edition = db.query(NABHEdition).filter(
+        NABHEdition.version == "6.0",
+        NABHEdition.retired_at.is_(None),
+    ).first()
     if not edition:
         return {
             "ontology_status": "partial_seed",
             "official_declared_total_standards": 100,
             "official_declared_total_elements": 639,
             "official_chapter_sum_standards": 100,
-            "official_chapter_sum_elements": 638,
-            "official_chapter_objective_elements_sum": 638,
+            "official_chapter_sum_elements": 639,
+            "official_chapter_objective_elements_sum": 639,
             "official_category_breakdown_sum": 639,
             "official_standards_discrepancy": 0,
-            "official_elements_discrepancy": 1,
-            "has_source_inconsistency": True,
-            "inconsistencies": [
-                {
-                    "chapter_code": "COP",
-                    "objective_elements_count": 135,
-                    "category_breakdown_sum": 136,
-                    "difference": 1,
-                    "note": "Official summary table appears internally inconsistent. COP objective elements count is listed as 135, but its category breakdown sum is 136."
-                }
-            ],
+            "official_elements_discrepancy": 0,
+            "has_source_inconsistency": False,
+            "inconsistencies": [],
+            "source_anomalies": [],
             "seeded_total_standards": 0,
             "seeded_total_elements": 0,
             "global_standards_coverage_percent": 0.0,
             "global_elements_coverage_percent": 0.0,
-            "citation_complete": citation_complete,
+            "citation_complete": False,
             "chapters": []
         }
 
-    # 3. Query all official 6th edition chapters from nabh_chapters
-    # Exclude HIC from calculations if it exists, matching only the official 10 canonical codes
-    official_chapter_codes = ["AAC", "COP", "MOM", "PRE", "IPC", "PSQ", "ROM", "FMS", "HRM", "IMS"]
-    
+    ensure_canonical_compatibility(db, edition.id)
+    official_chapter_codes = [
+        "AAC", "COP", "MOM", "PRE", "IPC",
+        "PSQ", "ROM", "FMS", "HRM", "IMS",
+    ]
     chapters = db.query(NABHChapter).filter(
         NABHChapter.edition_id == edition.id,
-        NABHChapter.canonical_code.in_(official_chapter_codes)
+        NABHChapter.canonical_code.in_(official_chapter_codes),
+        NABHChapter.retired_at.is_(None),
     ).order_by(NABHChapter.display_order).all()
+
+    standard_counts = dict(db.query(
+        NABHStandard.chapter_id,
+        func.count(NABHStandard.id),
+    ).filter(
+        NABHStandard.edition_id == edition.id,
+        NABHStandard.retired_at.is_(None),
+    ).group_by(NABHStandard.chapter_id).all())
+
+    requirement_counts = dict(db.query(
+        NABHStandard.chapter_id,
+        func.count(NABHRequirement.id),
+    ).join(
+        NABHRequirement,
+        NABHRequirement.standard_id == NABHStandard.id,
+    ).filter(
+        NABHRequirement.edition_id == edition.id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_([
+            KnowledgePublicationStatus.APPROVED,
+            KnowledgePublicationStatus.PUBLISHED,
+        ]),
+        NABHStandard.retired_at.is_(None),
+    ).group_by(NABHStandard.chapter_id).all())
+
+    citation_counts = dict(db.query(
+        NABHStandard.chapter_id,
+        func.count(func.distinct(NABHRequirementCitation.requirement_id)),
+    ).join(
+        NABHRequirement,
+        NABHRequirementCitation.requirement_id == NABHRequirement.id,
+    ).join(
+        NABHStandard,
+        NABHRequirement.standard_id == NABHStandard.id,
+    ).join(
+        NABHSourceDocument,
+        NABHRequirementCitation.document_id == NABHSourceDocument.id,
+    ).filter(
+        NABHRequirement.edition_id == edition.id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirementCitation.retired_at.is_(None),
+        NABHSourceDocument.retired_at.is_(None),
+    ).group_by(NABHStandard.chapter_id).all())
 
     chapter_stats = []
     total_seeded_standards = 0
     total_seeded_elements = 0
-    
     for chap in chapters:
-        # Seeded standards count for this chapter
-        seeded_standards_count = db.query(NABHStandard).filter(
-            NABHStandard.chapter_id == chap.id
-        ).count()
-        
-        # Seeded measurable elements (represented as objective elements) count for this chapter
-        seeded_elements = db.query(NABHMeasurableElement).join(NABHObjectiveElement).join(NABHStandard).filter(
-            NABHStandard.chapter_id == chap.id
-        ).all()
-        seeded_elements_count = len(seeded_elements)
-        seeded_element_ids = [el.id for el in seeded_elements]
-
-        # Citation count for seeded elements in this chapter
-        citation_count = 0
-        if seeded_element_ids:
-            citation_count = db.query(NABHRequirementCitation).filter(
-                NABHRequirementCitation.measurable_element_id.in_(seeded_element_ids),
-                NABHRequirementCitation.retired_at.is_(None)
-            ).count()
-            
-        # Uncited seeded elements count
-        uncited_count = 0
-        for el in seeded_elements:
-            has_citation = db.query(NABHRequirementCitation).filter(
-                NABHRequirementCitation.measurable_element_id == el.id,
-                NABHRequirementCitation.retired_at.is_(None)
-            ).first() is not None
-            if not has_citation:
-                uncited_count += 1
-                
-        # Coverage percentages
-        std_pct = round((seeded_standards_count / chap.official_standards_count) * 100, 1) if chap.official_standards_count else 0.0
-        meas_pct = round((seeded_elements_count / chap.official_measurable_elements_count) * 100, 1) if chap.official_measurable_elements_count else 0.0
+        seeded_standards_count = standard_counts.get(chap.id, 0)
+        seeded_elements_count = requirement_counts.get(chap.id, 0)
+        citation_count = citation_counts.get(chap.id, 0)
+        uncited_count = max(seeded_elements_count - citation_count, 0)
+        official_requirement_count = (
+            chap.official_requirements_count
+            if chap.official_requirements_count is not None
+            else chap.official_measurable_elements_count
+        )
+        std_pct = (
+            round((seeded_standards_count / chap.official_standards_count) * 100, 1)
+            if chap.official_standards_count else 0.0
+        )
+        req_pct = (
+            round((seeded_elements_count / official_requirement_count) * 100, 1)
+            if official_requirement_count else 0.0
+        )
 
         chapter_stats.append({
             "chapter_code": chap.canonical_code,
             "title": chap.title,
             "official_standards_count": chap.official_standards_count,
-            "official_objective_elements_count": chap.official_measurable_elements_count,
+            "official_objective_elements_count": official_requirement_count,
             "core_count": chap.core_count,
             "commitment_count": chap.commitment_count,
             "achievement_count": chap.achievement_count,
@@ -515,43 +524,70 @@ async def get_ontology_coverage(db: Session = Depends(get_db)):
             "seeded_standards_count": seeded_standards_count,
             "seeded_objective_elements_count": seeded_elements_count,
             "standards_coverage_percent": std_pct,
-            "elements_coverage_percent": meas_pct,
+            "elements_coverage_percent": req_pct,
             "citation_count": citation_count,
             "uncited_seeded_elements_count": uncited_count,
-            "is_fully_seeded": chap.is_fully_seeded
+            "is_fully_seeded": (
+                seeded_standards_count == chap.official_standards_count
+                and seeded_elements_count == official_requirement_count
+                and uncited_count == 0
+            ),
         })
-        
         total_seeded_standards += seeded_standards_count
         total_seeded_elements += seeded_elements_count
 
-    # Global calculations
-    global_std_pct = round((total_seeded_standards / 100) * 100, 1)
-    global_elem_pct = round((total_seeded_elements / 639) * 100, 1)
-
-    official_chapter_sum_standards = sum(chap.official_standards_count for chap in chapters)
-    official_chapter_sum_elements = sum(chap.official_measurable_elements_count for chap in chapters)
-
+    official_chapter_sum_standards = sum(
+        chap.official_standards_count or 0 for chap in chapters
+    )
+    official_chapter_sum_elements = sum(
+        chap.official_requirements_count
+        if chap.official_requirements_count is not None
+        else (chap.official_measurable_elements_count or 0)
+        for chap in chapters
+    )
     official_category_breakdown_sum = sum(
-        (c.core_count or 0) + (c.commitment_count or 0) + (c.achievement_count or 0) + (c.excellence_count or 0)
-        for c in chapters
+        (chapter.core_count or 0)
+        + (chapter.commitment_count or 0)
+        + (chapter.achievement_count or 0)
+        + (chapter.excellence_count or 0)
+        for chapter in chapters
+    )
+    anomalies = db.query(NABHSourceAnomaly).join(
+        NABHSourceDocument,
+        NABHSourceAnomaly.document_id == NABHSourceDocument.id,
+    ).filter(
+        NABHSourceDocument.edition_id == edition.id,
+    ).order_by(NABHSourceAnomaly.anomaly_code).all()
+    source_anomalies = [
+        {
+            "anomaly_code": anomaly.anomaly_code,
+            "title": anomaly.title,
+            "source_locator": anomaly.source_locator,
+            "observed_value": anomaly.observed_value,
+            "reconciled_value": anomaly.reconciled_value,
+            "reconciliation_basis": anomaly.reconciliation_basis,
+            "status": anomaly.status,
+        }
+        for anomaly in anomalies
+    ]
+    unresolved_anomalies = [
+        anomaly for anomaly in source_anomalies
+        if anomaly["status"] not in {"reconciled", "closed"}
+    ]
+    total_cited_requirements = sum(citation_counts.values())
+    citation_complete = (
+        total_seeded_elements == 639
+        and total_cited_requirements == total_seeded_elements
+    )
+    canonical_complete = (
+        len(chapters) == 10
+        and total_seeded_standards == 100
+        and total_seeded_elements == 639
+        and official_category_breakdown_sum == 639
     )
 
-    inconsistencies = []
-    for chap in chapters:
-        cat_sum = (chap.core_count or 0) + (chap.commitment_count or 0) + (chap.achievement_count or 0) + (chap.excellence_count or 0)
-        if chap.official_measurable_elements_count is not None and cat_sum > 0 and chap.official_measurable_elements_count != cat_sum:
-            diff = cat_sum - chap.official_measurable_elements_count
-            inconsistencies.append({
-                "chapter_code": chap.canonical_code,
-                "objective_elements_count": chap.official_measurable_elements_count,
-                "category_breakdown_sum": cat_sum,
-                "difference": abs(diff),
-                "note": f"Official summary table appears internally inconsistent. {chap.canonical_code} objective elements count is listed as {chap.official_measurable_elements_count}, but its category breakdown sum is {cat_sum}."
-            })
-    has_source_inconsistency = len(inconsistencies) > 0
-
     return {
-        "ontology_status": "partial_seed",
+        "ontology_status": "canonical_complete" if canonical_complete else "partial_seed",
         "official_declared_total_standards": 100,
         "official_declared_total_elements": 639,
         "official_chapter_sum_standards": official_chapter_sum_standards,
@@ -560,14 +596,18 @@ async def get_ontology_coverage(db: Session = Depends(get_db)):
         "official_category_breakdown_sum": official_category_breakdown_sum,
         "official_standards_discrepancy": 100 - official_chapter_sum_standards,
         "official_elements_discrepancy": 639 - official_chapter_sum_elements,
-        "has_source_inconsistency": has_source_inconsistency,
-        "inconsistencies": inconsistencies,
+        "has_source_inconsistency": bool(unresolved_anomalies),
+        "inconsistencies": unresolved_anomalies,
+        "source_anomalies": source_anomalies,
         "seeded_total_standards": total_seeded_standards,
         "seeded_total_elements": total_seeded_elements,
-        "global_standards_coverage_percent": global_std_pct,
-        "global_elements_coverage_percent": global_elem_pct,
+        "global_standards_coverage_percent": round(total_seeded_standards, 1),
+        "global_elements_coverage_percent": round(
+            (total_seeded_elements / 639) * 100,
+            1,
+        ),
         "citation_complete": citation_complete,
-        "chapters": chapter_stats
+        "chapters": chapter_stats,
     }
 
 
@@ -609,6 +649,80 @@ async def get_ontology_chapters(
     return query.order_by(NABHChapter.display_order).all()
 
 
+@router.get("/ontology/sources", response_model=List[NABHSourceDocumentSummary])
+async def get_ontology_sources(
+    edition_version: str = Query("6.0"),
+    include_retired: bool = Query(False),
+    db: Session = Depends(get_db),
+    current_user: Staff = Depends(get_current_user),
+):
+    """Return the governed source registry without protected source contents."""
+    edition = db.query(NABHEdition).filter(
+        NABHEdition.version == edition_version,
+        NABHEdition.retired_at.is_(None),
+    ).first()
+    if not edition:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Edition '{edition_version}' not found",
+        )
+
+    query = db.query(NABHSourceDocument).filter(
+        NABHSourceDocument.edition_id == edition.id,
+    )
+    if not include_retired:
+        query = query.filter(NABHSourceDocument.retired_at.is_(None))
+    documents = query.order_by(
+        NABHSourceDocument.effective_date.desc(),
+        NABHSourceDocument.title,
+    ).all()
+
+    document_ids = [document.id for document in documents]
+    anomalies_by_document = {document_id: [] for document_id in document_ids}
+    if document_ids:
+        anomalies = db.query(NABHSourceAnomaly).filter(
+            NABHSourceAnomaly.document_id.in_(document_ids),
+        ).order_by(NABHSourceAnomaly.anomaly_code).all()
+        for anomaly in anomalies:
+            anomalies_by_document[anomaly.document_id].append(
+                NABHSourceAnomalySchema.model_validate(anomaly)
+            )
+
+    return [
+        NABHSourceDocumentSummary(
+            id=document.id,
+            title=document.title,
+            publisher=document.publisher,
+            edition_version=document.edition_version,
+            checksum=document.checksum,
+            file_size_bytes=document.file_size_bytes,
+            pdf_page_count=document.pdf_page_count,
+            printed_page_start=document.printed_page_start,
+            printed_page_end=document.printed_page_end,
+            isbn=document.isbn,
+            document_type=document.document_type,
+            programme=document.programme,
+            authority_level=document.authority_level,
+            rights_status=(
+                document.rights_status.value
+                if hasattr(document.rights_status, "value")
+                else str(document.rights_status)
+            ),
+            may_store_full_text=document.may_store_full_text,
+            may_display_full_text=document.may_display_full_text,
+            may_create_embeddings=document.may_create_embeddings,
+            verification_status=document.verification_status,
+            verified_by=document.verified_by,
+            verified_at=document.verified_at,
+            approved_by=document.approved_by,
+            approved_at=document.approved_at,
+            effective_date=document.effective_date,
+            anomalies=anomalies_by_document[document.id],
+        )
+        for document in documents
+    ]
+
+
 @router.get("/ontology/requirements", response_model=PaginatedRequirementSummary)
 async def get_ontology_requirements(
     edition_version: str = Query("6.0"),
@@ -620,25 +734,35 @@ async def get_ontology_requirements(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_user)
 ):
-    """Get a paginated, filtered list of all requirements (measurable elements) with hierarchy context."""
+    """Get canonical NABH Objective Element requirements with hierarchy context."""
+    edition = db.query(NABHEdition).filter(
+        NABHEdition.version == edition_version,
+        NABHEdition.retired_at.is_(None),
+    ).first()
+    if not edition:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Edition '{edition_version}' not found",
+        )
+    ensure_canonical_compatibility(db, edition.id)
+
     query = db.query(
-        NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+        NABHRequirement, NABHChapter, NABHStandard
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
-    ).join(
-        NABHEdition, NABHChapter.edition_id == NABHEdition.id
     ).filter(
-        NABHEdition.version == edition_version
+        NABHRequirement.edition_id == edition.id,
     )
     
     if not include_retired:
         query = query.filter(
-            NABHMeasurableElement.retired_at.is_(None),
-            NABHObjectiveElement.retired_at.is_(None),
+            NABHRequirement.retired_at.is_(None),
+            NABHRequirement.publication_status.in_([
+                KnowledgePublicationStatus.APPROVED,
+                KnowledgePublicationStatus.PUBLISHED,
+            ]),
             NABHStandard.retired_at.is_(None),
             NABHChapter.retired_at.is_(None)
         )
@@ -652,24 +776,29 @@ async def get_ontology_requirements(
     results = query.order_by(
         NABHChapter.display_order,
         NABHStandard.display_order,
-        NABHObjectiveElement.display_order,
-        NABHMeasurableElement.display_order
+        NABHRequirement.display_order,
+        NABHRequirement.canonical_code,
     ).offset(offset).limit(limit).all()
     
     items = [
         NABHRequirementSummary(
-            id=el.id,
-            code=el.code,
-            canonical_code=el.canonical_code,
-            description=el.description,
-            applicability_default=el.applicability_default,
+            id=requirement.id,
+            code=requirement.official_code,
+            canonical_code=requirement.canonical_code,
+            description=requirement.display_text,
+            applicability_default=requirement.applicability_default,
             chapter_code=chap.canonical_code,
             chapter_title=chap.title,
             standard_code=std.canonical_code,
             standard_title=std.title,
-            objective_element_code=obj.canonical_code
+            objective_element_code=requirement.canonical_code,
+            classification=requirement.classification,
+            documentation_required=requirement.documentation_required,
+            authority_level=requirement.authority_level,
+            publication_status=requirement.publication_status,
+            source_status=requirement.source_status,
         )
-        for el, chap, std, obj in results
+        for requirement, chap, std in results
     ]
     
     return PaginatedRequirementSummary(
@@ -687,18 +816,20 @@ async def get_ontology_requirement_detail(
     current_user: Staff = Depends(get_current_user)
 ):
     """Get full details of a specific ontology requirement, including rules, evidence, and citations."""
+    ensure_canonical_compatibility(db)
     result = db.query(
-        NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+        NABHRequirement, NABHChapter, NABHStandard
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
-        NABHMeasurableElement.id == requirement_id,
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.id == requirement_id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_([
+            KnowledgePublicationStatus.APPROVED,
+            KnowledgePublicationStatus.PUBLISHED,
+        ]),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None)
     ).first()
@@ -706,38 +837,41 @@ async def get_ontology_requirement_detail(
     if not result:
         raise HTTPException(status_code=404, detail="Requirement not found")
         
-    el, chap, std, obj = result
-    
-    from app.models.database import NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation
+    requirement, chap, std = result
     
     rules = db.query(NABHApplicabilityRule).filter(
-        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.requirement_id == requirement.id,
         NABHApplicabilityRule.retired_at.is_(None)
     ).all()
     
     evidences = db.query(NABHEvidenceRequirement).filter(
-        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.requirement_id == requirement.id,
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
     
     citations = db.query(NABHRequirementCitation).filter(
-        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
     
     summary_data = build_evidence_burden_summary(evidences)
     return NABHRequirementDetail(
-        id=el.id,
-        code=el.code,
-        canonical_code=el.canonical_code,
-        description=el.description,
-        applicability_default=el.applicability_default,
+        id=requirement.id,
+        code=requirement.official_code,
+        canonical_code=requirement.canonical_code,
+        description=requirement.display_text,
+        applicability_default=requirement.applicability_default,
         chapter_code=chap.canonical_code,
         chapter_title=chap.title,
         standard_code=std.canonical_code,
         standard_title=std.title,
-        objective_element_code=obj.canonical_code,
-        objective_element_description=obj.description,
+        objective_element_code=requirement.canonical_code,
+        objective_element_description=requirement.display_text,
+        classification=requirement.classification,
+        documentation_required=requirement.documentation_required,
+        authority_level=requirement.authority_level,
+        publication_status=requirement.publication_status,
+        source_status=requirement.source_status,
         applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
@@ -943,17 +1077,15 @@ async def get_hospital_requirements(
     hosp = db.query(Hospital).filter(Hospital.id == hospital_id).first()
     if not hosp:
         raise HTTPException(status_code=404, detail="Hospital not found")
-        
-    from app.models.database import HospitalNABHRequirement
-    
+
+    ensure_canonical_compatibility(db)
     query = db.query(
-        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+        HospitalNABHRequirement, NABHRequirement, NABHChapter, NABHStandard
     ).join(
-        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id,
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
@@ -963,8 +1095,11 @@ async def get_hospital_requirements(
     if not include_retired:
         query = query.filter(
             HospitalNABHRequirement.retired_at.is_(None),
-            NABHMeasurableElement.retired_at.is_(None),
-            NABHObjectiveElement.retired_at.is_(None),
+            NABHRequirement.retired_at.is_(None),
+            NABHRequirement.publication_status.in_([
+                KnowledgePublicationStatus.APPROVED,
+                KnowledgePublicationStatus.PUBLISHED,
+            ]),
             NABHStandard.retired_at.is_(None),
             NABHChapter.retired_at.is_(None)
         )
@@ -984,15 +1119,15 @@ async def get_hospital_requirements(
     results = query.order_by(
         NABHChapter.display_order,
         NABHStandard.display_order,
-        NABHObjectiveElement.display_order,
-        NABHMeasurableElement.display_order
+        NABHRequirement.display_order,
+        NABHRequirement.canonical_code,
     ).offset(offset).limit(limit).all()
     
     items = [
         SchemaHospitalRequirementSummary(
             id=req.id,
             hospital_id=req.hospital_id,
-            requirement_id=req.requirement_id,
+            requirement_id=req.canonical_requirement_id,
             applicability_status=req.applicability_status,
             applicability_reason=req.applicability_reason,
             maturity_level=req.maturity_level,
@@ -1002,13 +1137,13 @@ async def get_hospital_requirements(
             last_reviewed_at=req.last_reviewed_at,
             last_reviewed_by=req.last_reviewed_by,
             readiness_status=req.readiness_status,
-            requirement_code=el.canonical_code,
-            requirement_description=el.description,
+            requirement_code=requirement.canonical_code,
+            requirement_description=requirement.display_text,
             chapter_code=chap.canonical_code,
             standard_code=std.canonical_code,
-            objective_element_code=obj.canonical_code
+            objective_element_code=requirement.canonical_code,
         )
-        for req, el, chap, std, obj in results
+        for req, requirement, chap, std in results
     ]
     
     return PaginatedHospitalRequirementSummary(
@@ -1033,24 +1168,25 @@ async def get_hospital_requirement_detail(
     if not hosp:
         raise HTTPException(status_code=404, detail="Hospital not found")
         
-    from app.models.database import HospitalNABHRequirement
-    
+    ensure_canonical_compatibility(db)
     result = db.query(
-        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+        HospitalNABHRequirement, NABHRequirement, NABHChapter, NABHStandard
     ).join(
-        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id,
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.canonical_requirement_id == requirement_id,
         HospitalNABHRequirement.retired_at.is_(None),
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_([
+            KnowledgePublicationStatus.APPROVED,
+            KnowledgePublicationStatus.PUBLISHED,
+        ]),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None)
     ).first()
@@ -1058,25 +1194,20 @@ async def get_hospital_requirement_detail(
     if not result:
         raise HTTPException(status_code=404, detail="Hospital requirement state not found")
         
-    req, el, chap, std, obj = result
-    
-    from app.models.database import (
-        NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation,
-        HospitalRequirementEvidenceLink
-    )
+    req, requirement, chap, std = result
     
     rules = db.query(NABHApplicabilityRule).filter(
-        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.requirement_id == requirement.id,
         NABHApplicabilityRule.retired_at.is_(None)
     ).all()
     
     evidences = db.query(NABHEvidenceRequirement).filter(
-        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.requirement_id == requirement.id,
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
     
     citations = db.query(NABHRequirementCitation).filter(
-        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
     
@@ -1087,17 +1218,22 @@ async def get_hospital_requirement_detail(
     
     summary_data = build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
-        id=el.id,
-        code=el.code,
-        canonical_code=el.canonical_code,
-        description=el.description,
-        applicability_default=el.applicability_default,
+        id=requirement.id,
+        code=requirement.official_code,
+        canonical_code=requirement.canonical_code,
+        description=requirement.display_text,
+        applicability_default=requirement.applicability_default,
         chapter_code=chap.canonical_code,
         chapter_title=chap.title,
         standard_code=std.canonical_code,
         standard_title=std.title,
-        objective_element_code=obj.canonical_code,
-        objective_element_description=obj.description,
+        objective_element_code=requirement.canonical_code,
+        objective_element_description=requirement.display_text,
+        classification=requirement.classification,
+        documentation_required=requirement.documentation_required,
+        authority_level=requirement.authority_level,
+        publication_status=requirement.publication_status,
+        source_status=requirement.source_status,
         applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
@@ -1109,7 +1245,7 @@ async def get_hospital_requirement_detail(
     return SchemaHospitalRequirementDetail(
         id=req.id,
         hospital_id=req.hospital_id,
-        requirement_id=req.requirement_id,
+        requirement_id=req.canonical_requirement_id,
         applicability_status=req.applicability_status,
         applicability_reason=req.applicability_reason,
         maturity_level=req.maturity_level,
@@ -1139,24 +1275,25 @@ async def patch_hospital_requirement(
     if not hosp:
         raise HTTPException(status_code=404, detail="Hospital not found")
         
-    from app.models.database import HospitalNABHRequirement
-    
+    ensure_canonical_compatibility(db)
     req_result = db.query(
         HospitalNABHRequirement
     ).join(
-        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id,
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.canonical_requirement_id == requirement_id,
         HospitalNABHRequirement.retired_at.is_(None),
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_([
+            KnowledgePublicationStatus.APPROVED,
+            KnowledgePublicationStatus.PUBLISHED,
+        ]),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None)
     ).first()
@@ -1181,44 +1318,41 @@ async def patch_hospital_requirement(
     
     # Reload details to return the full response schema
     result = db.query(
-        HospitalNABHRequirement, NABHMeasurableElement, NABHChapter, NABHStandard, NABHObjectiveElement
+        HospitalNABHRequirement, NABHRequirement, NABHChapter, NABHStandard
     ).join(
-        NABHMeasurableElement, HospitalNABHRequirement.requirement_id == NABHMeasurableElement.id
+        NABHRequirement,
+        HospitalNABHRequirement.canonical_requirement_id == NABHRequirement.id,
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
         HospitalNABHRequirement.hospital_id == hospital_id,
-        HospitalNABHRequirement.requirement_id == requirement_id,
+        HospitalNABHRequirement.canonical_requirement_id == requirement_id,
         HospitalNABHRequirement.retired_at.is_(None),
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_([
+            KnowledgePublicationStatus.APPROVED,
+            KnowledgePublicationStatus.PUBLISHED,
+        ]),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None)
     ).first()
     
-    req, el, chap, std, obj = result
-    
-    from app.models.database import (
-        NABHApplicabilityRule, NABHEvidenceRequirement, NABHRequirementCitation,
-        HospitalRequirementEvidenceLink
-    )
+    req, requirement, chap, std = result
     
     rules = db.query(NABHApplicabilityRule).filter(
-        NABHApplicabilityRule.measurable_element_id == el.id,
+        NABHApplicabilityRule.requirement_id == requirement.id,
         NABHApplicabilityRule.retired_at.is_(None)
     ).all()
     
     evidences = db.query(NABHEvidenceRequirement).filter(
-        NABHEvidenceRequirement.measurable_element_id == el.id,
+        NABHEvidenceRequirement.requirement_id == requirement.id,
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
     
     citations = db.query(NABHRequirementCitation).filter(
-        NABHRequirementCitation.measurable_element_id == el.id,
+        NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
     
@@ -1229,17 +1363,22 @@ async def patch_hospital_requirement(
     
     summary_data = build_evidence_burden_summary(evidences)
     ont_detail = NABHRequirementDetail(
-        id=el.id,
-        code=el.code,
-        canonical_code=el.canonical_code,
-        description=el.description,
-        applicability_default=el.applicability_default,
+        id=requirement.id,
+        code=requirement.official_code,
+        canonical_code=requirement.canonical_code,
+        description=requirement.display_text,
+        applicability_default=requirement.applicability_default,
         chapter_code=chap.canonical_code,
         chapter_title=chap.title,
         standard_code=std.canonical_code,
         standard_title=std.title,
-        objective_element_code=obj.canonical_code,
-        objective_element_description=obj.description,
+        objective_element_code=requirement.canonical_code,
+        objective_element_description=requirement.display_text,
+        classification=requirement.classification,
+        documentation_required=requirement.documentation_required,
+        authority_level=requirement.authority_level,
+        publication_status=requirement.publication_status,
+        source_status=requirement.source_status,
         applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
         citations=[NABHCitationSchema.model_validate(c) for c in citations],
@@ -1251,7 +1390,7 @@ async def patch_hospital_requirement(
     return SchemaHospitalRequirementDetail(
         id=req.id,
         hospital_id=req.hospital_id,
-        requirement_id=req.requirement_id,
+        requirement_id=req.canonical_requirement_id,
         applicability_status=req.applicability_status,
         applicability_reason=req.applicability_reason,
         maturity_level=req.maturity_level,

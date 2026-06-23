@@ -5,11 +5,12 @@ from sqlalchemy.orm import Session
 
 from app.models.database import (
     NABHEdition, NABHChapter, NABHStandard,
-    NABHObjectiveElement, NABHMeasurableElement,
+    NABHRequirement,
     NABHEvidenceRequirement, NABHRequirementCitation,
     NABHSourceDocument, HospitalNABHRequirement, Staff,
-    SeverityLevel, EditionStatus
+    EditionStatus
 )
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
 from app.nabh.quality import citation_has_locator
 
 def build_requirement_explanation(
@@ -35,19 +36,18 @@ def build_requirement_explanation(
         )
 
     # 2. Query Requirement and all parent ontology layers (excluding retired)
+    ensure_canonical_compatibility(db, edition.id)
     result = db.query(
-        NABHMeasurableElement, NABHObjectiveElement, NABHStandard, NABHChapter
+        NABHRequirement, NABHStandard, NABHChapter
     ).join(
-        NABHObjectiveElement, NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id
-    ).join(
-        NABHStandard, NABHObjectiveElement.standard_id == NABHStandard.id
+        NABHStandard, NABHRequirement.standard_id == NABHStandard.id
     ).join(
         NABHChapter, NABHStandard.chapter_id == NABHChapter.id
     ).filter(
-        NABHMeasurableElement.id == requirement_id,
-        NABHMeasurableElement.edition_id == edition.id,
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.id == requirement_id,
+        NABHRequirement.edition_id == edition.id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None)
     ).first()
@@ -58,11 +58,11 @@ def build_requirement_explanation(
             detail=f"Active requirement with ID '{requirement_id}' not found."
         )
 
-    me, obj, std, chapter = result
+    requirement, std, chapter = result
 
     # 3. Retrieve Evidence Requirements (non-retired)
     evidences = db.query(NABHEvidenceRequirement).filter(
-        NABHEvidenceRequirement.measurable_element_id == me.id,
+        NABHEvidenceRequirement.requirement_id == requirement.id,
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
 
@@ -72,7 +72,7 @@ def build_requirement_explanation(
     ).join(
         NABHSourceDocument, NABHRequirementCitation.document_id == NABHSourceDocument.id
     ).filter(
-        NABHRequirementCitation.measurable_element_id == me.id,
+        NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None),
         NABHSourceDocument.retired_at.is_(None)
     ).all()
@@ -87,7 +87,7 @@ def build_requirement_explanation(
     if hospital_id:
         hospital_req = db.query(HospitalNABHRequirement).filter(
             HospitalNABHRequirement.hospital_id == hospital_id,
-            HospitalNABHRequirement.requirement_id == me.id,
+            HospitalNABHRequirement.canonical_requirement_id == requirement.id,
             HospitalNABHRequirement.retired_at.is_(None)
         ).first()
 
@@ -102,33 +102,15 @@ def build_requirement_explanation(
     else:
         confidence = "source_cited"
         plain_language_explanation = (
-            f"This requirement asks the hospital to ensure: {me.description}. "
+            f"This requirement asks the hospital to ensure: {requirement.display_text}. "
             f"It belongs to {chapter.code}: {chapter.title}, under standard {std.canonical_code}: {std.title}. "
             f"For survey readiness, the hospital must be able to show current, reviewable evidence."
         )
 
-        # Why-it-matters check (conservatively safety/regulatory check)
-        is_critical = (obj.severity.value == "critical" if hasattr(obj.severity, "value") else str(obj.severity) == "critical")
-        if is_critical:
-            # Check for safety terms in requirement or citation text
-            combined_text = (me.description + " " + " ".join([c.clause_text_summary for c, _ in citations_data if c.clause_text_summary])).lower()
-            if "fire" in combined_text:
-                why_it_matters = (
-                    "This requirement is critical for fire safety. Surveyors use this to verify compliance "
-                    "with fire safety regulations to ensure a safe environment for patients and staff."
-                )
-            elif "infection" in combined_text or "ipc" in combined_text:
-                why_it_matters = (
-                    "This requirement is critical for infection control. Surveyors use this to prevent transmission hazards "
-                    "and verify that active clinical safety protocols are maintained."
-                )
-            else:
-                why_it_matters = (
-                    "This is a critical safety and regulatory compliance requirement. Surveyors use this to verify "
-                    "that safety processes are actively managed and compliant with regulatory standards."
-                )
-        else:
-            why_it_matters = "Surveyors use this to verify that the stated process is documented, assigned, and supported by evidence."
+        why_it_matters = (
+            "Surveyors use this objective element to verify that the stated process "
+            "is implemented and supported by appropriate evidence."
+        )
 
     # 7. Evidence Requirements mapping
     required_evidence = []
@@ -182,12 +164,12 @@ def build_requirement_explanation(
     elif len(evidence_roles) > 1:
         responsible_role = "multiple"
         responsible_roles = evidence_roles
-    elif me.default_owner_role:
-        responsible_role = me.default_owner_role
+    elif requirement.default_owner_role:
+        responsible_role = requirement.default_owner_role
 
     # 9. Applicability formatting
     applicability = {
-        "status": me.applicability_default.value if hasattr(me.applicability_default, "value") else str(me.applicability_default),
+        "status": requirement.applicability_default.value if hasattr(requirement.applicability_default, "value") else str(requirement.applicability_default),
         "reason": "Default applicability for this requirement."
     }
 
@@ -233,9 +215,9 @@ def build_requirement_explanation(
             limitations.append("Hospital-specific requirement state has not been computed yet.")
 
     return {
-        "requirement_id": me.id,
-        "requirement_code": me.canonical_code,
-        "title": me.description,
+        "requirement_id": requirement.id,
+        "requirement_code": requirement.canonical_code,
+        "title": requirement.display_text,
         "plain_language_explanation": plain_language_explanation,
         "why_it_matters": why_it_matters,
         "required_evidence": required_evidence,

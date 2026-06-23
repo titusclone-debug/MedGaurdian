@@ -5,11 +5,13 @@ from typing import Optional, Dict, Any, List
 
 from app.models.database import (
     HospitalAccreditationProfile, HospitalNABHRequirement,
-    NABHMeasurableElement, NABHApplicabilityRule,
+    NABHRequirement, NABHApplicabilityRule,
     ApplicabilityDefault, MaturityLevel, EvidenceStatus, ComplianceStatus,
-    NABHEdition, NABHChapter, NABHStandard, NABHObjectiveElement,
+    NABHEdition, NABHChapter, NABHStandard,
     EditionStatus
 )
+from app.nabh.canonical import ensure_canonical_compatibility
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES
 
 PROFILE_WHITELIST = {
     "bed_count",
@@ -155,15 +157,16 @@ class ApplicabilityEngine:
                 "results": []
             }
             
-        # 3. Load all active 6th Edition measurable elements
+        # 3. Load all active 6th Edition canonical requirements
+        ensure_canonical_compatibility(db, edition.id)
         official_chapter_codes = ["AAC", "COP", "MOM", "PRE", "IPC", "PSQ", "ROM", "FMS", "HRM", "IMS"]
-        elements = db.query(NABHMeasurableElement).join(NABHObjectiveElement).join(NABHStandard).join(NABHChapter).filter(
+        elements = db.query(NABHRequirement).join(NABHStandard).join(NABHChapter).filter(
             NABHChapter.edition_id == edition.id,
             NABHChapter.canonical_code.in_(official_chapter_codes),
             NABHChapter.retired_at.is_(None),
             NABHStandard.retired_at.is_(None),
-            NABHObjectiveElement.retired_at.is_(None),
-            NABHMeasurableElement.retired_at.is_(None)
+            NABHRequirement.retired_at.is_(None),
+            NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         ).all()
 
         element_ids = [element.id for element in elements]
@@ -171,19 +174,19 @@ class ApplicabilityEngine:
         states_by_requirement = {}
         if element_ids:
             rules = db.query(NABHApplicabilityRule).filter(
-                NABHApplicabilityRule.measurable_element_id.in_(element_ids),
+                NABHApplicabilityRule.requirement_id.in_(element_ids),
                 NABHApplicabilityRule.retired_at.is_(None)
             ).all()
             for rule in rules:
-                rules_by_element[rule.measurable_element_id].append(rule)
+                rules_by_element[rule.requirement_id].append(rule)
 
             existing_states = db.query(HospitalNABHRequirement).filter(
                 HospitalNABHRequirement.hospital_id == hospital_id,
-                HospitalNABHRequirement.requirement_id.in_(element_ids),
+                HospitalNABHRequirement.canonical_requirement_id.in_(element_ids),
                 HospitalNABHRequirement.retired_at.is_(None)
             ).all()
             states_by_requirement = {
-                state.requirement_id: state
+                state.canonical_requirement_id: state
                 for state in existing_states
             }
         
@@ -265,7 +268,8 @@ class ApplicabilityEngine:
             if not req_state:
                 req_state = HospitalNABHRequirement(
                     hospital_id=hospital_id,
-                    requirement_id=element.id,
+                    requirement_id=element.legacy_measurable_element_id,
+                    canonical_requirement_id=element.id,
                     applicability_status=winning_status,
                     applicability_reason=winning_reason,
                     maturity_level=MaturityLevel.NON_EXISTENT,

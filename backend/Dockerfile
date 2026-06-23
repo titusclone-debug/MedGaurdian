@@ -27,5 +27,6 @@ COPY . .
 # Expose port 8000 for the app
 EXPOSE 8000
 
-# Start Gunicorn with 1 uvicorn worker to prevent DB lock contentions on single-core Free Tier containers
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000"]
+# Apply the recorded schema revision under a PostgreSQL advisory lock before
+# accepting traffic, then replace the shell so signals reach Gunicorn.
+CMD ["sh", "-c", "python scripts/run_migrations.py && exec gunicorn -w 1 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000"]

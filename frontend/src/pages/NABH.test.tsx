@@ -223,8 +223,8 @@ function mockApi({ profile = profileMissing, requirements = [] as any[] } = {}) 
 
     if (url === '/api/nabh/ontology/coverage') return jsonResponse(coverage)
     if (url === '/api/nabh/ontology/chapters') return jsonResponse(chapters)
-    if (url === '/api/nabh/ontology/requirements?limit=100') {
-      return jsonResponse({ total: ontologyRequirements.length, limit: 100, offset: 0, items: ontologyRequirements })
+    if (url === '/api/nabh/ontology/requirements?chapter_code=FMS&limit=200') {
+      return jsonResponse({ total: ontologyRequirements.length, limit: 200, offset: 0, items: ontologyRequirements })
     }
     if (url === `/api/nabh/profile/${hospitalId}` && method === 'GET') return jsonResponse(profile)
     if (url === `/api/nabh/profile/${hospitalId}` && method === 'PUT') return jsonResponse({ ...profileSaved, exists: true })

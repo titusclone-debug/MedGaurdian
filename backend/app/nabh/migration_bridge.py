@@ -21,16 +21,18 @@ from app.models.database import (
     NABHMeasurableElement,
     NABHObjective,
     NABHObjectiveElement,
+    NABHRequirement,
     NABHStandard,
     Staff,
 )
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
 from app.nabh.quality import NABHQualityError, assert_requirement_has_evidence_definitions
 
 
 @dataclass
 class MappingTarget:
     mapping_level: str
-    requirement: NABHMeasurableElement
+    requirement: NABHRequirement
 
 
 @dataclass
@@ -78,19 +80,17 @@ def _find_active_edition(db: Session, edition_version: str) -> Optional[NABHEdit
 
 
 def _active_requirement_query(db: Session, edition: NABHEdition):
-    return db.query(NABHMeasurableElement).join(
-        NABHObjectiveElement,
-        NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id,
-    ).join(
+    ensure_canonical_compatibility(db, edition.id)
+    return db.query(NABHRequirement).join(
         NABHStandard,
-        NABHObjectiveElement.standard_id == NABHStandard.id,
+        NABHRequirement.standard_id == NABHStandard.id,
     ).join(
         NABHChapter,
         NABHStandard.chapter_id == NABHChapter.id,
     ).filter(
-        NABHMeasurableElement.edition_id == edition.id,
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.edition_id == edition.id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None),
     )
@@ -102,10 +102,10 @@ def _resolve_mapping_targets(db: Session, edition: NABHEdition, legacy_code: str
         return []
 
     exact_requirement = _active_requirement_query(db, edition).filter(
-        NABHMeasurableElement.canonical_code == code,
+        NABHRequirement.canonical_code == code,
     ).first()
     if exact_requirement:
-        return [MappingTarget("measurable_element", exact_requirement)]
+        return [MappingTarget("requirement", exact_requirement)]
 
     objective = db.query(NABHObjectiveElement).join(
         NABHStandard,
@@ -121,9 +121,12 @@ def _resolve_mapping_targets(db: Session, edition: NABHEdition, legacy_code: str
         NABHChapter.retired_at.is_(None),
     ).first()
     if objective:
-        rows = _active_requirement_query(db, edition).filter(
+        rows = _active_requirement_query(db, edition).join(
+            NABHMeasurableElement,
+            NABHRequirement.legacy_measurable_element_id == NABHMeasurableElement.id,
+        ).filter(
             NABHMeasurableElement.objective_element_id == objective.id,
-        ).order_by(NABHMeasurableElement.display_order).all()
+        ).order_by(NABHRequirement.display_order).all()
         return [MappingTarget("objective_element", row) for row in rows]
 
     standard = db.query(NABHStandard).join(
@@ -137,11 +140,8 @@ def _resolve_mapping_targets(db: Session, edition: NABHEdition, legacy_code: str
     ).first()
     if standard:
         rows = _active_requirement_query(db, edition).filter(
-            NABHObjectiveElement.standard_id == standard.id,
-        ).order_by(
-            NABHObjectiveElement.display_order,
-            NABHMeasurableElement.display_order,
-        ).all()
+            NABHRequirement.standard_id == standard.id,
+        ).order_by(NABHRequirement.display_order).all()
         return [MappingTarget("standard", row) for row in rows]
 
     return []
@@ -173,7 +173,8 @@ def _record_mapping(
     dry_run: bool,
     hospital_id: str,
     legacy: NABHObjective,
-    new_requirement_id: Optional[str],
+    canonical_requirement_id: Optional[str],
+    legacy_measurable_element_id: Optional[str],
     mapping_level: str,
     mapping_status: str,
     reason: str,
@@ -183,11 +184,13 @@ def _record_mapping(
 
     existing = db.query(NABHLegacyMigrationMap).filter(
         NABHLegacyMigrationMap.legacy_objective_id == legacy.id,
-        NABHLegacyMigrationMap.new_requirement_id == new_requirement_id,
+        NABHLegacyMigrationMap.canonical_requirement_id == canonical_requirement_id,
         NABHLegacyMigrationMap.mapping_level == mapping_level,
     ).first()
     if existing:
         existing.mapping_status = mapping_status
+        existing.new_requirement_id = legacy_measurable_element_id
+        existing.canonical_requirement_id = canonical_requirement_id
         existing.reason = reason
         existing.migrated_at = datetime.utcnow()
         return
@@ -196,7 +199,8 @@ def _record_mapping(
         hospital_id=hospital_id,
         legacy_objective_id=legacy.id,
         legacy_standard_code=legacy.standard_code,
-        new_requirement_id=new_requirement_id,
+        new_requirement_id=legacy_measurable_element_id,
+        canonical_requirement_id=canonical_requirement_id,
         mapping_level=mapping_level,
         mapping_status=mapping_status,
         reason=reason,
@@ -242,7 +246,8 @@ def _build_new_state(
 
     return HospitalNABHRequirement(
         hospital_id=hospital_id,
-        requirement_id=target.requirement.id,
+        requirement_id=target.requirement.legacy_measurable_element_id,
+        canonical_requirement_id=target.requirement.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
         applicability_reason=f"Migrated from legacy NABH objective {legacy.standard_code} at {target.mapping_level} level.",
         maturity_level=maturity,
@@ -296,7 +301,8 @@ def migrate_hospital_legacy_nabh_state(
                 dry_run=dry_run,
                 hospital_id=hospital_id,
                 legacy=legacy,
-                new_requirement_id=None,
+                canonical_requirement_id=None,
+                legacy_measurable_element_id=None,
                 mapping_level="unmapped",
                 mapping_status="unmapped",
                 reason=reason,
@@ -313,7 +319,7 @@ def migrate_hospital_legacy_nabh_state(
         for target in targets:
             existing = db.query(HospitalNABHRequirement).filter(
                 HospitalNABHRequirement.hospital_id == hospital_id,
-                HospitalNABHRequirement.requirement_id == target.requirement.id,
+                HospitalNABHRequirement.canonical_requirement_id == target.requirement.id,
                 HospitalNABHRequirement.retired_at.is_(None),
             ).first()
 
@@ -324,7 +330,8 @@ def migrate_hospital_legacy_nabh_state(
                     dry_run=dry_run,
                     hospital_id=hospital_id,
                     legacy=legacy,
-                    new_requirement_id=target.requirement.id,
+                    canonical_requirement_id=target.requirement.id,
+                    legacy_measurable_element_id=target.requirement.legacy_measurable_element_id,
                     mapping_level=target.mapping_level,
                     mapping_status="skipped_existing",
                     reason="Existing new requirement state preserved.",
@@ -345,7 +352,8 @@ def migrate_hospital_legacy_nabh_state(
                 dry_run=dry_run,
                 hospital_id=hospital_id,
                 legacy=legacy,
-                new_requirement_id=target.requirement.id,
+                canonical_requirement_id=target.requirement.id,
+                legacy_measurable_element_id=target.requirement.legacy_measurable_element_id,
                 mapping_level=target.mapping_level,
                 mapping_status="mapped",
                 reason="Created new requirement state from legacy objective.",

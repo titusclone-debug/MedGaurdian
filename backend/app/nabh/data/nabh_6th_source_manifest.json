@@ -1,0 +1,66 @@
+{
+  "source_id": "NABH-HCO-6-2025-STANDARD",
+  "title": "NABH Accreditation Standards for Hospitals",
+  "issuer": "National Accreditation Board for Hospitals and Healthcare Providers",
+  "programme": "Hospitals Accreditation Programme",
+  "edition_version": "6.0",
+  "edition_label": "6th Edition",
+  "effective_date": "2025-01-01",
+  "isbn": "978-81-965264-9-8",
+  "sha256": "0C684E6B71A9D582E50966A13E2BE3859EE5CA50C90D172D4FE57B79315C791A",
+  "file_size_bytes": 16404482,
+  "pdf_page_count": 242,
+  "printed_page_start": 1,
+  "printed_page_end": 230,
+  "document_type": "accreditation_standard",
+  "authority_level": "normative",
+  "rights_status": "permission_required",
+  "may_store_full_text": false,
+  "may_display_full_text": false,
+  "may_create_embeddings": false,
+  "copyright_notice": "All rights reserved; reproduction or transmission requires written permission.",
+  "canonical_totals": {
+    "chapters": 10,
+    "standards": 100,
+    "requirements": 639,
+    "core": 105,
+    "commitment": 457,
+    "achievement": 60,
+    "excellence": 17
+  },
+  "chapter_pages": {
+    "AAC": {"first_printed_page": 55, "last_printed_page": 67},
+    "COP": {"first_printed_page": 68, "last_printed_page": 88},
+    "MOM": {"first_printed_page": 89, "last_printed_page": 100},
+    "PRE": {"first_printed_page": 101, "last_printed_page": 109},
+    "IPC": {"first_printed_page": 110, "last_printed_page": 118},
+    "PSQ": {"first_printed_page": 119, "last_printed_page": 131},
+    "ROM": {"first_printed_page": 132, "last_printed_page": 139},
+    "FMS": {"first_printed_page": 140, "last_printed_page": 149},
+    "HRM": {"first_printed_page": 150, "last_printed_page": 165},
+    "IMS": {"first_printed_page": 166, "last_printed_page": 174}
+  },
+  "known_anomalies": [
+    {
+      "code": "COP-SUMMARY-TOTAL",
+      "source_locator": "printed page 19",
+      "observed_value": "COP objective elements = 135",
+      "reconciled_value": "COP objective elements = 136",
+      "basis": "The detailed COP table enumerates 136 objective elements and its classification totals are 13 + 107 + 12 + 4 = 136."
+    },
+    {
+      "code": "CONTENTS-HRM-START",
+      "source_locator": "contents page",
+      "observed_value": "HRM starts at printed page 159",
+      "reconciled_value": "HRM starts at printed page 150",
+      "basis": "The HRM chapter title and summary begin at printed page 150."
+    },
+    {
+      "code": "CONTENTS-IMS-START",
+      "source_locator": "contents page",
+      "observed_value": "IMS starts at printed page 186",
+      "reconciled_value": "IMS starts at printed page 166",
+      "basis": "The IMS chapter title and summary begin at printed page 166; the glossary begins at printed page 175."
+    }
+  ]
+}

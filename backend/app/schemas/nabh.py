@@ -3,7 +3,9 @@ from datetime import datetime
 from typing import Optional, List
 from app.models.database import (
     EditionStatus, ApplicabilityDefault, MaturityLevel, EvidenceStatus,
-    ComplianceStatus, ProfileStatus, VerificationStatus, EvidenceType
+    ComplianceStatus, ProfileStatus, VerificationStatus, EvidenceType,
+    KnowledgeAuthorityLevel, KnowledgePublicationStatus,
+    NABHRequirementClassification,
 )
 
 # --- Task 10: Ontology Schemas ---
@@ -25,12 +27,55 @@ class NABHChapterSummary(BaseModel):
     title: str
     display_order: int
     official_standards_count: int
+    official_requirements_count: Optional[int] = None
     official_measurable_elements_count: int
     core_count: Optional[int] = None
     commitment_count: Optional[int] = None
     achievement_count: Optional[int] = None
     excellence_count: Optional[int] = None
     is_fully_seeded: bool
+
+
+class NABHSourceAnomalySchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    anomaly_code: str
+    title: str
+    description: str
+    source_locator: str
+    observed_value: Optional[str] = None
+    reconciled_value: Optional[str] = None
+    reconciliation_basis: Optional[str] = None
+    status: str
+    verified_at: Optional[datetime] = None
+
+
+class NABHSourceDocumentSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    title: str
+    publisher: str
+    edition_version: str
+    checksum: Optional[str] = None
+    file_size_bytes: Optional[int] = None
+    pdf_page_count: Optional[int] = None
+    printed_page_start: Optional[int] = None
+    printed_page_end: Optional[int] = None
+    isbn: Optional[str] = None
+    document_type: Optional[str] = None
+    programme: Optional[str] = None
+    authority_level: KnowledgeAuthorityLevel
+    rights_status: str
+    may_store_full_text: bool
+    may_display_full_text: bool
+    may_create_embeddings: bool
+    verification_status: KnowledgePublicationStatus
+    verified_by: Optional[str] = None
+    verified_at: Optional[datetime] = None
+    approved_by: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    effective_date: Optional[datetime] = None
+    anomalies: List[NABHSourceAnomalySchema] = Field(default_factory=list)
+
 
 class NABHRequirementSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -44,6 +89,11 @@ class NABHRequirementSummary(BaseModel):
     standard_code: str
     standard_title: str
     objective_element_code: str
+    classification: Optional[NABHRequirementClassification] = None
+    documentation_required: Optional[bool] = None
+    authority_level: Optional[KnowledgeAuthorityLevel] = None
+    publication_status: Optional[KnowledgePublicationStatus] = None
+    source_status: Optional[str] = None
 
 class PaginatedRequirementSummary(BaseModel):
     total: int
@@ -75,13 +125,18 @@ class NABHEvidenceRequirementSchema(BaseModel):
 class NABHCitationSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
-    measurable_element_id: str
+    requirement_id: Optional[str] = None
+    measurable_element_id: Optional[str] = None
     document_id: Optional[str] = None
     section: Optional[str] = None
     page_number: Optional[str] = None
+    printed_page_number: Optional[str] = None
+    pdf_page_index: Optional[int] = None
+    source_heading: Optional[str] = None
     clause_text_summary: Optional[str] = None
     file_path: Optional[str] = None
     url: Optional[str] = None
+    human_verified: bool = False
 
 class NABHRequirementDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -96,6 +151,11 @@ class NABHRequirementDetail(BaseModel):
     standard_title: str
     objective_element_code: str
     objective_element_description: str
+    classification: Optional[NABHRequirementClassification] = None
+    documentation_required: Optional[bool] = None
+    authority_level: Optional[KnowledgeAuthorityLevel] = None
+    publication_status: Optional[KnowledgePublicationStatus] = None
+    source_status: Optional[str] = None
     applicability_rules: List[NABHRuleSchema] = []
     evidence_requirements: List[NABHEvidenceRequirementSchema] = []
     citations: List[NABHCitationSchema] = []
@@ -109,13 +169,18 @@ class NABHRequirementDetail(BaseModel):
 class CitationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
-    measurable_element_id: str
+    requirement_id: Optional[str] = None
+    measurable_element_id: Optional[str] = None
     document: Optional[dict] = None
     section: Optional[str] = None
     page_number: Optional[str] = None
+    printed_page_number: Optional[str] = None
+    pdf_page_index: Optional[int] = None
+    source_heading: Optional[str] = None
     clause_text_summary: Optional[str] = None
     file_path: Optional[str] = None
     url: Optional[str] = None
+    human_verified: bool = False
     effective_date_override: Optional[str] = None
     resolved_effective_date: Optional[str] = None
     ontology: Optional[dict] = None

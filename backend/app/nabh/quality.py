@@ -18,12 +18,13 @@ from app.models.database import (
     NABHChapter,
     NABHEdition,
     NABHEvidenceRequirement,
-    NABHMeasurableElement,
-    NABHObjectiveElement,
+    NABHRequirement,
     NABHRequirementCitation,
     NABHSourceDocument,
     NABHStandard,
+    KnowledgePublicationStatus,
 )
+from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
 
 
 PLACEHOLDER_VALUES = {"", "tbd", "todo", "placeholder", "unknown", "n/a"}
@@ -68,18 +69,15 @@ def _add_required_text_error(errors: list[str], label: str, value: Optional[str]
 
 
 def _active_requirement_chain(db: Session, requirement_id: str):
+    ensure_canonical_compatibility(db)
     return db.query(
-        NABHMeasurableElement,
-        NABHObjectiveElement,
+        NABHRequirement,
         NABHStandard,
         NABHChapter,
         NABHEdition,
     ).join(
-        NABHObjectiveElement,
-        NABHMeasurableElement.objective_element_id == NABHObjectiveElement.id,
-    ).join(
         NABHStandard,
-        NABHObjectiveElement.standard_id == NABHStandard.id,
+        NABHRequirement.standard_id == NABHStandard.id,
     ).join(
         NABHChapter,
         NABHStandard.chapter_id == NABHChapter.id,
@@ -87,9 +85,9 @@ def _active_requirement_chain(db: Session, requirement_id: str):
         NABHEdition,
         NABHChapter.edition_id == NABHEdition.id,
     ).filter(
-        NABHMeasurableElement.id == requirement_id,
-        NABHMeasurableElement.retired_at.is_(None),
-        NABHObjectiveElement.retired_at.is_(None),
+        NABHRequirement.id == requirement_id,
+        NABHRequirement.retired_at.is_(None),
+        NABHRequirement.publication_status.in_(ACTIVE_PUBLICATION_STATUSES),
         NABHStandard.retired_at.is_(None),
         NABHChapter.retired_at.is_(None),
         NABHEdition.retired_at.is_(None),
@@ -98,7 +96,7 @@ def _active_requirement_chain(db: Session, requirement_id: str):
 
 def _active_evidence_requirements(db: Session, requirement_id: str) -> list[NABHEvidenceRequirement]:
     return db.query(NABHEvidenceRequirement).filter(
-        NABHEvidenceRequirement.measurable_element_id == requirement_id,
+        NABHEvidenceRequirement.requirement_id == requirement_id,
         NABHEvidenceRequirement.retired_at.is_(None),
     ).all()
 
@@ -108,7 +106,7 @@ def _active_citations_with_documents(db: Session, requirement_id: str):
         NABHSourceDocument,
         NABHRequirementCitation.document_id == NABHSourceDocument.id,
     ).filter(
-        NABHRequirementCitation.measurable_element_id == requirement_id,
+        NABHRequirementCitation.requirement_id == requirement_id,
         NABHRequirementCitation.retired_at.is_(None),
         NABHSourceDocument.retired_at.is_(None),
     ).all()
@@ -148,7 +146,7 @@ def validate_requirement_runtime_quality(
             errors=["requirement is missing or has a retired ontology chain"],
         )
 
-    requirement, objective, standard, chapter, edition = chain
+    requirement, standard, chapter, edition = chain
     report = RequirementQualityReport(
         requirement_id=requirement.id,
         requirement_code=requirement.canonical_code or requirement.id,
@@ -162,10 +160,8 @@ def validate_requirement_runtime_quality(
     _add_required_text_error(errors, "chapter title", chapter.title)
     _add_required_text_error(errors, "standard code", standard.canonical_code)
     _add_required_text_error(errors, "standard title", standard.title)
-    _add_required_text_error(errors, "objective element code", objective.canonical_code)
-    _add_required_text_error(errors, "objective element description", objective.description)
     _add_required_text_error(errors, "requirement code", requirement.canonical_code)
-    _add_required_text_error(errors, "requirement description", requirement.description)
+    _add_required_text_error(errors, "requirement description", requirement.display_text)
 
     if requirement.applicability_default is None:
         errors.append("missing applicability default")
@@ -191,6 +187,21 @@ def validate_requirement_runtime_quality(
             errors.append("missing active citation with active source document")
         elif not any(citation_has_locator(citation) for citation, _document in citation_rows):
             errors.append("missing citation locator")
+        if requirement.source_status == "official_verified":
+            verified_citations = [
+                (citation, document)
+                for citation, document in citation_rows
+                if citation.human_verified
+                and document.verification_status in {
+                    KnowledgePublicationStatus.APPROVED,
+                    KnowledgePublicationStatus.PUBLISHED,
+                }
+            ]
+            if not verified_citations:
+                errors.append(
+                    "official requirement lacks a human-verified citation "
+                    "to an approved source document"
+                )
 
     return report
 

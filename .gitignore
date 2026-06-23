@@ -35,3 +35,6 @@ Thumbs.db
 # Local data and db backup files
 backend/data/
 *.real
+# Protected research sources and local review artifacts
+.tmp/
+workspace/research_data/*.pdf

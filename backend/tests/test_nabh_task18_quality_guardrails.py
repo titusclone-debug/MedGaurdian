@@ -232,7 +232,8 @@ def test_runtime_quality_rejects_placeholder_evidence_description(db_session):
 def test_partial_ontology_does_not_require_all_official_elements(db_session):
     *_prefix, requirement, _state = create_requirement_graph(db_session)
     chapter = db_session.query(NABHChapter).filter_by(id="chapter-task18").first()
-    chapter.official_measurable_elements_count = 638
+    chapter.official_requirements_count = 639
+    chapter.official_measurable_elements_count = 639
     db_session.commit()
 
     report = validate_requirement_runtime_quality(db_session, requirement.id)

@@ -56,6 +56,15 @@ export type Coverage = {
   global_standards_coverage_percent: number
   global_elements_coverage_percent: number
   citation_complete: boolean
+  source_anomalies?: Array<{
+    anomaly_code: string
+    title: string
+    source_locator: string
+    observed_value?: string | null
+    reconciled_value?: string | null
+    reconciliation_basis?: string | null
+    status: string
+  }>
   chapters: CoverageChapter[]
 }
 
@@ -66,6 +75,7 @@ export type OntologyChapter = {
   title: string
   display_order: number
   official_standards_count: number
+  official_requirements_count?: number
   official_measurable_elements_count: number
   is_fully_seeded: boolean
 }
@@ -81,6 +91,11 @@ export type OntologyRequirement = {
   standard_code: string
   standard_title: string
   objective_element_code: string
+  classification?: 'core' | 'commitment' | 'achievement' | 'excellence' | null
+  documentation_required?: boolean | null
+  authority_level?: string | null
+  publication_status?: string | null
+  source_status?: string | null
 }
 
 export type HospitalRequirement = {

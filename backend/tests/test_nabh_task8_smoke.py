@@ -15,9 +15,9 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.models.database import (
     NABHEdition, NABHChapter, NABHStandard,
-    NABHObjectiveElement, NABHMeasurableElement,
+    NABHObjectiveElement, NABHMeasurableElement, NABHRequirement,
     NABHSourceDocument, NABHRequirementCitation,
-    NABHEvidenceRequirement, Staff, UserRole
+    NABHEvidenceRequirement, NABHSourceAnomaly, Staff, UserRole
 )
 from app.main import app
 from app.nabh.seeder import seed_versioned_ontology
@@ -42,6 +42,8 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
     db_session.execute(text("DELETE FROM nabh_requirement_citations"))
     db_session.execute(text("DELETE FROM nabh_applicability_rules"))
     db_session.execute(text("DELETE FROM nabh_evidence_requirements"))
+    db_session.execute(text("DELETE FROM nabh_source_anomalies"))
+    db_session.execute(text("DELETE FROM nabh_requirements"))
     db_session.execute(text("DELETE FROM nabh_measurable_elements"))
     db_session.execute(text("DELETE FROM nabh_objective_elements"))
     db_session.execute(text("DELETE FROM nabh_standards"))
@@ -70,19 +72,24 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
         assert chap.canonical_code in official_chapter_codes
         assert chap.is_fully_seeded is False
         assert chap.official_standards_count is not None
+        assert chap.official_requirements_count is not None
         assert chap.official_measurable_elements_count is not None
 
     # Total official chapter counts check
     official_standards_total = sum(c.official_standards_count for c in db_chapters)
-    official_elements_total = sum(c.official_measurable_elements_count for c in db_chapters)
+    official_elements_total = sum(c.official_requirements_count for c in db_chapters)
     assert official_standards_total == 100
-    assert official_elements_total == 638
+    assert official_elements_total == 639
 
     # Assert seeded requirement entities exist and match IPC, MOM, FMS
     seeded_elements = db_session.query(NABHMeasurableElement).all()
     assert len(seeded_elements) == 3
     element_codes = {el.canonical_code for el in seeded_elements}
     assert element_codes == {"IPC-1.a.1", "MOM-1.a.1", "FMS-1.a.1"}
+    canonical_requirements = db_session.query(NABHRequirement).all()
+    assert {item.id for item in canonical_requirements} == {
+        item.id for item in seeded_elements
+    }
 
     # Assert every seeded element has at least one citation and one evidence requirement
     for el in seeded_elements:
@@ -105,25 +112,36 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
     assert data["official_declared_total_standards"] == 100
     assert data["official_declared_total_elements"] == 639
     assert data["official_chapter_sum_standards"] == 100
-    assert data["official_chapter_sum_elements"] == 638
-    assert data["official_chapter_objective_elements_sum"] == 638
+    assert data["official_chapter_sum_elements"] == 639
+    assert data["official_chapter_objective_elements_sum"] == 639
     assert data["official_category_breakdown_sum"] == 639
     assert data["official_standards_discrepancy"] == 0
-    assert data["official_elements_discrepancy"] == 1
-    assert data["has_source_inconsistency"] is True
-    assert len(data["inconsistencies"]) == 1
-    
-    inconsistency = data["inconsistencies"][0]
-    assert inconsistency["chapter_code"] == "COP"
-    assert inconsistency["objective_elements_count"] == 135
-    assert inconsistency["category_breakdown_sum"] == 136
-    assert inconsistency["difference"] == 1
+    assert data["official_elements_discrepancy"] == 0
+    assert data["has_source_inconsistency"] is False
+    assert data["inconsistencies"] == []
+    assert len(data["source_anomalies"]) == 3
+    assert all(
+        anomaly["status"] == "reconciled"
+        for anomaly in data["source_anomalies"]
+    )
     
     assert data["seeded_total_standards"] == 3
     assert data["seeded_total_elements"] == 3
     assert data["global_standards_coverage_percent"] == 3.0
     assert data["global_elements_coverage_percent"] == 0.5
     assert data["citation_complete"] is False
+
+    source_response = client.get("/api/nabh/ontology/sources")
+    assert source_response.status_code == 200
+    official_sources = [
+        source for source in source_response.json()
+        if source["checksum"]
+        == "0C684E6B71A9D582E50966A13E2BE3859EE5CA50C90D172D4FE57B79315C791A"
+    ]
+    assert len(official_sources) == 1
+    assert official_sources[0]["rights_status"] == "permission_required"
+    assert official_sources[0]["may_store_full_text"] is False
+    assert len(official_sources[0]["anomalies"]) == 3
 
     # Assert ordering of chapters matches display_order
     chapters_resp = data["chapters"]
@@ -160,7 +178,7 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
 
     # Check IPC breakdown details
     ipc_resp = [c for c in chapters_resp if c["chapter_code"] == "IPC"][0]
-    assert ipc_resp["title"] == "Infection Prevention & Control"
+    assert ipc_resp["title"] == "Infection Prevention and Control"
     assert ipc_resp["official_standards_count"] == 8
     assert ipc_resp["official_objective_elements_count"] == 49
     assert ipc_resp["core_count"] == 13
