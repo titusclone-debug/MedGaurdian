@@ -1,0 +1,1844 @@
+[
+  {
+    "chapter_code": "IPC",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "IPC-1",
+        "title": "Infection Prevention and Control Program",
+        "description": "The organization establishes and maintains a structured infection prevention and control program aligned with evidence-based guidelines and regulatory mandates.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "IPC-1.a",
+            "description": "A documented IPC program exists, covering all patient care and support areas, with clearly defined scope and objectives.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.a.1",
+                "description": "The organization maintains a comprehensive, written IPC program manual that is reviewed and updated at least annually in line with current national and international guidelines.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.b",
+            "description": "An Infection Control Committee (ICC) is constituted with multidisciplinary membership and meets at defined intervals.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.b.1",
+                "description": "A multidisciplinary ICC is formally constituted, with documented terms of reference, and meets at least quarterly with maintained minutes of meetings.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.c",
+            "description": "An Infection Control Officer and/or team is designated with defined roles, authority, and accountability.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.c.1",
+                "description": "A qualified infection control nurse or officer is designated with clearly documented roles, responsibilities, and authority to enforce IPC practices across the organization.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.d",
+            "description": "The IPC program encompasses risk assessment for healthcare-associated infections across all departments.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.d.1",
+                "description": "A documented risk assessment for HAIs is conducted at least annually covering all clinical and non-clinical areas, with mitigation strategies for identified risks.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.e",
+            "description": "IPC policies and procedures are communicated and accessible to all relevant staff through orientation and ongoing education.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.e.1",
+                "description": "IPC policies are disseminated to all clinical and support staff, with documented evidence of orientation training for new employees and periodic refresher education.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.f",
+            "description": "Adequate budget and resources are allocated to support effective implementation of the IPC program.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.f.1",
+                "description": "There is documented evidence of budgetary allocation for IPC activities including supplies, training, surveillance, and infrastructure requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-1.g",
+            "description": "The IPC program is benchmarked against best practices and outcomes are used to drive continuous improvement.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IPC-1.g.1",
+                "description": "IPC program outcomes are benchmarked against national or international standards, with documented evidence of improvement actions initiated based on comparative analysis.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-2",
+        "title": "Hand Hygiene Practices",
+        "description": "The organization promotes and monitors compliance with evidence-based hand hygiene practices across all patient care and support areas.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "IPC-2.a",
+            "description": "Hand hygiene guidelines based on WHO recommendations are adopted and displayed at all points of care.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.a.1",
+                "description": "Written hand hygiene policies aligned with WHO guidelines are adopted, and visual reminders (posters, signage) are displayed at all hand washing stations and points of care.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.b",
+            "description": "Adequate hand hygiene infrastructure including sinks, soap, and alcohol-based hand rub dispensers is available at all required locations.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.b.1",
+                "description": "Functional hand washing sinks with running water, liquid soap, and single-use towels are available in all patient care areas, with alcohol-based hand rub dispensers at the point of care.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.c",
+            "description": "Staff are trained on the WHO five moments of hand hygiene and correct hand washing techniques.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.c.1",
+                "description": "All healthcare workers receive documented training on the five moments of hand hygiene, proper handwashing and hand rub techniques at induction and through periodic refresher sessions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.d",
+            "description": "Hand hygiene compliance is monitored through periodic audits using a standardized observation methodology.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.d.1",
+                "description": "Regular hand hygiene compliance audits are conducted using a standardized observation tool, with results documented and shared with clinical leadership at defined intervals.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.e",
+            "description": "Corrective actions are implemented to improve hand hygiene compliance based on audit findings.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.e.1",
+                "description": "Documented corrective actions and improvement plans are developed and implemented when hand hygiene compliance rates fall below established targets.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.f",
+            "description": "Hand hygiene compliance rates are tracked as a key performance indicator and reported to leadership.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.f.1",
+                "description": "Hand hygiene compliance rates are monitored as a quality indicator, with trend analysis performed and periodic reports submitted to the ICC and hospital management.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-2.g",
+            "description": "Hand hygiene practices extend to patients, visitors, and contract staff with appropriate awareness measures.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IPC-2.g.1",
+                "description": "Patients, visitors, and contract personnel are educated on hand hygiene through signage, leaflets, or verbal instructions, with evidence of awareness activities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-3",
+        "title": "Standard and Transmission-Based Precautions",
+        "description": "The organization implements standard precautions for all patients and transmission-based precautions for patients with known or suspected infectious agents.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "IPC-3.a",
+            "description": "Standard precautions are applied universally for all patient interactions, including use of appropriate personal protective equipment.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.a.1",
+                "description": "Documented policies for standard precautions (hand hygiene, PPE, respiratory hygiene, safe injection practices, sharps safety) are implemented for all patient encounters.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.b",
+            "description": "Adequate PPE (gloves, masks, gowns, face shields, eye protection) is available and staff are trained in correct donning and doffing procedures.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.b.1",
+                "description": "Adequate quantities of appropriate PPE are available in all clinical areas, with staff trained and periodically assessed on correct donning and doffing sequences.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.c",
+            "description": "Transmission-based precautions (contact, droplet, airborne) are implemented based on mode of disease transmission.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.c.1",
+                "description": "Documented protocols for contact, droplet, and airborne precautions are implemented, with isolation signage, dedicated equipment, and appropriate room assignments for identified patients.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.d",
+            "description": "Safe injection and infusion practices are followed as per standard guidelines to prevent needlestick injuries and cross-contamination.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.d.1",
+                "description": "Single-use injection devices are used, multi-dose vials are managed per policy, and needlestick prevention devices are available, with documented training on safe injection practices.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.e",
+            "description": "Occupational exposure management protocols are established for post-exposure prophylaxis and follow-up.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.e.1",
+                "description": "A documented post-exposure prophylaxis (PEP) protocol is available for occupational exposure to blood and body fluids, with 24/7 access to PEP starter kits and follow-up tracking.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.f",
+            "description": "Cleaning, disinfection, and environmental decontamination protocols are defined for patient care areas and equipment.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.f.1",
+                "description": "Documented protocols for environmental cleaning, terminal disinfection, and equipment decontamination are implemented, with defined frequencies, agents, and concentrations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "housekeeping_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-3.g",
+            "description": "The organization monitors compliance with standard precautions through surveillance rounds and audits with demonstrated improvement trends.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IPC-3.g.1",
+                "description": "Periodic audits of standard and transmission-based precautions compliance are conducted with documented findings, trend analysis, and evidence of sustained improvement over time.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-4",
+        "title": "Biomedical Waste Management",
+        "description": "The organization manages biomedical waste in compliance with prevailing statutory regulations to minimize risks to staff, patients, and the environment.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "IPC-4.a",
+            "description": "Biomedical waste management complies with applicable national regulations and statutory requirements.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.a.1",
+                "description": "The organization holds valid authorization under biomedical waste management rules and maintains documented compliance with all applicable statutory requirements for waste handling and disposal.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-4.b",
+            "description": "Waste is segregated at the point of generation into appropriate color-coded containers as per regulatory standards.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.b.1",
+                "description": "Color-coded waste segregation containers conforming to regulatory specifications are available at all waste generation points, with proper labeling and biohazard symbols displayed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-4.c",
+            "description": "Safe collection, transportation, storage, and disposal of biomedical waste follows established internal routes and schedules.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.c.1",
+                "description": "Defined internal waste transport routes, collection schedules, and designated temporary storage areas are established, with waste disposed through authorized agencies within stipulated timelines.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "housekeeping_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-4.d",
+            "description": "Staff handling biomedical waste are trained, immunized, and provided with appropriate personal protective equipment.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.d.1",
+                "description": "All waste handlers receive documented initial and refresher training on BMW procedures, are vaccinated as per policy, and are provided with and trained in the use of required PPE.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-4.e",
+            "description": "Sharps waste is managed using puncture-proof containers with documented safe disposal practices.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.e.1",
+                "description": "Puncture-proof, tamper-resistant sharps containers are available at all points of use, are not filled beyond three-quarters capacity, and are disposed of as per regulatory requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-4.f",
+            "description": "Biomedical waste generation records and disposal manifests are maintained for regulatory and internal auditing purposes.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IPC-4.f.1",
+                "description": "Records of daily waste generation quantities by category, disposal manifests, and annual reports are maintained and available for regulatory inspection and internal audit review.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "housekeeping_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-5",
+        "title": "Sterilization and Central Sterile Supply Department",
+        "description": "The organization maintains a centralized sterile supply department with validated sterilization processes ensuring patient and staff safety.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "IPC-5.a",
+            "description": "A CSSD is established with appropriate layout, workflows, and infrastructure ensuring unidirectional flow from dirty to clean areas.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.a.1",
+                "description": "The CSSD has a defined layout with physically separated dirty, clean, and sterile zones, ensuring unidirectional workflow to prevent cross-contamination.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.b",
+            "description": "Sterilization processes are validated through physical, chemical, and biological indicators at defined frequencies.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.b.1",
+                "description": "Physical monitoring (time, temperature, pressure), chemical indicators (internal and external), and biological indicators are used for each sterilization cycle with documented results and corrective actions for failures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.c",
+            "description": "Policies for cleaning, decontamination, disassembly, inspection, and packaging of reusable instruments are documented and implemented.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.c.1",
+                "description": "Standard operating procedures for instrument cleaning, decontamination, inspection, assembly, packaging, and labeling are documented and followed, with staff trained on each step.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.d",
+            "description": "Sterile storage conditions are maintained with defined shelf-life policies and stock rotation practices.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.d.1",
+                "description": "Sterile packs are stored in controlled conditions with defined shelf life, proper labeling (sterilization date, expiry, load number), and first-in-first-out stock rotation is practiced.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.e",
+            "description": "CSSD staff are trained and competent in sterilization techniques and equipment operation.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.e.1",
+                "description": "CSSD personnel have documented competency assessments and receive initial and ongoing training on sterilization methods, equipment operation, and safety protocols.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.f",
+            "description": "Recall procedures for sterilization failures are defined and can be executed promptly.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.f.1",
+                "description": "A documented recall procedure exists for sterilization load failures, with a traceability system linking each sterilized item to its load and cycle, enabling prompt recall when indicators fail.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-5.g",
+            "description": "Quality metrics for sterilization processes are tracked and used to demonstrate continuous improvement.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IPC-5.g.1",
+                "description": "CSSD tracks quality indicators including sterilization failure rates, turnaround times, and recall incidents, with trend analysis showing sustained improvement over time.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "cssd_incharge",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-6",
+        "title": "Healthcare-Associated Infection Surveillance",
+        "description": "The organization conducts systematic surveillance of healthcare-associated infections to identify trends, outbreaks, and implement targeted interventions.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "IPC-6.a",
+            "description": "An HAI surveillance program is established using standardized definitions and methodologies for data collection.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-6.a.1",
+                "description": "A structured HAI surveillance program is implemented using CDC/NHSN or equivalent standardized definitions and case-finding methods, with prospective monitoring in high-risk areas.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-6.b",
+            "description": "HAI rates are calculated, analyzed, and reported to clinical teams and leadership for action.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-6.b.1",
+                "description": "HAI rates (CLABSI, CAUTI, VAP, SSI) are calculated using device-days or procedure-specific denominators, analyzed for trends, and reported to clinical departments and the ICC quarterly.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-6.c",
+            "description": "Outbreak detection and response protocols are documented and operationally ready.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-6.c.1",
+                "description": "A documented outbreak identification and response plan exists with defined trigger thresholds, investigation protocols, communication chains, and containment measures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-6.d",
+            "description": "Device-associated infection prevention bundles are implemented and compliance is monitored.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-6.d.1",
+                "description": "Evidence-based care bundles for device-associated infections (central line, urinary catheter, ventilator) are implemented, with documented bundle compliance audits and feedback to clinical staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-6.e",
+            "description": "Surgical site infection surveillance is conducted for defined procedures with feedback to surgical teams.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-6.e.1",
+                "description": "Post-operative SSI surveillance is conducted for targeted surgical procedures with at least 30-day follow-up, and individual surgeon and procedure-specific SSI rates are fed back to surgical teams.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-7",
+        "title": "Antibiotic Stewardship Program",
+        "description": "The organization implements an antibiotic stewardship program to promote rational use of antimicrobials and prevent antimicrobial resistance.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "IPC-7.a",
+            "description": "An antibiotic stewardship program is established with defined governance structure and institutional antibiotic policy.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-7.a.1",
+                "description": "A formal antibiotic stewardship program is established with a designated team, institutional antibiotic policy, and a hospital formulary-based restricted antibiotic list approved by leadership.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "clinical_pharmacologist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-7.b",
+            "description": "An institutional antibiogram is prepared and updated regularly to guide empirical antimicrobial therapy.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-7.b.1",
+                "description": "An institutional cumulative antibiogram is prepared at least annually based on microbiology laboratory data and disseminated to all prescribing physicians to guide empiric antibiotic selection.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "microbiologist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-7.c",
+            "description": "Antibiotic usage patterns are monitored, and prescribing audits are conducted with feedback to clinicians.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-7.c.1",
+                "description": "Antibiotic consumption data (DDD per 100 bed-days) is tracked, prescribing audits are conducted periodically, and audit results with recommendations are communicated to prescribing clinicians.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "clinical_pharmacologist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-7.d",
+            "description": "Approval mechanisms for restricted and reserve antibiotics are defined and enforced.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-7.d.1",
+                "description": "A tiered authorization system for restricted antibiotics (requiring specialist or committee approval) is documented and enforced, with audit trails for all restricted antibiotic prescriptions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "clinical_pharmacologist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-7.e",
+            "description": "Education on antimicrobial resistance and rational antibiotic use is provided to all prescribers.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-7.e.1",
+                "description": "Regular educational sessions on antimicrobial resistance patterns, rational prescribing principles, and de-escalation strategies are conducted for all medical staff with documented attendance.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "clinical_pharmacologist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IPC-8",
+        "title": "Construction, Renovation, and Infection Control",
+        "description": "The organization addresses infection control risks associated with construction, renovation, and demolition activities within the healthcare facility.",
+        "display_order": 8,
+        "objective_elements": [
+          {
+            "code": "IPC-8.a",
+            "description": "An infection control risk assessment is conducted prior to any construction, renovation, or demolition activity within the facility.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IPC-8.a.1",
+                "description": "A pre-construction infection control risk assessment (ICRA) is documented for all construction, renovation, or demolition projects, classifying risk level and determining required precautions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IPC-8.b",
+            "description": "Barrier containment measures and environmental controls are implemented during construction to prevent dust and airborne contaminant migration.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IPC-8.b.1",
+                "description": "Appropriate barrier measures (rigid dust barriers, negative pressure, sealed openings) are implemented based on ICRA classification to prevent construction dust and debris from reaching patient care areas.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-8.c",
+            "description": "HVAC and ventilation systems are monitored during construction to prevent airborne pathogen transmission to patient care areas.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IPC-8.c.1",
+                "description": "HVAC systems and air handling units are assessed during construction activities to ensure negative pressure differentials, proper filtration, and air changes are maintained in adjacent patient care areas.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-8.d",
+            "description": "Construction workers and contractors are educated on facility IPC requirements and are monitored for compliance.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IPC-8.d.1",
+                "description": "Construction workers and external contractors receive orientation on infection control requirements, designated entry/exit routes, and waste management, with compliance monitoring during the project.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IPC-8.e",
+            "description": "Post-construction cleaning and environmental clearance is completed before the area is reoccupied by patients or staff.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IPC-8.e.1",
+                "description": "A documented post-construction cleaning and environmental clearance protocol is followed, including terminal cleaning, air sampling if indicated, and ICC sign-off before patient readmission to the area.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "PSQ",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "PSQ-1",
+        "title": "Quality Improvement Program",
+        "description": "The organization has an ongoing quality improvement program that monitors, evaluates, and continuously improves the quality of clinical and non-clinical services.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "PSQ-1.a",
+            "description": "A documented quality improvement program is established with defined goals, scope, and governance structure.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.a.1",
+                "description": "The organization maintains a written quality improvement program with defined objectives, scope across all departments, leadership oversight, and annual quality goals approved by the governing body.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.b",
+            "description": "A Quality Council or equivalent body is constituted with multidisciplinary representation to oversee quality activities.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.b.1",
+                "description": "A multidisciplinary Quality Council with representation from medical, nursing, administration, and support services is constituted, meets at least quarterly, and maintains documented minutes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.c",
+            "description": "Quality indicators are identified and monitored for key clinical and managerial processes.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.c.1",
+                "description": "Key quality indicators are identified for clinical and managerial areas, with defined targets, data collection methodologies, and responsible persons for each indicator.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.d",
+            "description": "Quality indicator data is analyzed and used to drive measurable improvements in care processes.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.d.1",
+                "description": "Quality indicator data is collected at defined frequencies, analyzed using statistical methods, and documented improvement projects are initiated when indicators fall below targets.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.e",
+            "description": "Quality improvement methodologies such as PDCA, Lean, or Six Sigma are used for structured problem-solving.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.e.1",
+                "description": "Evidence-based quality improvement methodologies (PDCA, RCA, Lean, Six Sigma, or equivalent) are used for structured problem-solving, with documented project reports.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.f",
+            "description": "Quality improvement results are benchmarked and demonstrated to show sustained improvement over time.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.f.1",
+                "description": "Quality indicator results are benchmarked against internal trends and external standards, with evidence of sustained improvement across multiple measurement cycles.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-1.g",
+            "description": "The organization participates in external quality benchmarking programs and quality award processes.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PSQ-1.g.1",
+                "description": "The organization actively participates in national or international quality benchmarking initiatives, external quality award programs, or collaborative quality improvement networks.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.4,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-2",
+        "title": "Patient Safety Program",
+        "description": "The organization has a comprehensive patient safety program that proactively identifies, mitigates, and manages risks to patient safety.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "PSQ-2.a",
+            "description": "A patient safety program is documented with defined objectives, scope, and accountability structures.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.a.1",
+                "description": "A written patient safety program is established with defined goals, scope encompassing all patient care areas, a designated patient safety officer, and accountability to senior leadership.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.b",
+            "description": "Proactive risk assessment tools such as FMEA or hazard vulnerability analysis are applied to high-risk processes.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.b.1",
+                "description": "Proactive risk assessment tools (FMEA, HVA, or equivalent) are applied to at least one high-risk clinical process annually, with documented risk scores, mitigation actions, and re-evaluation results.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.c",
+            "description": "A culture of safety is promoted through leadership commitment, staff engagement, and non-punitive reporting.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.c.1",
+                "description": "Leadership actively promotes a just culture of safety through visible commitment, non-punitive incident reporting policies, safety walkrounds, and periodic safety culture surveys.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.d",
+            "description": "Patient safety training is provided to all staff as part of induction and ongoing education.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.d.1",
+                "description": "All clinical and relevant non-clinical staff receive patient safety training at induction and periodic refresher sessions, with documented attendance and competency assessment.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.e",
+            "description": "Near misses and unsafe conditions are identified, reported, and analyzed to prevent adverse events.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.e.1",
+                "description": "A system for reporting near misses and unsafe conditions is available to all staff, with documented analysis of reported events and implementation of preventive measures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.f",
+            "description": "Patient safety metrics are defined, monitored, and reported to governance structures.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.f.1",
+                "description": "Patient safety metrics (incident rates, near miss rates, harm severity indices) are tracked, analyzed for trends, and reported to the Patient Safety Committee and hospital leadership periodically.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-2.g",
+            "description": "Patient safety improvement initiatives demonstrate measurable reduction in preventable harm over time.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PSQ-2.g.1",
+                "description": "Documented evidence of patient safety improvement projects showing measurable reduction in preventable harm rates, medication errors, or other safety events across multiple measurement cycles.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-3",
+        "title": "Incident Reporting and Learning System",
+        "description": "The organization maintains a robust incident reporting and learning system to capture, analyze, and act upon patient safety events and near misses.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "PSQ-3.a",
+            "description": "An incident reporting system is established that is accessible, non-punitive, and covers all types of patient safety events.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.a.1",
+                "description": "A formal incident reporting system is implemented, accessible to all staff, covering adverse events, near misses, and sentinel events, with a documented non-punitive reporting policy endorsed by leadership.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.b",
+            "description": "Reported incidents are classified by severity and type using a standardized taxonomy.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.b.1",
+                "description": "Reported incidents are classified using a standardized severity grading system and categorized by type (medication error, fall, procedural error, etc.) to enable meaningful aggregate analysis.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.c",
+            "description": "Root cause analysis is conducted for serious incidents and sentinel events within defined timelines.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.c.1",
+                "description": "Root cause analysis (RCA) is conducted for all sentinel events and serious incidents within 45 days, with a multidisciplinary team, documented causal factors, and actionable recommendations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.d",
+            "description": "Corrective and preventive actions arising from incident analysis are tracked to implementation and effectiveness.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.d.1",
+                "description": "CAPA plans arising from incident analysis are documented with assigned responsibility, target dates, and tracked through implementation to verified effectiveness through sustained monitoring.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.e",
+            "description": "Incident data is aggregated and analyzed periodically to identify system-level trends and patterns.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.e.1",
+                "description": "Aggregate incident data is analyzed at least quarterly for trends, patterns, and common contributing factors, with findings reported to the Patient Safety Committee and used to prioritize improvement initiatives.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.f",
+            "description": "Lessons learned from incidents are shared across the organization to prevent recurrence.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.f.1",
+                "description": "A structured process for disseminating lessons learned from incident investigations exists, including safety alerts, case discussions, departmental briefings, or organization-wide learning communications.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-3.g",
+            "description": "The incident reporting system demonstrates maturity with increasing reporting rates and decreasing harm severity over time.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PSQ-3.g.1",
+                "description": "The organization demonstrates incident reporting maturity through increasing reporting volumes (especially near misses), decreasing proportion of serious harm events, and benchmarking against similar organizations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.4,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-4",
+        "title": "International Patient Safety Goals",
+        "description": "The organization implements patient safety practices aligned with International Patient Safety Goals covering identification, communication, medication safety, surgical safety, falls, and pressure injuries.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "PSQ-4.a",
+            "description": "Patient identification protocols using at least two identifiers are implemented across all clinical interactions.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.a.1",
+                "description": "A policy requiring verification of patient identity using at least two patient-specific identifiers (name and UHID/DOB; not bed number) is implemented before every clinical intervention, medication, blood product, or specimen collection.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.b",
+            "description": "Effective communication protocols including handover, read-back, and critical result reporting are standardized.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.b.1",
+                "description": "Standardized communication tools (SBAR, I-PASS, or equivalent) are used for clinical handovers, with read-back/hear-back protocols for verbal and telephone orders, and defined timelines for critical result communication.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.c",
+            "description": "High-alert medications are identified, stored, and managed with additional safety controls.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.c.1",
+                "description": "A list of high-alert medications is defined, with special storage requirements, warning labels, independent double-check protocols, and concentrated electrolyte management policies enforced across the organization.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.d",
+            "description": "Surgical safety procedures including the WHO Surgical Safety Checklist are implemented for all operative and invasive procedures.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.d.1",
+                "description": "The WHO Surgical Safety Checklist (or equivalent) with sign-in, time-out, and sign-out phases is implemented for all surgical and invasive procedures, with documented compliance monitoring.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "surgical_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.e",
+            "description": "A fall risk assessment and prevention program is implemented for all inpatients with documented reassessment triggers.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.e.1",
+                "description": "A validated fall risk assessment tool is used for all inpatients at admission and reassessment points, with risk-stratified prevention interventions, fall precaution signage, and documented fall rates monitoring.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.f",
+            "description": "Pressure injury risk assessment and prevention protocols are implemented for at-risk patients.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.f.1",
+                "description": "A validated pressure injury risk assessment tool (Braden, Norton, or equivalent) is used for at-risk patients, with documented prevention bundles including repositioning, nutrition support, and skin assessment.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-4.g",
+            "description": "IPSG compliance is monitored through audits and demonstrated improvement in safety outcomes is achieved.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PSQ-4.g.1",
+                "description": "Compliance with all IPSG elements is audited at defined frequencies, with documented audit scores, trend analysis, and evidence of improved patient safety outcomes over successive measurement periods.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-5",
+        "title": "Clinical Audits",
+        "description": "The organization conducts clinical audits to evaluate adherence to clinical protocols, guidelines, and evidence-based practices.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "PSQ-5.a",
+            "description": "A clinical audit program is established with defined scope, methodology, and annual audit calendar.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.a.1",
+                "description": "A structured clinical audit program is documented, with an annual audit calendar covering priority clinical areas, defined audit methodology, and responsible audit leads for each planned audit.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-5.b",
+            "description": "Clinical audits evaluate adherence to evidence-based clinical pathways, protocols, and guidelines.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.b.1",
+                "description": "Clinical audits assess compliance with approved clinical protocols, pathways, and evidence-based guidelines using defined criteria, adequate sample sizes, and standardized audit tools.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-5.c",
+            "description": "Medical record audits are conducted to evaluate completeness, accuracy, and timeliness of clinical documentation.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.c.1",
+                "description": "Periodic medical record audits are conducted evaluating completeness of documentation, legibility, authentication, timeliness of entries, and adherence to record-keeping standards.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "medical_records_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-5.d",
+            "description": "Audit findings are communicated to relevant clinical teams and management for action.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.d.1",
+                "description": "Clinical audit results are formally presented to relevant department heads and clinical teams, with documented action plans for non-compliance findings and defined timelines for re-audit.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-5.e",
+            "description": "Re-audits are conducted to assess the effectiveness of corrective actions following initial audit findings.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.e.1",
+                "description": "Re-audits are conducted within defined timelines after implementation of corrective actions to verify effectiveness, with comparison of pre- and post-intervention compliance rates.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-5.f",
+            "description": "Clinical audit outcomes contribute to the development and revision of clinical guidelines and protocols.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-5.f.1",
+                "description": "Evidence that clinical audit findings have been used to revise or develop clinical pathways, protocols, or guidelines, demonstrating a closed-loop quality improvement cycle.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-6",
+        "title": "Outcome Monitoring and Clinical Indicators",
+        "description": "The organization monitors clinical outcomes through defined indicators to assess care quality and identify opportunities for improvement.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "PSQ-6.a",
+            "description": "Clinical outcome indicators relevant to the organization's scope of services are defined and monitored.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.a.1",
+                "description": "Clinical outcome indicators (mortality rates, readmission rates, complication rates, length of stay) relevant to the organization's case-mix are defined with targets and monitored at defined frequencies.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-6.b",
+            "description": "Department-level and service-specific quality indicators are monitored and reviewed periodically.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.b.1",
+                "description": "Each clinical department monitors at least three service-specific quality indicators, with monthly data collection, quarterly trend analysis, and departmental review discussions documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-6.c",
+            "description": "Mortality and morbidity reviews are conducted for all inpatient deaths and significant complications.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.c.1",
+                "description": "Mortality review committees review all inpatient deaths, and morbidity reviews are conducted for significant complications, with documented findings, preventability assessments, and action taken.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-6.d",
+            "description": "Unplanned readmission and return-to-OT rates are monitored and analyzed for systemic issues.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.d.1",
+                "description": "Unplanned readmissions within 30 days and unplanned returns to the operating theater within 48 hours are tracked, analyzed for root causes, and findings are used to improve discharge planning and surgical care.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-6.e",
+            "description": "Patient-reported outcome measures and satisfaction data are incorporated into quality monitoring.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.e.1",
+                "description": "Patient experience and satisfaction data is systematically collected, analyzed, and used alongside clinical indicators to provide a comprehensive view of care quality, with documented improvement actions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-6.f",
+            "description": "Clinical outcome data demonstrates sustained improvement and approaches or meets established benchmarks.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-6.f.1",
+                "description": "Clinical outcome data demonstrates sustained improvement trends over at least four consecutive quarters, with performance approaching or meeting national or international benchmarks for key indicators.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PSQ-7",
+        "title": "Sentinel Events and Corrective Action",
+        "description": "The organization defines, identifies, and responds to sentinel events through structured investigation, corrective action, and preventive measures.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "PSQ-7.a",
+            "description": "Sentinel events are defined by the organization with a comprehensive list aligned with national and international standards.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.a.1",
+                "description": "The organization maintains a documented list of sentinel events aligned with NABH/JCI definitions, including wrong-site surgery, patient death from medication error, major patient falls, and other serious adverse events.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-7.b",
+            "description": "Sentinel events are reported to hospital leadership within defined timelines and to external authorities as required.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.b.1",
+                "description": "A policy mandates immediate reporting of sentinel events to hospital leadership and the patient safety committee, with external reporting to regulatory authorities within stipulated timelines as required by law.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-7.c",
+            "description": "A comprehensive root cause analysis is completed for every sentinel event with systemic corrective actions.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.c.1",
+                "description": "Every sentinel event undergoes a thorough root cause analysis within 45 days, identifying systemic contributing factors, with documented corrective and preventive actions targeting system-level failures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-7.d",
+            "description": "CAPA implementation is tracked with assigned accountability, timelines, and effectiveness verification.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.d.1",
+                "description": "Corrective and preventive actions from sentinel event RCAs are tracked in a centralized CAPA register with assigned owners, target completion dates, implementation status, and effectiveness verification.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-7.e",
+            "description": "Disclosure of sentinel events to affected patients and families is conducted in accordance with organizational policy.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.e.1",
+                "description": "A documented policy for transparent disclosure of sentinel events to affected patients and families exists, with defined roles for disclosure communication and support provided to affected parties.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "PSQ-7.f",
+            "description": "The organization demonstrates a reduction in sentinel event recurrence through effective systemic changes and sustained monitoring.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PSQ-7.f.1",
+                "description": "The organization can demonstrate through documented evidence that systemic changes implemented following sentinel events have been sustained and have resulted in non-recurrence of similar events over time.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.4,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

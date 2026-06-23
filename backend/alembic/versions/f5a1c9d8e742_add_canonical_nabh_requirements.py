@@ -380,15 +380,16 @@ def upgrade() -> None:
         "nabh_legacy_migration_maps": "canonical_requirement_id",
     }
     for table_name, column_name in dependent_columns.items():
-        _add_column_if_missing(
-            table_name,
-            sa.Column(
-                column_name,
-                sa.String(),
-                sa.ForeignKey("nabh_requirements.id", ondelete="CASCADE"),
-                nullable=True,
-            ),
-        )
+        if column_name not in _columns(table_name):
+            with op.batch_alter_table(table_name) as batch_op:
+                batch_op.add_column(sa.Column(column_name, sa.String(), nullable=True))
+                batch_op.create_foreign_key(
+                    f"fk_{table_name}_{column_name}_nabh_requirements",
+                    "nabh_requirements",
+                    [column_name],
+                    ["id"],
+                    ondelete="CASCADE",
+                )
 
     citation_columns = [
         sa.Column("printed_page_number", sa.String(length=50), nullable=True),

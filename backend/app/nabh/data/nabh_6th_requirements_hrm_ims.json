@@ -1,0 +1,2352 @@
+[
+  {
+    "chapter_code": "HRM",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "HRM-1",
+        "title": "Human Resource Planning",
+        "description": "The organization conducts systematic human resource planning aligned with its strategic goals to ensure adequate staffing across all departments.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "HRM-1.a",
+            "description": "A documented human resource plan exists that aligns staffing requirements with the organization's strategic direction and service scope.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.a.1",
+                "description": "The organization maintains a written HR plan that is reviewed periodically and reflects current and projected service needs.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-1.b",
+            "description": "Staffing ratios and workforce numbers are determined based on patient volume, acuity levels, and departmental workload data.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.b.1",
+                "description": "Staffing norms are established for each department considering patient census, case complexity, and national benchmarks.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-1.c",
+            "description": "Job descriptions are defined for every category of staff, specifying qualifications, duties, reporting relationships, and accountability.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.c.1",
+                "description": "Written job descriptions are available for all positions and include required qualifications, key responsibilities, and reporting structure.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-1.d",
+            "description": "Succession planning is undertaken for leadership and key clinical positions to ensure continuity of services.",
+            "severity": "minor",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.d.1",
+                "description": "A succession plan identifying potential successors for critical leadership and clinical roles is documented and periodically updated.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-1.e",
+            "description": "Periodic reviews of staffing adequacy are conducted to address gaps and changing organizational requirements.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.e.1",
+                "description": "Staffing adequacy reviews are performed at defined intervals with documented action plans for identified gaps.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-1.f",
+            "description": "Budgetary provisions are made for human resource activities including recruitment, training, and staff welfare.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-1.f.1",
+                "description": "An annual HR budget covering recruitment costs, training programs, and employee welfare is approved and monitored.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-2",
+        "title": "Recruitment and Selection Process",
+        "description": "The organization follows a defined and transparent recruitment process ensuring selection of qualified and competent personnel.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "HRM-2.a",
+            "description": "A documented recruitment and selection process exists covering sourcing, screening, interviewing, and appointment procedures.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.a.1",
+                "description": "Written recruitment policies and procedures define each step from requisition to appointment, including approval authorities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-2.b",
+            "description": "Qualifications, professional registrations, and licensure of all clinical staff are verified before appointment.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.b.1",
+                "description": "Original documents for educational qualifications and current registration with relevant statutory bodies are verified and copies retained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-2.c",
+            "description": "Background verification including reference checks is conducted for all new employees prior to joining.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.c.1",
+                "description": "A background verification process including employment references and character checks is completed before or within the probation period.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-2.d",
+            "description": "An equal opportunity and non-discrimination policy guides all hiring decisions.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.d.1",
+                "description": "The recruitment policy incorporates provisions for equal opportunity and prohibits discrimination based on gender, religion, caste, or disability.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-2.e",
+            "description": "A structured probation and confirmation process evaluates new employees' suitability for continued employment.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.e.1",
+                "description": "Probationary evaluation criteria are defined and applied consistently, with documented outcomes leading to confirmation or separation.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-2.f",
+            "description": "Personnel files are maintained for all staff containing required documentation and are kept secure and confidential.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-2.f.1",
+                "description": "Individual personnel files with appointment letters, qualification copies, registration certificates, and appraisal records are maintained securely.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-3",
+        "title": "Credentialing and Privileging of Medical Professionals",
+        "description": "The organization has a defined process for credentialing and granting clinical privileges to medical professionals based on verified qualifications and competence.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "HRM-3.a",
+            "description": "A credentialing process is established for all medical staff including physicians, surgeons, and allied health professionals.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.a.1",
+                "description": "A documented credentialing policy specifies the process for verifying qualifications, training, experience, and registration of all medical professionals.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.b",
+            "description": "Primary source verification of credentials is performed for all clinical staff to confirm the authenticity of qualifications.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.b.1",
+                "description": "Credentials are verified directly with issuing institutions or through recognized verification agencies, with documented evidence of verification.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.c",
+            "description": "Clinical privileges are granted based on credentials, competence assessment, and scope of services offered by the organization.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.c.1",
+                "description": "A privileging process defines specific clinical procedures and activities each practitioner is authorized to perform, based on verified credentials and demonstrated competence.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.d",
+            "description": "Periodic re-credentialing is conducted at defined intervals to ensure continued competence and current registration.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.d.1",
+                "description": "Re-credentialing is performed at least every three years or as per organizational policy, reviewing updated registrations, competence, and performance data.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.e",
+            "description": "A process exists for granting temporary privileges and emergency privileges when clinically necessary.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.e.1",
+                "description": "Policies define the criteria, duration, and approval process for temporary and emergency clinical privileges, including oversight requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.f",
+            "description": "Credentialing of nursing staff is performed to verify their qualifications, registration, and competence for assigned duties.",
+            "severity": "critical",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.f.1",
+                "description": "Nursing staff credentials including nursing council registration, educational qualifications, and specialized training certificates are verified and documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.g",
+            "description": "A credentialing committee or equivalent body oversees the credentialing and privileging process.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.g.1",
+                "description": "A credentialing committee with defined membership, terms of reference, and meeting frequency reviews and approves all credentialing and privileging decisions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-3.h",
+            "description": "The scope of clinical practice is defined for all categories of clinical staff based on their qualifications and privileges.",
+            "severity": "major",
+            "display_order": 8,
+            "measurable_elements": [
+              {
+                "code": "HRM-3.h.1",
+                "description": "Each clinical staff member has a documented scope of practice that is communicated to them and to relevant departments.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-4",
+        "title": "Staff Orientation Program",
+        "description": "The organization provides a structured orientation program for all new staff to familiarize them with the organization's policies, facilities, and their specific roles.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "HRM-4.a",
+            "description": "A documented orientation program is implemented for all newly hired staff before they assume their duties independently.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.a.1",
+                "description": "An orientation program with defined content, duration, and assessment criteria is provided to all new staff with documented completion records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-4.b",
+            "description": "General orientation covers the organization's mission, vision, values, policies, and key procedures applicable to all employees.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.b.1",
+                "description": "General orientation topics include organizational structure, mission and values, HR policies, code of conduct, and emergency procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-4.c",
+            "description": "Department-specific orientation familiarizes new staff with their work area, equipment, protocols, and reporting relationships.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.c.1",
+                "description": "Department heads conduct specific orientation covering unit layout, equipment operation, departmental protocols, and team introductions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-4.d",
+            "description": "Orientation includes mandatory training on patient safety, infection control, fire safety, and emergency codes.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.d.1",
+                "description": "All new staff receive mandatory orientation on patient safety goals, hand hygiene, infection prevention, fire safety protocols, and code procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-4.e",
+            "description": "Completion of the orientation program is tracked and documented for each new employee.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.e.1",
+                "description": "Orientation attendance and completion records are maintained in personnel files with sign-off by the employee and supervisor.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-4.f",
+            "description": "Staff who are transferred or reassigned within the organization receive re-orientation relevant to their new role and department.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-4.f.1",
+                "description": "A re-orientation process is defined for internally transferred or reassigned staff covering new department procedures and role expectations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-5",
+        "title": "Ongoing In-Service Training and Education",
+        "description": "The organization provides continuous in-service education and training programs to maintain and enhance staff competence and knowledge.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "HRM-5.a",
+            "description": "A training needs assessment is conducted annually to identify skill gaps and learning requirements across all departments.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.a.1",
+                "description": "An annual training needs assessment process identifies department-level and individual skill gaps using performance data, incident reports, and new technology requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-5.b",
+            "description": "A documented training calendar is prepared based on assessed needs and covers both mandatory and developmental programs.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.b.1",
+                "description": "An annual training calendar is developed, approved, and circulated listing all mandatory, departmental, and developmental training programs with schedules.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-5.c",
+            "description": "Mandatory training programs on fire safety, basic life support, infection control, and patient safety are conducted for all relevant staff.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.c.1",
+                "description": "All staff receive periodic mandatory training on fire safety, BLS/CPR, infection prevention, safe medication practices, and patient safety with documented attendance.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-5.d",
+            "description": "Training effectiveness is evaluated through appropriate methods to assess knowledge retention and skill application.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.d.1",
+                "description": "Post-training evaluations are conducted using assessments, observations, or feedback instruments, and results are used to improve future programs.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-5.e",
+            "description": "Training attendance and completion records are maintained for all staff and monitored for compliance.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.e.1",
+                "description": "Training records documenting program name, date, attendees, and completion status are maintained and accessible for review and audit.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-5.f",
+            "description": "Staff are provided access to continuing professional education and development opportunities relevant to their discipline.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-5.f.1",
+                "description": "The organization facilitates continuing education through sponsorships, study leave, conference attendance, and access to professional journals or online learning platforms.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-6",
+        "title": "Competency Assessment of Staff",
+        "description": "The organization defines and assesses competencies for all categories of staff to ensure capability in performing assigned duties.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "HRM-6.a",
+            "description": "A competency framework defining the required knowledge, skills, and attitudes for each category of staff is documented.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.a.1",
+                "description": "Role-specific competency matrices are developed defining required clinical, technical, and behavioral competencies for each staff category.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-6.b",
+            "description": "Initial competency assessment is performed at the time of hiring or role assignment to verify baseline capabilities.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.b.1",
+                "description": "New hires and newly assigned staff undergo initial competency evaluation using practical demonstrations, written tests, or clinical assessments.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-6.c",
+            "description": "Ongoing competency evaluation is conducted at defined intervals to ensure sustained capability and identify development needs.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.c.1",
+                "description": "Periodic competency re-assessments are conducted annually or as defined, using observation, case reviews, simulation, or skill demonstration methods.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-6.d",
+            "description": "Identified competency gaps are addressed through targeted training, mentoring, or supervised practice with follow-up evaluation.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.d.1",
+                "description": "Competency gap remediation plans are developed for staff who do not meet expected levels, with timelines and reassessment criteria.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-6.e",
+            "description": "Competency verification is mandatory for staff performing high-risk, high-volume, or problem-prone procedures.",
+            "severity": "critical",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.e.1",
+                "description": "Staff performing high-risk or specialized procedures are assessed for specific procedural competency with documented sign-off by authorized evaluators.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-6.f",
+            "description": "All competency assessments and their outcomes are documented and maintained in staff records.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-6.f.1",
+                "description": "Competency assessment records including evaluation tools, scores, dates, and assessor details are filed in personnel records and are retrievable for review.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-7",
+        "title": "Performance Appraisal System",
+        "description": "The organization implements a systematic performance appraisal process for all categories of staff linked to job expectations and professional development.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "HRM-7.a",
+            "description": "A defined performance appraisal system outlines the methodology, frequency, and criteria for evaluating staff performance.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-7.a.1",
+                "description": "A performance appraisal policy defines the appraisal methodology, rating scales, review frequency, and roles of appraiser and reviewer.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-7.b",
+            "description": "Performance reviews are conducted at defined intervals for all categories of staff including clinical, administrative, and support personnel.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-7.b.1",
+                "description": "Periodic performance appraisals are completed for all staff categories at intervals not exceeding one year, with documented evidence.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-7.c",
+            "description": "Performance evaluation criteria are linked to job descriptions, competency expectations, and organizational objectives.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-7.c.1",
+                "description": "Appraisal criteria reflect the key result areas from job descriptions, required competencies, and contribution to department and organizational goals.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-7.d",
+            "description": "Constructive feedback is provided during appraisals and an individual development plan is created to address identified areas of improvement.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-7.d.1",
+                "description": "Performance feedback discussions include strengths, areas for improvement, and mutually agreed development plans with timelines.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-7.e",
+            "description": "Appraisal records are maintained confidentially and are accessible to authorized personnel only.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-7.e.1",
+                "description": "Completed appraisal forms, development plans, and feedback records are securely stored in personnel files with restricted access.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-8",
+        "title": "Staff Health and Safety Program",
+        "description": "The organization implements a comprehensive health and safety program to protect staff from occupational health risks and promote well-being.",
+        "display_order": 8,
+        "objective_elements": [
+          {
+            "code": "HRM-8.a",
+            "description": "Pre-employment health screening is conducted for all new staff to establish baseline health status and fitness for duty.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.a.1",
+                "description": "All new employees undergo a pre-employment medical examination including relevant tests based on their job role, with fitness certification documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "occupational_health_physician",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.b",
+            "description": "Periodic health assessments are conducted for staff at defined intervals, with particular focus on those in high-risk areas.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.b.1",
+                "description": "Annual or periodic health check-ups are provided to all staff, with enhanced screening frequency for those working in high-risk environments.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "occupational_health_physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.c",
+            "description": "An immunization program is implemented for healthcare workers based on their exposure risk and national guidelines.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.c.1",
+                "description": "Hepatitis B, influenza, and other recommended vaccinations are provided to at-risk healthcare workers with immunization records maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.d",
+            "description": "Post-exposure prophylaxis protocols are established and accessible for needle-stick injuries and exposure to blood-borne pathogens.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.d.1",
+                "description": "PEP protocols for needle-stick and sharps injuries are documented, accessible 24/7, and include reporting procedures, baseline testing, and follow-up schedules.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.e",
+            "description": "Staff injuries and illnesses are reported, documented, and managed through a defined process with appropriate follow-up.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.e.1",
+                "description": "A staff injury reporting system captures all workplace injuries and illnesses, triggers investigation, provides treatment, and tracks recovery outcomes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.f",
+            "description": "Workplace safety measures are implemented to prevent injuries including ergonomic assessments and safe work practices.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.f.1",
+                "description": "Workplace safety measures including safe lifting techniques, ergonomic workstation design, and anti-slip flooring are implemented and monitored.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-8.g",
+            "description": "Mental health and psychological well-being support is available for staff including stress management and counseling services.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "HRM-8.g.1",
+                "description": "Employee assistance programs, counseling services, and stress management initiatives are available and promoted to support staff mental health and well-being.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-9",
+        "title": "Occupational Hazard Management",
+        "description": "The organization identifies, evaluates, and controls occupational hazards to protect healthcare workers from workplace-related health risks.",
+        "display_order": 9,
+        "objective_elements": [
+          {
+            "code": "HRM-9.a",
+            "description": "Occupational hazards across all work areas are systematically identified, assessed, and documented with risk ratings.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.a.1",
+                "description": "A hazard identification and risk assessment process is conducted for all work areas with documented risk registers and mitigation plans.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-9.b",
+            "description": "Safety measures for staff exposed to ionizing and non-ionizing radiation are implemented in compliance with regulatory requirements.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.b.1",
+                "description": "Radiation safety measures including dosimetry monitoring, protective shielding, exposure limits, and AERB compliance are implemented for all radiation workers.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "radiation_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-9.c",
+            "description": "Chemical safety measures including availability of material safety data sheets are in place for all hazardous substances used.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.c.1",
+                "description": "MSDS/SDS documents are available at point of use for all chemicals, and staff are trained on safe handling, storage, and spill management procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-9.d",
+            "description": "Biological hazard management including safe handling of infectious materials and biomedical waste is implemented.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.d.1",
+                "description": "Standard precautions for biological hazard management, biomedical waste segregation, and safe handling of potentially infectious materials are followed and monitored.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-9.e",
+            "description": "Ergonomic risk assessments are conducted and corrective measures implemented to prevent musculoskeletal disorders.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.e.1",
+                "description": "Ergonomic assessments cover workstation design, manual handling activities, and repetitive tasks with corrective actions documented and implemented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-9.f",
+            "description": "Appropriate personal protective equipment is provided, and its use is ensured for all staff exposed to occupational hazards.",
+            "severity": "critical",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "HRM-9.f.1",
+                "description": "PPE appropriate to the hazard type is procured, made available, and its correct usage is enforced and monitored through audits and training.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-10",
+        "title": "Employee Welfare and Grievance Redressal",
+        "description": "The organization promotes employee welfare and has mechanisms for addressing grievances and ensuring a supportive work environment.",
+        "display_order": 10,
+        "objective_elements": [
+          {
+            "code": "HRM-10.a",
+            "description": "Employee welfare programs addressing social, recreational, and financial well-being are implemented.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-10.a.1",
+                "description": "Welfare programs including insurance, recreational activities, financial assistance schemes, and recognition awards are documented and available to all staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-10.b",
+            "description": "A formal grievance redressal mechanism exists for employees to raise concerns and have them addressed in a timely manner.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-10.b.1",
+                "description": "A grievance redressal policy defines the process for filing complaints, investigation steps, timelines for resolution, and escalation procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-10.c",
+            "description": "An anti-harassment policy including Prevention of Sexual Harassment (POSH) compliance is in place with an internal complaints committee.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-10.c.1",
+                "description": "A POSH-compliant anti-harassment policy is documented, an Internal Complaints Committee is constituted, and awareness training is conducted for all staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-10.d",
+            "description": "Adequate staff amenities including rest areas, changing rooms, and cafeteria facilities are provided.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-10.d.1",
+                "description": "Staff amenities such as rest rooms, lockers, changing areas, clean drinking water, and food services are available and maintained in hygienic condition.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-10.e",
+            "description": "Employee satisfaction surveys are conducted periodically and results are analyzed to drive improvement initiatives.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-10.e.1",
+                "description": "Employee satisfaction surveys are conducted at least annually, results are analyzed for trends, and action plans are developed and tracked for identified concerns.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-11",
+        "title": "Management of Volunteers",
+        "description": "The organization has a structured approach to managing volunteers including their selection, training, supervision, and scope of activities.",
+        "display_order": 11,
+        "objective_elements": [
+          {
+            "code": "HRM-11.a",
+            "description": "A documented policy governs the engagement and management of volunteers within the organization.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-11.a.1",
+                "description": "A volunteer management policy defines eligibility criteria, enrollment procedures, scope of permitted activities, and code of conduct for volunteers.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-11.b",
+            "description": "Volunteers are screened and selected through a defined process including background checks and health screening.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-11.b.1",
+                "description": "A screening process for volunteers includes identity verification, background checks, health screening, and documentation before engagement.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-11.c",
+            "description": "Volunteers receive orientation and training relevant to their assigned roles including patient safety and infection control basics.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-11.c.1",
+                "description": "Orientation and role-specific training are provided to volunteers covering organizational policies, patient safety basics, infection prevention, and confidentiality.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "training_coordinator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-11.d",
+            "description": "Roles and responsibilities of volunteers are clearly defined, limiting their involvement to non-clinical support activities.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-11.d.1",
+                "description": "Written role descriptions for volunteers clearly delineate permitted activities, prohibited tasks, and boundaries to ensure patient safety.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-11.e",
+            "description": "Volunteer activities are supervised by designated staff and their performance is periodically evaluated.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-11.e.1",
+                "description": "Designated supervisors oversee volunteer activities, provide guidance, and conduct periodic evaluations of volunteer engagement and conduct.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-12",
+        "title": "Management of Outsourced and Contracted Staff",
+        "description": "The organization ensures that outsourced and contracted staff meet defined competency and compliance standards equivalent to employed staff.",
+        "display_order": 12,
+        "objective_elements": [
+          {
+            "code": "HRM-12.a",
+            "description": "A policy governs the engagement, management, and performance oversight of outsourced and contracted staff.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-12.a.1",
+                "description": "A documented policy for outsourced staff management covers vendor selection criteria, service level agreements, and performance monitoring mechanisms.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-12.b",
+            "description": "Credentials and competencies of outsourced clinical staff are verified to the same standards as employed clinical staff.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-12.b.1",
+                "description": "Outsourced clinical staff undergo credential verification including qualification checks, registration validity, and competency assessment before deployment.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "HRM-12.c",
+            "description": "Outsourced staff receive appropriate orientation to the organization's policies, safety procedures, and their work area.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-12.c.1",
+                "description": "Outsourced staff orientation covers organizational policies, patient safety, infection prevention, emergency procedures, and specific departmental protocols.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "department_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-12.d",
+            "description": "Performance of outsourced staff is monitored against defined service level agreements and quality parameters.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-12.d.1",
+                "description": "Regular performance reviews of outsourced services are conducted against SLA benchmarks, with documented feedback and corrective actions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-12.e",
+            "description": "Contractual agreements with outsourcing agencies include provisions for compliance with organizational quality and safety standards.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-12.e.1",
+                "description": "Contracts with outsourcing vendors include clauses on quality standards, safety compliance, credential verification, confidentiality, and penalty provisions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "HRM-13",
+        "title": "Nursing Staff Excellence and Development",
+        "description": "The organization promotes nursing excellence through defined leadership structures, adequate staffing, professional development, and quality monitoring.",
+        "display_order": 13,
+        "objective_elements": [
+          {
+            "code": "HRM-13.a",
+            "description": "A nursing leadership structure with defined authority and accountability is established within the organization.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "HRM-13.a.1",
+                "description": "A nursing organizational chart defines the leadership hierarchy, reporting relationships, and authority levels from unit in-charge to chief nursing officer.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-13.b",
+            "description": "Nurse staffing ratios are determined for each clinical area based on patient acuity, census, and evidence-based norms.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "HRM-13.b.1",
+                "description": "Nurse-to-patient ratios are defined for general wards, ICUs, emergency, and specialized units based on acuity and national staffing guidelines.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-13.c",
+            "description": "Nursing care standards and clinical protocols are documented, implemented, and periodically updated.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "HRM-13.c.1",
+                "description": "Nursing standard operating procedures and clinical protocols covering assessment, intervention, documentation, and evaluation are maintained and reviewed annually.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "HRM-13.d",
+            "description": "Professional development programs specific to nursing staff are implemented to enhance clinical skills and career advancement.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "HRM-13.d.1",
+                "description": "Nursing-specific training programs including clinical skill workshops, specialty certifications, and leadership development are offered and participation is tracked.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "HRM-13.e",
+            "description": "Nursing quality indicators are monitored, analyzed, and used to drive improvements in patient care.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "HRM-13.e.1",
+                "description": "Key nursing quality indicators such as fall rates, pressure injury incidence, medication errors, and patient satisfaction are tracked, trended, and benchmarked.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "IMS",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "IMS-1",
+        "title": "Health Information Management Planning",
+        "description": "The organization plans and implements a comprehensive health information management system to support clinical care, management decisions, and regulatory compliance.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "IMS-1.a",
+            "description": "A documented health information management policy defines the scope, objectives, and governance of information management activities.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.a.1",
+                "description": "A health information management policy covering data governance, information lifecycle, and quality objectives is approved and communicated to relevant staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.b",
+            "description": "Designated responsibility for health information management is assigned to qualified personnel or a department.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.b.1",
+                "description": "A qualified individual or department is designated to manage health information with defined roles, responsibilities, and authority for information governance.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.c",
+            "description": "Standardized data collection methods are established across all departments to ensure consistency and comparability.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.c.1",
+                "description": "Data collection formats, definitions, and coding standards are standardized across departments to enable meaningful aggregation and comparison.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.d",
+            "description": "Data aggregation and analysis mechanisms are in place to transform raw data into actionable information for decision-making.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.d.1",
+                "description": "Systems and processes for data aggregation, statistical analysis, and report generation are established and used by departments for monitoring and improvement.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.e",
+            "description": "Information flow pathways are defined across departments to ensure timely availability of relevant data to authorized users.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.e.1",
+                "description": "Information flow diagrams mapping data sources, destinations, frequency, and responsible persons are documented for key organizational processes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.f",
+            "description": "Data validation processes are implemented to ensure accuracy, completeness, and reliability of collected information.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.f.1",
+                "description": "Data validation checks including completeness verification, range checks, and consistency reviews are performed at defined points in data entry workflows.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-1.g",
+            "description": "Health information is systematically used for evidence-based decision-making at clinical, operational, and strategic levels.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IMS-1.g.1",
+                "description": "Evidence of data-driven decision-making is demonstrated through documented use of analytics in quality improvement, resource planning, and clinical governance forums.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-2",
+        "title": "Medical Records Management",
+        "description": "The organization maintains accurate, complete, and accessible medical records for every patient encounter to support continuity of care and legal compliance.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "IMS-2.a",
+            "description": "A standardized medical record format is defined that includes all essential clinical documentation components.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.a.1",
+                "description": "A standardized medical record format with defined sections for history, examination, diagnosis, treatment plan, progress notes, and discharge summary is in use.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.b",
+            "description": "Medical records are completed in a timely manner with entries made contemporaneously during or immediately after patient encounters.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.b.1",
+                "description": "Timelines are defined for completion of medical record entries including admission notes, operative notes, and discharge summaries, and compliance is monitored.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.c",
+            "description": "Medical records contain all essential components including patient identification, clinical findings, treatment details, and informed consent.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.c.1",
+                "description": "Every medical record includes patient demographics, clinical history, physical examination, investigation results, treatment plan, progress notes, consent forms, and discharge summary.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.d",
+            "description": "Access to medical records is restricted to authorized personnel with defined access levels based on role and need.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.d.1",
+                "description": "A medical record access policy defines authorization levels, access request procedures, and tracking mechanisms to protect patient confidentiality.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.e",
+            "description": "A systematic storage and retrieval system ensures medical records are accessible when needed for patient care and other legitimate purposes.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.e.1",
+                "description": "An organized filing and retrieval system with unique identification numbering, indexing, and tracking ensures timely availability of patient records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.f",
+            "description": "A retention and safe destruction policy for medical records is defined in compliance with legal and regulatory requirements.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.f.1",
+                "description": "Medical record retention periods comply with applicable laws, and a documented destruction process ensures confidentiality during disposal with proper authorization.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-2.g",
+            "description": "Regular audits of medical records are conducted to assess completeness, accuracy, and compliance with documentation standards.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IMS-2.g.1",
+                "description": "Periodic medical record audits are conducted using defined checklists, with results shared with clinical teams and improvement actions tracked.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-3",
+        "title": "Clinical Data Management and Analysis",
+        "description": "The organization collects, analyzes, and utilizes clinical data to monitor care outcomes, support quality improvement, and enable evidence-based clinical practice.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "IMS-3.a",
+            "description": "Clinical data definitions and terminologies are standardized across the organization to ensure consistency in data capture.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.a.1",
+                "description": "Standardized clinical terminologies, coding systems (ICD, procedure codes), and data dictionaries are adopted for consistent clinical data recording.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_head",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.b",
+            "description": "Clinical quality indicators are defined, monitored, and reported at regular intervals to track care quality and patient outcomes.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.b.1",
+                "description": "A set of clinical quality indicators covering mortality, morbidity, readmission, and complication rates are tracked monthly and reported to quality committees.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.c",
+            "description": "Patient outcome data is systematically analyzed to identify trends, variations, and opportunities for clinical improvement.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.c.1",
+                "description": "Patient outcome analysis including trend identification, variation analysis, and root cause evaluation is conducted and presented to clinical governance forums.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.d",
+            "description": "Adverse event and near-miss data is systematically captured, analyzed, and used to prevent recurrence.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.d.1",
+                "description": "An adverse event and near-miss reporting database captures incident details, contributing factors, and corrective actions with trend analysis performed quarterly.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.e",
+            "description": "Infection surveillance data is collected, analyzed, and used to guide infection prevention and control strategies.",
+            "severity": "critical",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.e.1",
+                "description": "Healthcare-associated infection rates are tracked by type and location, analyzed for trends, and reported to the infection control committee for targeted interventions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.f",
+            "description": "Clinical performance is benchmarked against external standards, national databases, or peer institutions where available.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.f.1",
+                "description": "Clinical outcomes are compared against national benchmarks, published standards, or peer institution data to identify performance gaps and best practices.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "IMS-3.g",
+            "description": "Data-driven clinical process improvements are initiated based on analysis of clinical indicators and outcome data.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IMS-3.g.1",
+                "description": "Clinical improvement projects with measurable objectives are initiated based on data analysis, with documented outcomes and sustainability plans.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-4",
+        "title": "Information Technology Infrastructure",
+        "description": "The organization establishes and maintains adequate information technology infrastructure to support clinical operations, administrative functions, and data management needs.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "IMS-4.a",
+            "description": "An IT strategic plan aligned with organizational goals defines technology priorities, investments, and implementation timelines.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.a.1",
+                "description": "A documented IT strategic plan with defined objectives, technology roadmap, budget allocation, and alignment to organizational strategy is approved and reviewed annually.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-4.b",
+            "description": "Adequate IT hardware, software, and network infrastructure is deployed to support clinical and administrative operations.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.b.1",
+                "description": "IT infrastructure including servers, workstations, networking equipment, and licensed software is maintained in adequate quantities and kept current.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-4.c",
+            "description": "Network connectivity and system uptime are managed to ensure reliable access to information systems across the organization.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.c.1",
+                "description": "Network uptime targets are defined and monitored, with redundancy measures and incident response procedures to minimize downtime impact on clinical operations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-4.d",
+            "description": "An IT disaster recovery and business continuity plan ensures continuity of critical information systems during disruptions.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.d.1",
+                "description": "A disaster recovery plan with defined RPO/RTO, backup strategies, failover mechanisms, and periodic testing is documented and maintained for critical systems.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-4.e",
+            "description": "IT helpdesk and technical support services are available to assist users and resolve technology issues promptly.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.e.1",
+                "description": "An IT helpdesk with defined service hours, escalation matrix, response time targets, and ticket tracking system supports all organizational users.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-4.f",
+            "description": "Technology assessment and upgrade planning ensures that IT systems remain current, secure, and fit for purpose.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-4.f.1",
+                "description": "Periodic technology assessments evaluate system performance, obsolescence risks, and user satisfaction to inform upgrade and replacement decisions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-5",
+        "title": "Data Security and Privacy",
+        "description": "The organization implements comprehensive data security and privacy measures to protect patient information and organizational data from unauthorized access, breaches, and loss.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "IMS-5.a",
+            "description": "A data security policy and framework is established to protect information assets from threats, vulnerabilities, and unauthorized access.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.a.1",
+                "description": "A comprehensive information security policy covering asset classification, threat assessment, security controls, and incident management is approved and implemented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.b",
+            "description": "Access controls and authentication mechanisms are implemented to restrict system and data access to authorized users only.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.b.1",
+                "description": "Role-based access controls, strong authentication (passwords, multi-factor), and unique user IDs are implemented across all information systems with periodic access reviews.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.c",
+            "description": "Patient data confidentiality safeguards are implemented across physical, electronic, and verbal communication channels.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.c.1",
+                "description": "Confidentiality safeguards including data encryption, screen privacy, document security, and verbal communication protocols are enforced across all care settings.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 2.0,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.d",
+            "description": "Cyber security measures including network protection, malware prevention, and monitoring are implemented to defend against digital threats.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.d.1",
+                "description": "Cyber security controls including firewalls, intrusion detection, antivirus, patch management, and security monitoring are deployed and maintained across the network.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.e",
+            "description": "An incident response plan for data security breaches is documented, tested, and ready for activation.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.e.1",
+                "description": "A data breach incident response plan with defined roles, communication protocols, containment steps, forensic procedures, and notification requirements is tested periodically.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.f",
+            "description": "Regular security audits and vulnerability assessments are conducted to identify and remediate security weaknesses.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.f.1",
+                "description": "Security audits and vulnerability assessments are conducted at least annually or after significant changes, with findings documented and remediation tracked.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-5.g",
+            "description": "Staff training on data security awareness, privacy obligations, and safe data handling practices is conducted regularly.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "IMS-5.g.1",
+                "description": "Mandatory data security awareness training covering phishing prevention, password hygiene, data handling, and privacy obligations is provided to all staff annually.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "ciso",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-6",
+        "title": "Digital Personal Data Protection Compliance",
+        "description": "The organization ensures compliance with the Digital Personal Data Protection Act and other applicable data protection regulations governing the processing of personal health data.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "IMS-6.a",
+            "description": "A compliance framework for data protection regulations including the DPDP Act is established and integrated into organizational processes.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.a.1",
+                "description": "A DPDP compliance framework mapping regulatory requirements to organizational processes, controls, and responsible persons is documented and maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "data_protection_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-6.b",
+            "description": "Consent management processes ensure lawful collection and processing of personal data with informed and verifiable consent.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.b.1",
+                "description": "Consent collection processes for personal data processing are documented, include purpose specification, and provide mechanisms for consent withdrawal.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "data_protection_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-6.c",
+            "description": "Processes are in place to address data principal rights including access, correction, erasure, and grievance redressal.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.c.1",
+                "description": "Procedures for responding to data principal requests for access, correction, and erasure are defined with timelines and escalation paths.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "data_protection_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-6.d",
+            "description": "Data processing activities are limited to specified purposes and conducted with transparency regarding data usage.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.d.1",
+                "description": "A data processing register documents all categories of personal data processed, purposes, legal basis, retention periods, and sharing arrangements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "data_protection_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-6.e",
+            "description": "Data breach notification procedures comply with regulatory requirements for timely reporting to authorities and affected individuals.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.e.1",
+                "description": "Data breach notification procedures define timelines, responsible persons, communication templates, and reporting channels for notifying the Data Protection Board and affected data principals.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "data_protection_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-6.f",
+            "description": "A data protection officer or designated person is appointed to oversee data protection compliance and serve as the point of contact.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "IMS-6.f.1",
+                "description": "A data protection officer or designated responsible person is formally appointed with defined responsibilities, authority, and independence to oversee DPDP compliance.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "ceo",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "IMS-7",
+        "title": "Clinical Decision Support Systems",
+        "description": "The organization implements clinical decision support tools and systems to enhance evidence-based clinical practice and patient safety at the point of care.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "IMS-7.a",
+            "description": "Clinical decision support tools are available to assist clinicians in diagnosis, treatment planning, and care delivery.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "IMS-7.a.1",
+                "description": "Clinical decision support tools such as clinical pathways, order sets, calculators, and reference databases are accessible to clinicians during patient care.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-7.b",
+            "description": "Drug interaction checking and allergy alert systems are implemented to prevent adverse medication events.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "IMS-7.b.1",
+                "description": "Automated or manual drug-drug interaction checks and allergy alert mechanisms are in place at the prescribing and dispensing stages to prevent adverse events.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.5,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-7.c",
+            "description": "Evidence-based clinical guidelines and protocols are accessible to clinicians at the point of care.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "IMS-7.c.1",
+                "description": "Current evidence-based clinical guidelines, protocols, and formulary information are accessible through electronic or physical means at patient care areas.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "IMS-7.d",
+            "description": "Clinical decision support is integrated with the electronic medical record system to provide context-aware alerts and recommendations.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "IMS-7.d.1",
+                "description": "CDS tools are integrated with the EMR/HIS to provide real-time, patient-specific alerts, reminders, and evidence-based recommendations during clinical workflows.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "it_director",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          },
+          {
+            "code": "IMS-7.e",
+            "description": "The effectiveness and clinical impact of decision support tools are evaluated and improved based on user feedback and outcome data.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "IMS-7.e.1",
+                "description": "Periodic evaluations of CDS tool effectiveness including alert compliance rates, override patterns, and impact on clinical outcomes are conducted with improvement actions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

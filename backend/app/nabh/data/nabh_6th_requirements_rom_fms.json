@@ -1,0 +1,1558 @@
+[
+  {
+    "chapter_code": "ROM",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "ROM-1",
+        "title": "Governance and Leadership Framework",
+        "description": "The hospital has a well-defined governance structure with clear leadership accountability for organizational direction, quality, and patient safety.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "ROM-1.a",
+            "description": "A governing body or board is formally constituted with documented authority, composition, and defined responsibilities for hospital oversight.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.a.1",
+                "description": "The governing body charter or bylaws are documented, specifying membership composition, term of office, meeting frequency, and quorum requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.b",
+            "description": "The governing body appoints qualified senior leadership and defines their authority, responsibilities, and accountability mechanisms.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.b.1",
+                "description": "Appointment letters and job descriptions for senior leadership positions clearly delineate authority, roles, and accountability lines.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.c",
+            "description": "The governing body regularly reviews and approves the hospital's mission, vision, and values, ensuring alignment with quality and safety goals.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.c.1",
+                "description": "Board meeting minutes reflect periodic review and endorsement of the organization's mission, vision, values, and strategic priorities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.d",
+            "description": "Senior leaders ensure that required statutory and regulatory licenses and permits are obtained, displayed, and kept current.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.d.1",
+                "description": "A centralized register of all statutory licenses, registrations, and permits is maintained with renewal tracking and compliance verification.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.e",
+            "description": "Leadership communicates the organization's direction, priorities, and performance outcomes to all levels of staff.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.e.1",
+                "description": "Documented communication channels exist (town halls, newsletters, intranet updates) for cascading organizational priorities and performance results to staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.f",
+            "description": "The governing body reviews key quality and safety indicators, patient feedback, and adverse event trends on a defined schedule.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.f.1",
+                "description": "Board agendas and minutes demonstrate regular review of quality dashboards, safety metrics, patient satisfaction data, and sentinel event reports.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.g",
+            "description": "The organization has mechanisms for leadership succession planning and continuity of administrative functions.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.g.1",
+                "description": "A documented succession plan exists for key leadership positions, identifying potential successors and development pathways.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "ROM-1.h",
+            "description": "Leadership fosters a culture of continuous improvement through benchmarking against peer organizations and best practice adoption.",
+            "severity": "minor",
+            "display_order": 8,
+            "measurable_elements": [
+              {
+                "code": "ROM-1.h.1",
+                "description": "Evidence of benchmarking activities comparing key performance indicators with peer institutions and documented plans for adopting identified best practices.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "ROM-2",
+        "title": "Ethics and Transparency in Hospital Operations",
+        "description": "The organization operates with a clearly defined ethical framework that promotes transparency, accountability, and integrity in all activities.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "ROM-2.a",
+            "description": "A documented code of ethics and professional conduct is established, communicated to all staff, and enforced through appropriate mechanisms.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.a.1",
+                "description": "A written code of ethics covering conflicts of interest, professional conduct, anti-bribery, and ethical decision-making is approved by the governing body and distributed to all employees.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "ROM-2.b",
+            "description": "An ethics committee or equivalent body is constituted to address ethical dilemmas in clinical care, research, and organizational operations.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.b.1",
+                "description": "The ethics committee has documented terms of reference, multi-disciplinary membership, and maintains minutes of meetings with resolution tracking for ethical issues raised.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-2.c",
+            "description": "The organization maintains transparent financial practices with disclosed fee structures, billing processes, and audit mechanisms.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.c.1",
+                "description": "Rate lists, package pricing, and billing policies are publicly displayed and regularly reviewed to ensure accuracy and transparency for patients and families.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "finance_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-2.d",
+            "description": "A mechanism for reporting unethical behavior or compliance violations exists, with safeguards to protect whistleblowers.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.d.1",
+                "description": "A documented whistleblower policy with anonymous reporting channels, investigation procedures, and non-retaliation protections is implemented and communicated to staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-2.e",
+            "description": "Ethical considerations in clinical research, organ donation, and end-of-life care are addressed through defined protocols.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.e.1",
+                "description": "Documented protocols cover ethical review of clinical research proposals, organ transplant ethics, and advance directive/end-of-life decision frameworks.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-2.f",
+            "description": "The organization conducts periodic ethics audits and incorporates findings into governance improvement plans.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "ROM-2.f.1",
+                "description": "Periodic ethics audit reports are produced, presented to leadership, and corrective action plans are tracked to closure with measurable outcomes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "ROM-3",
+        "title": "Organizational Structure and Accountability",
+        "description": "The organization maintains a clear structure defining roles, departments, and reporting relationships to ensure efficient operations and accountability.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "ROM-3.a",
+            "description": "An organizational chart is maintained reflecting current reporting relationships, departmental structure, and lines of authority across all functions.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.a.1",
+                "description": "A current organizational chart is displayed and accessible, showing all departments, key positions, reporting lines, and committee structures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-3.b",
+            "description": "Each department or service has a designated leader with defined responsibilities for service delivery, quality, and resource management.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.b.1",
+                "description": "Each clinical and non-clinical department has a named head with a documented job description specifying quality oversight, budget management, and reporting obligations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hr_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-3.c",
+            "description": "Committees and teams essential for quality, safety, infection control, and other key functions are formally constituted and operational.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.c.1",
+                "description": "Terms of reference for all mandatory committees (quality, safety, infection control, pharmacy, medical records) are documented with member rosters, meeting schedules, and minutes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-3.d",
+            "description": "Clear delegation of authority policies exist, defining who may make clinical, administrative, and financial decisions in the absence of primary decision-makers.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.d.1",
+                "description": "A delegation of authority matrix is documented, specifying approval limits and decision-making powers for clinical, operational, and financial functions across hierarchy levels.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-3.e",
+            "description": "Inter-departmental coordination mechanisms are in place to ensure seamless patient care and operational efficiency.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.e.1",
+                "description": "Documented inter-departmental coordination processes (regular coordination meetings, shared protocols, escalation pathways) ensure smooth workflow across clinical and support services.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-3.f",
+            "description": "The organization reviews and updates its structure periodically to align with changes in services, technology, or patient volume.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "ROM-3.f.1",
+                "description": "Evidence of periodic reviews of organizational structure with documented rationale for any restructuring, role redefinition, or creation of new departments.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "ROM-4",
+        "title": "Strategic and Operational Planning",
+        "description": "The organization undertakes systematic strategic and operational planning to set priorities, allocate resources, and achieve defined performance objectives.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "ROM-4.a",
+            "description": "A documented strategic plan covering a defined period is developed with input from clinical and administrative leaders, aligned with the mission and community needs.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.a.1",
+                "description": "A board-approved strategic plan for a defined period (3-5 years) exists, developed through a consultative process involving clinical, operational, and financial stakeholders.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-4.b",
+            "description": "Annual operational plans and budgets are prepared in alignment with the strategic plan, with measurable targets for each department.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.b.1",
+                "description": "Annual operational plans with department-level targets, timelines, resource allocation, and budget linkages are documented and approved by leadership.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "finance_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-4.c",
+            "description": "Key performance indicators are defined for monitoring strategic plan implementation, with regular progress reviews by leadership.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.c.1",
+                "description": "A defined set of KPIs aligned to strategic objectives is tracked through dashboards, with documented leadership reviews conducted at least quarterly.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-4.d",
+            "description": "Resource allocation decisions are guided by organizational priorities, patient needs analysis, and financial sustainability considerations.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.d.1",
+                "description": "Documented evidence that capital and operational resource allocation decisions incorporate patient demand analysis, service priority ranking, and financial viability assessments.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "finance_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-4.e",
+            "description": "The organization conducts periodic community health needs assessments to inform service planning and new program development.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.e.1",
+                "description": "Community health needs assessments are conducted periodically, with findings documented and used as input for service expansion, new program design, or resource reallocation.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "ROM-4.f",
+            "description": "The organization actively pursues innovation, adopting new technologies, treatment modalities, or care delivery models based on evidence and strategic priorities.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "ROM-4.f.1",
+                "description": "Documented innovation initiatives (new technology adoption, care model pilots, digital health integration) are linked to strategic goals with outcome evaluation reports.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "ROM-5",
+        "title": "Risk Management and Compliance",
+        "description": "The organization has a comprehensive risk management framework that identifies, assesses, mitigates, and monitors risks across clinical, operational, and financial domains.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "ROM-5.a",
+            "description": "A documented organization-wide risk management plan is established, covering clinical risks, operational risks, financial risks, and reputational risks.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.a.1",
+                "description": "A comprehensive risk management plan is documented, identifying risk categories, assessment methodology, risk registers, mitigation strategies, and monitoring schedules.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "ROM-5.b",
+            "description": "Risk identification and assessment processes are conducted periodically using standardized tools and involve relevant stakeholders from all departments.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.b.1",
+                "description": "Risk assessments are performed at least annually using standardized tools (risk matrices, FMEA, or equivalent), with departmental participation and documented findings.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-5.c",
+            "description": "Risk mitigation plans are implemented with assigned owners, timelines, and monitoring mechanisms to track effectiveness of controls.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.c.1",
+                "description": "Risk mitigation action plans with responsible owners, completion deadlines, and effectiveness metrics are documented in the risk register and reviewed in committee meetings.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-5.d",
+            "description": "The organization maintains compliance with all applicable regulatory and statutory requirements, with a documented compliance tracking system.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.d.1",
+                "description": "A regulatory compliance tracker captures all applicable laws, regulations, and standards with status indicators, responsible parties, and renewal/audit dates.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "compliance_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-5.e",
+            "description": "Insurance and indemnity coverage is maintained for professional liability, property, and operational risks as applicable.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.e.1",
+                "description": "Current insurance policies covering professional indemnity, public liability, property damage, and other operational risks are documented with renewal tracking.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "finance_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "ROM-5.f",
+            "description": "The organization employs data-driven risk analytics and trending to predict and proactively address emerging risks.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "ROM-5.f.1",
+                "description": "Risk trending reports using incident data, near-miss analysis, and predictive analytics are generated periodically and used for proactive risk reduction planning.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "ROM-6",
+        "title": "Social Responsibility and Community Engagement",
+        "description": "The organization fulfills its social responsibilities by engaging with the community, promoting public health, and contributing to societal wellbeing.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "ROM-6.a",
+            "description": "The organization conducts community outreach programs focused on health promotion, disease prevention, and public health education.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "ROM-6.a.1",
+                "description": "Documented community outreach activities (health camps, screening programs, awareness campaigns) are conducted with participation records, outcome reports, and annual planning.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.5,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-6.b",
+            "description": "The organization has policies and programs to address the healthcare needs of economically weaker sections and vulnerable populations.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "ROM-6.b.1",
+                "description": "Documented policies for providing subsidized or free care to economically disadvantaged patients, with utilization records and annual reporting on beneficiaries served.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-6.c",
+            "description": "Environmental sustainability practices are adopted, including waste reduction, energy conservation, and green hospital initiatives.",
+            "severity": "minor",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "ROM-6.c.1",
+                "description": "Environmental sustainability programs covering energy audit, water conservation, carbon footprint reduction, and green procurement practices are documented with measurable targets.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "ROM-6.d",
+            "description": "The organization supports education and training of healthcare professionals through teaching programs, internships, or academic collaborations.",
+            "severity": "minor",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "ROM-6.d.1",
+                "description": "Academic affiliations, teaching programs, internship arrangements, or research collaborations are documented with agreements, participant records, and program outcome reports.",
+                "applicability_default": "conditional",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "ROM-6.e",
+            "description": "The organization demonstrates thought leadership in healthcare policy, contributing to regional or national health system improvement initiatives.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "ROM-6.e.1",
+                "description": "Evidence of leadership participation in policy forums, healthcare improvement coalitions, published position papers, or advisory roles in national health programs.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.6,
+                "risk_weight": 0.3,
+                "default_owner_role": "medical_director",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "FMS",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "FMS-1",
+        "title": "Fire Safety and Prevention Program",
+        "description": "The organization has a comprehensive fire safety program addressing prevention, detection, suppression, and safe evacuation of occupants.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "FMS-1.a",
+            "description": "The organization obtains and maintains a valid fire safety clearance certificate from the competent fire authority.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.a.1",
+                "description": "A current, valid Fire No Objection Certificate (NOC) from the local fire authority is maintained and displayed, with renewal tracked prior to expiry.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.b",
+            "description": "Fire detection and alarm systems are installed throughout the facility, tested regularly, and maintained in working condition.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.b.1",
+                "description": "Smoke detectors, heat sensors, and fire alarm systems are installed in all areas per national fire code, with documented quarterly testing and annual maintenance records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.c",
+            "description": "Fire suppression equipment (extinguishers, sprinklers, hydrants) is available, accessible, properly maintained, and staff are trained in its use.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.c.1",
+                "description": "Fire extinguishers of appropriate type and capacity are placed at designated locations, refilled/replaced per schedule, with monthly inspection checklists and annual hydrostatic testing records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.d",
+            "description": "Fire evacuation plans and routes are displayed, exit routes are unobstructed, and emergency exits are clearly marked with illuminated signage.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.d.1",
+                "description": "Floor-wise evacuation plans are displayed at strategic locations, exit routes are kept clear, emergency exit doors are functional, and illuminated exit signs are operational at all times.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.e",
+            "description": "Fire drills are conducted at defined intervals across all shifts, with participation records and post-drill evaluation reports.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.e.1",
+                "description": "Fire drills are conducted at least twice annually covering all shifts, with attendance records, drill performance evaluations, and corrective actions documented for identified gaps.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.f",
+            "description": "All staff members receive fire safety training at induction and through periodic refresher programs covering fire response procedures.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.f.1",
+                "description": "Fire safety training records demonstrate that all staff receive induction training and annual refresher training on fire prevention, alarm response, extinguisher use, and evacuation procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-1.g",
+            "description": "Fire-resistant construction materials and fire compartmentalization are maintained per applicable building codes.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "FMS-1.g.1",
+                "description": "Building fire safety assessments verify fire-rated doors, compartmentalization, fire-resistant materials in critical areas, and compliance with applicable building fire codes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-2",
+        "title": "Electrical Safety and Reliability",
+        "description": "The organization ensures safe, reliable electrical systems with appropriate safeguards, testing protocols, and emergency backup power.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "FMS-2.a",
+            "description": "Electrical installations comply with national electrical codes and are inspected periodically by qualified professionals.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.a.1",
+                "description": "Electrical installation compliance certificates from licensed electrical inspectors are maintained, with periodic re-inspection per regulatory requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-2.b",
+            "description": "Emergency power supply systems (generators, UPS) are available for critical areas and tested regularly to ensure reliable switchover.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.b.1",
+                "description": "Emergency generators and UPS systems for ICU, OT, NICU, emergency, and other critical areas are tested weekly with load-testing logs and automatic transfer switch verification records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-2.c",
+            "description": "Earthing and grounding systems are tested periodically, and surge protection devices are installed to safeguard sensitive equipment.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.c.1",
+                "description": "Earthing resistance testing is conducted at least annually by qualified personnel, with documented results and corrective actions for any readings outside acceptable ranges.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-2.d",
+            "description": "Electrical safety signage, lockout/tagout procedures, and personal protective equipment are provided for maintenance personnel.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.d.1",
+                "description": "Danger signage on electrical panels, documented lockout/tagout procedures, and availability of appropriate PPE for electrical maintenance staff are verified through periodic audits.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-2.e",
+            "description": "Electrical load distribution is managed to prevent overloading, with circuit breakers and protective devices properly rated and maintained.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.e.1",
+                "description": "Electrical load distribution plans are documented, circuit breakers are properly rated, and periodic thermography scans of panels and switchgear identify potential overload or failure points.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-2.f",
+            "description": "Medical electrical equipment in patient care areas undergoes periodic electrical safety testing (leakage current, insulation resistance) per standards.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-2.f.1",
+                "description": "Electrical safety testing records for medical equipment (leakage current, ground continuity, insulation resistance) are maintained per IEC 62353 or equivalent standards.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-3",
+        "title": "Building and Structural Safety",
+        "description": "The organization ensures structural integrity, accessibility, and safety of the physical environment for patients, staff, and visitors.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "FMS-3.a",
+            "description": "The building has valid occupancy and structural safety certificates from competent authorities, with periodic structural audits conducted.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.a.1",
+                "description": "Valid building occupancy certificates, structural stability certificates, and seismic safety assessments (where applicable) are maintained and current.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-3.b",
+            "description": "The facility provides barrier-free access for persons with disabilities, including ramps, adapted restrooms, signage, and assistive features.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.b.1",
+                "description": "Accessibility audit reports verify presence of wheelchair ramps, adapted toilets, tactile flooring, braille signage, and other barrier-free features per national accessibility standards.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-3.c",
+            "description": "Flooring, corridors, stairways, and patient care areas are maintained to minimize slip, trip, and fall hazards.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.c.1",
+                "description": "Anti-slip flooring, handrails in corridors and stairways, adequate lighting, and prompt spill management protocols reduce fall hazards, verified through periodic safety rounds.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-3.d",
+            "description": "Adequate ventilation, temperature control, lighting, and noise management are maintained in patient care and work areas.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.d.1",
+                "description": "Environmental monitoring records for temperature, humidity, air changes per hour, illumination levels, and noise measurements in clinical areas are maintained within prescribed standards.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-3.e",
+            "description": "Elevators and lifts are maintained with valid certificates, regular servicing, and emergency rescue procedures in place.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.e.1",
+                "description": "Elevator operation permits are current, maintenance contracts with qualified vendors are active, service logs are updated, and emergency rescue protocols are displayed and tested.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-3.f",
+            "description": "The organization implements evidence-based healing environment design principles to enhance patient comfort and recovery outcomes.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-3.f.1",
+                "description": "Design elements such as natural lighting, noise reduction, patient privacy considerations, wayfinding systems, and therapeutic environments are incorporated and assessed for patient experience impact.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-4",
+        "title": "Waste Management and Hazardous Materials Safety",
+        "description": "The organization manages biomedical waste, hazardous materials, and chemical substances safely in compliance with regulatory requirements.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "FMS-4.a",
+            "description": "Biomedical waste is segregated, collected, stored, transported, and disposed of in accordance with national biomedical waste management regulations.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.a.1",
+                "description": "Biomedical waste management follows color-coded segregation, designated storage areas with holding time limits, authorized transport, and documented disposal through licensed waste handlers.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.b",
+            "description": "The organization holds valid authorization for biomedical waste generation and maintains contracts with authorized waste treatment facilities.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.b.1",
+                "description": "Valid biomedical waste authorization from the pollution control board, current contracts with CBWTF or equivalent licensed treatment facilities, and annual returns filing records are maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.c",
+            "description": "Hazardous chemicals and materials are identified, inventoried, handled safely, and stored with appropriate safety data sheets accessible.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.c.1",
+                "description": "A hazardous chemicals inventory is maintained with safety data sheets (SDS) accessible at point of use, compatible storage arrangements, and spill response kits available.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.d",
+            "description": "Staff handling biomedical waste and hazardous materials receive appropriate training, immunization, and personal protective equipment.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.d.1",
+                "description": "Training records, immunization status (Hepatitis B, Tetanus), and PPE issuance logs for waste handling staff are documented and reviewed periodically.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.e",
+            "description": "Needle-stick injury and sharps injury prevention protocols are established with post-exposure prophylaxis procedures.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.e.1",
+                "description": "Needle-stick and sharps injury reporting mechanisms, PEP protocols, injury tracking logs, and root cause analysis for recurring incidents are documented and monitored.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "infection_control_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.f",
+            "description": "Radioactive materials and radiation-emitting equipment are managed per Atomic Energy Regulatory Board guidelines with proper licensing.",
+            "severity": "critical",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.f.1",
+                "description": "AERB licenses for radiation equipment, radiation safety officer appointment, personnel dosimetry records, and area monitoring reports are current and compliant.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "radiation_safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-4.g",
+            "description": "General waste (non-hazardous) including solid waste and liquid waste is managed per municipal regulations with recycling where feasible.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "FMS-4.g.1",
+                "description": "General solid waste segregation (wet/dry/recyclable), sewage treatment plant or municipal connection compliance, and waste audit records are maintained with recycling metrics tracked.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-5",
+        "title": "Emergency Preparedness and Disaster Management",
+        "description": "The organization has a comprehensive emergency and disaster management program to prepare for, respond to, and recover from internal and external emergencies.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "FMS-5.a",
+            "description": "A documented hospital disaster management plan (HDMP) addresses natural disasters, epidemics, mass casualty incidents, and internal emergencies.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.a.1",
+                "description": "A comprehensive hospital disaster management plan covering multiple hazard scenarios (earthquake, flood, fire, epidemic, bomb threat, mass casualty) with command structure and resource mobilization is documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-5.b",
+            "description": "Mock disaster drills are conducted periodically, involving internal and external stakeholders, with documented evaluation and improvement plans.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.b.1",
+                "description": "Mock disaster drills are conducted at least annually, with scenario-based exercises, multi-departmental participation, post-drill debriefing reports, and action plans for identified weaknesses.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "safety_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-5.c",
+            "description": "A hospital incident command system (HICS) or equivalent framework is established to coordinate emergency response across all functions.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.c.1",
+                "description": "An incident command structure with defined roles (incident commander, operations, logistics, planning, finance) is documented, with trained personnel assigned and contact details updated.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-5.d",
+            "description": "Emergency supplies, medications, equipment caches, and communication systems are pre-positioned and regularly checked for readiness.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.d.1",
+                "description": "Emergency supply inventories (medications, consumables, equipment) are pre-positioned at designated locations, inspected quarterly for expiry and functionality, with replenishment protocols documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-5.e",
+            "description": "The organization has linkages with external emergency services, government disaster agencies, and mutual aid agreements with neighboring facilities.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.e.1",
+                "description": "Documented memoranda of understanding with local emergency services (fire, police, ambulance), disaster management authorities, and neighboring hospitals for mutual aid during mass casualty events.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-5.f",
+            "description": "Business continuity plans ensure continued operation of critical clinical and support services during and after disruptive events.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-5.f.1",
+                "description": "Business continuity plans for critical services (emergency, ICU, OT, pharmacy, laboratory, blood bank) address staffing, supply chain, IT systems, and alternate site arrangements during disruptions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "hospital_administrator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-6",
+        "title": "Security, Utilities, and Essential Services",
+        "description": "The organization provides a safe and secure environment with reliable utilities including water, power, medical gases, and HVAC systems.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "FMS-6.a",
+            "description": "A comprehensive security program protects patients, staff, visitors, and property through access control, surveillance, and threat assessment.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.a.1",
+                "description": "Security measures including access control systems, CCTV surveillance, visitor management protocols, and security personnel deployment are documented with incident response procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "security_chief",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-6.b",
+            "description": "Safe and adequate water supply is ensured through testing, treatment, storage, and distribution systems with backup provisions.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.b.1",
+                "description": "Water quality testing reports (bacteriological and chemical), storage tank cleaning records, water treatment plant logs, and backup water supply arrangements are documented and reviewed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "FMS-6.c",
+            "description": "Medical gas systems (oxygen, compressed air, vacuum, nitrous oxide) are safely installed, maintained, and monitored with alarm systems.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.c.1",
+                "description": "Medical gas pipeline installation compliance certificates, manifold room safety measures, area alarm panels, and periodic pipeline integrity testing records are maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-6.d",
+            "description": "HVAC systems in critical areas (OT, ICU, CSSD, laboratory) are maintained with appropriate air quality, pressure differentials, and filtration standards.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.d.1",
+                "description": "HVAC maintenance records, air quality testing reports, HEPA filter change logs, pressure differential monitoring in OTs and clean rooms, and air changes per hour verification are documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-6.e",
+            "description": "Vulnerable patient populations (neonates, pediatric, psychiatric, elderly) are provided with additional security safeguards appropriate to their needs.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.e.1",
+                "description": "Enhanced security protocols for vulnerable populations include infant tagging systems, restricted nursery access, psychiatric unit safety features, and fall prevention measures for elderly patients.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "nursing_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-6.f",
+            "description": "The organization implements smart building management systems integrating utility monitoring, energy efficiency tracking, and predictive maintenance capabilities.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "FMS-6.f.1",
+                "description": "Integrated building management systems for energy monitoring, automated utility controls, predictive maintenance analytics, and sustainability dashboards are implemented with performance improvement trends.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "FMS-7",
+        "title": "Medical Equipment Management Program",
+        "description": "The organization has a systematic equipment management program covering selection, procurement, installation, operation, maintenance, and disposal of medical devices.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "FMS-7.a",
+            "description": "A comprehensive medical equipment management plan is documented, covering the entire lifecycle from needs assessment through procurement to disposal.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "FMS-7.a.1",
+                "description": "A documented equipment management plan covers needs assessment, procurement criteria, installation protocols, user training, preventive maintenance schedules, and end-of-life disposal procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-7.b",
+            "description": "A master equipment inventory is maintained with unique identifiers, locations, maintenance status, and calibration tracking for all medical devices.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "FMS-7.b.1",
+                "description": "An equipment asset register with unique IDs, serial numbers, locations, commission dates, warranty status, AMC details, and maintenance history is maintained and updated in real-time.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-7.c",
+            "description": "Preventive and corrective maintenance is performed per manufacturer recommendations and documented schedules with downtime tracking.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "FMS-7.c.1",
+                "description": "Preventive maintenance schedules per manufacturer guidelines, corrective maintenance work orders, equipment downtime logs, and mean time between failure analysis are documented and reviewed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-7.d",
+            "description": "Critical medical equipment is calibrated by accredited agencies at defined intervals with traceability to national or international standards.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "FMS-7.d.1",
+                "description": "Calibration certificates from NABL-accredited or equivalent agencies for critical equipment (monitors, ventilators, defibrillators, infusion pumps, analyzers) are maintained with traceability records.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "FMS-7.e",
+            "description": "The organization implements advanced equipment analytics including usage optimization, technology assessment, and evidence-based replacement planning.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "FMS-7.e.1",
+                "description": "Equipment utilization analytics, health technology assessments for new acquisitions, total cost of ownership analysis, and evidence-based replacement priority matrices are used for capital planning decisions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "biomedical_engineer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

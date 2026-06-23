@@ -20,6 +20,13 @@ from app.api import (
     fcra,
     licenses,
     nabh,
+    nabh_evidence,
+    nabh_explanation,
+    nabh_operations,
+    nabh_ontology,
+    nabh_profile,
+    nabh_requirements,
+    nabh_agents,
     regulatory,
     reports,
     risk,
@@ -258,6 +265,13 @@ app.include_router(fcra.router, prefix="/api/fcra", tags=["FCRA Guardian"], depe
 app.include_router(dpdp.router, prefix="/api/dpdp", tags=["DPDP Consent Manager"], dependencies=protected_dependencies)
 app.include_router(bmw.router, prefix="/api/bmw", tags=["BMW Sentinel"], dependencies=protected_dependencies)
 app.include_router(nabh.router, prefix="/api/nabh", tags=["NABH Compliance"], dependencies=protected_dependencies)
+app.include_router(nabh_evidence.router, prefix="/api/nabh", tags=["NABH Compliance Evidence"], dependencies=protected_dependencies)
+app.include_router(nabh_explanation.router, prefix="/api/nabh", tags=["NABH Compliance Explanation"], dependencies=protected_dependencies)
+app.include_router(nabh_operations.router, prefix="/api/nabh", tags=["NABH Compliance Operations"], dependencies=protected_dependencies)
+app.include_router(nabh_ontology.router, prefix="/api/nabh", tags=["NABH Compliance Ontology"], dependencies=protected_dependencies)
+app.include_router(nabh_profile.router, prefix="/api/nabh", tags=["NABH Compliance Profile"], dependencies=protected_dependencies)
+app.include_router(nabh_requirements.router, prefix="/api/nabh", tags=["NABH Compliance Requirements"], dependencies=protected_dependencies)
+app.include_router(nabh_agents.router, prefix="/api/nabh/agent", tags=["NABH Compliance Agents"], dependencies=protected_dependencies)
 app.include_router(licenses.router, prefix="/api/licenses", tags=["License Tracker"], dependencies=protected_dependencies)
 app.include_router(risk.router, prefix="/api/risk", tags=["Risk Intelligence"], dependencies=protected_dependencies)
 app.include_router(regulatory.router, prefix="/api/regulatory", tags=["Regulatory Monitor"], dependencies=protected_dependencies)

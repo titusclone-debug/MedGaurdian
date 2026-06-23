@@ -11,7 +11,7 @@
     "commitment_count": 68,
     "achievement_count": 9,
     "excellence_count": 4,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "COP",
@@ -25,7 +25,7 @@
     "commitment_count": 107,
     "achievement_count": 12,
     "excellence_count": 4,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "MOM",
@@ -39,7 +39,7 @@
     "commitment_count": 48,
     "achievement_count": 6,
     "excellence_count": 1,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "PRE",
@@ -53,7 +53,7 @@
     "commitment_count": 32,
     "achievement_count": 7,
     "excellence_count": 1,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "IPC",
@@ -67,7 +67,7 @@
     "commitment_count": 33,
     "achievement_count": 3,
     "excellence_count": 0,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "PSQ",
@@ -81,7 +81,7 @@
     "commitment_count": 28,
     "achievement_count": 7,
     "excellence_count": 3,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "ROM",
@@ -95,7 +95,7 @@
     "commitment_count": 23,
     "achievement_count": 8,
     "excellence_count": 2,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "FMS",
@@ -109,7 +109,7 @@
     "commitment_count": 29,
     "achievement_count": 2,
     "excellence_count": 1,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "HRM",
@@ -123,7 +123,7 @@
     "commitment_count": 56,
     "achievement_count": 4,
     "excellence_count": 0,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   },
   {
     "code": "IMS",
@@ -137,6 +137,6 @@
     "commitment_count": 33,
     "achievement_count": 2,
     "excellence_count": 1,
-    "is_fully_seeded": false
+    "is_fully_seeded": true
   }
 ]

@@ -99,6 +99,34 @@ def mirror_legacy_requirement(
     return requirement
 
 
+def resolve_canonical_requirement_id(db: Session, requirement_id: str) -> tuple[str, bool]:
+    """
+    Resolve an ID to a canonical requirement ID.
+    Returns (canonical_id, was_legacy_id).
+    """
+    # 1. Check if the requirement_id maps directly to a valid NABHRequirement
+    req = db.query(NABHRequirement).filter(NABHRequirement.id == requirement_id).first()
+    if req:
+        # If it's a legacy synthetic mirror, we still treat it as canonical for now,
+        # but if we have a way to find a non-synthetic one, we could do it here.
+        # Actually, if the ID is literally the canonical ID, no warning.
+        # Wait, if req.legacy_measurable_element_id is set and equals the ID, 
+        # it might mean they used the legacy ID to hit the mirror.
+        if req.legacy_measurable_element_id == requirement_id:
+            return requirement_id, True
+        return requirement_id, False
+        
+    # 2. Check if it's an old measurable_element_id mapped to something else
+    legacy_req = db.query(NABHRequirement).filter(
+        NABHRequirement.legacy_measurable_element_id == requirement_id
+    ).first()
+    
+    if legacy_req:
+        return legacy_req.id, True
+        
+    return requirement_id, False
+
+
 def ensure_canonical_compatibility(
     db: Session,
     edition_id: Optional[str] = None,

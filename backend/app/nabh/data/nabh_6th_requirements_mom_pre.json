@@ -1,0 +1,2326 @@
+[
+  {
+    "chapter_code": "MOM",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "MOM-1",
+        "title": "Pharmacy Organization and Formulary Management",
+        "description": "The organization maintains a structured pharmacy department with a defined formulary that is periodically reviewed and updated.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "MOM-1.a",
+            "description": "A hospital formulary is established, approved by the pharmacy and therapeutics committee, and made available to prescribers.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.a.1",
+                "description": "The organization maintains an approved formulary developed by the pharmacy and therapeutics committee, accessible to all prescribing staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.b",
+            "description": "The formulary undergoes periodic review at defined intervals with documented additions, deletions, and rationale.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.b.1",
+                "description": "Evidence exists that the formulary is reviewed at least annually with documented minutes of the committee reviewing additions and deletions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.c",
+            "description": "The pharmacy department is organized with defined leadership, adequate staffing, and clear reporting structure.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.c.1",
+                "description": "The pharmacy department has a designated head pharmacist with defined responsibilities, adequate qualified staff, and an organizational chart.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.d",
+            "description": "Policies and procedures governing all aspects of medication management are documented and accessible to relevant staff.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.d.1",
+                "description": "Comprehensive medication management policies and procedures are documented, approved by competent authority, and accessible to pharmacy and clinical staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.e",
+            "description": "A process exists for obtaining medications not available in the formulary, including emergency and after-hours procurement.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.e.1",
+                "description": "A documented process addresses obtaining non-formulary medications, including authorization requirements and after-hours availability.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.f",
+            "description": "The pharmacy and therapeutics committee includes multidisciplinary representation and meets at defined intervals.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.f.1",
+                "description": "The pharmacy and therapeutics committee has representation from medical, nursing, pharmacy, and administration departments and meets at least quarterly with documented minutes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.g",
+            "description": "Drug utilization reviews and pharmacoeconomic analyses are conducted periodically to optimize formulary selections.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.g.1",
+                "description": "Periodic drug utilization reviews and cost-effectiveness analyses are conducted and results used to refine formulary composition.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "MOM-1.h",
+            "description": "Antibiotic stewardship principles are integrated into the formulary management process.",
+            "severity": "major",
+            "display_order": 8,
+            "measurable_elements": [
+              {
+                "code": "MOM-1.h.1",
+                "description": "The organization has antibiotic stewardship guidelines integrated into formulary management with restricted antibiotic prescribing protocols.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-2",
+        "title": "Medication Storage and Security",
+        "description": "Medications are stored safely and securely under conditions that ensure their integrity, potency, and safety.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "MOM-2.a",
+            "description": "All medication storage areas maintain appropriate environmental conditions including temperature, humidity, and light control.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.a.1",
+                "description": "Medication storage areas are maintained at appropriate temperature and humidity levels with continuous monitoring and documented logs.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.b",
+            "description": "Controlled substances and narcotics are stored in double-locked cabinets with strict access controls and accountability records.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.b.1",
+                "description": "Narcotics and controlled substances are stored under double lock with access restricted to authorized personnel and shift-wise accountability maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.c",
+            "description": "Cold chain medications are stored in dedicated refrigeration units with temperature excursion monitoring and action protocols.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.c.1",
+                "description": "Cold chain medications are stored in dedicated pharmaceutical-grade refrigerators with twice-daily temperature recording and documented action plans for excursions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.d",
+            "description": "A systematic process ensures expired, damaged, or recalled medications are identified, segregated, and disposed of safely.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.d.1",
+                "description": "Regular checks identify near-expiry, expired, damaged, and recalled medications which are segregated, documented, and disposed of per regulatory requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.e",
+            "description": "Medication storage areas outside the pharmacy, including nursing stations and operating rooms, are subject to the same storage standards.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.e.1",
+                "description": "Medication storage at ward level, nursing stations, and procedure areas follows the same security, temperature, and labeling standards as the central pharmacy.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.f",
+            "description": "Radioactive, cytotoxic, and other hazardous medications are stored separately with appropriate safety measures.",
+            "severity": "critical",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.f.1",
+                "description": "Hazardous medications including cytotoxic agents and radioactive materials are stored in designated areas with safety equipment and handling protocols.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-2.g",
+            "description": "Automated storage and tracking technologies are employed to enhance medication inventory accuracy and security.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "MOM-2.g.1",
+                "description": "The organization utilizes automated dispensing cabinets or inventory tracking systems to improve medication storage accuracy and reduce discrepancies.",
+                "applicability_default": "conditional",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-3",
+        "title": "Medication Procurement and Inventory Control",
+        "description": "The organization has a defined process for procuring medications ensuring quality, availability, and regulatory compliance.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "MOM-3.a",
+            "description": "Medication procurement follows a documented policy ensuring sourcing from licensed and approved vendors.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.a.1",
+                "description": "The organization procures medications only from licensed suppliers with a documented vendor qualification and approval process.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-3.b",
+            "description": "An inventory management system tracks medication stock levels, consumption patterns, and reorder points.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.b.1",
+                "description": "A systematic inventory management process with defined minimum and maximum stock levels, reorder points, and consumption tracking is implemented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-3.c",
+            "description": "Incoming medications are inspected for integrity, proper labeling, expiry date, and batch details upon receipt.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.c.1",
+                "description": "Each medication consignment is inspected upon receipt for packaging integrity, correct labeling, batch number, manufacturing and expiry dates.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-3.d",
+            "description": "Drug shortage management protocols exist to ensure continuity of patient care when specific medications are unavailable.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.d.1",
+                "description": "The organization has protocols for managing drug shortages including therapeutic alternatives, communication to prescribers, and emergency procurement channels.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-3.e",
+            "description": "Drug recall procedures are documented and implemented promptly when manufacturer or regulatory recalls are issued.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.e.1",
+                "description": "A documented drug recall procedure ensures rapid identification, quarantine, and return of recalled medications with traceability maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-3.f",
+            "description": "Periodic physical stock verification is conducted and discrepancies are investigated and documented.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-3.f.1",
+                "description": "Physical stock verification is conducted at defined intervals with discrepancy investigation, root cause analysis, and corrective actions documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-4",
+        "title": "Prescribing and Transcription of Medications",
+        "description": "Medication orders are written clearly, completely, and in accordance with organizational policies to minimize prescribing errors.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "MOM-4.a",
+            "description": "Prescribing guidelines define who is authorized to prescribe, essential elements of a prescription, and use of approved abbreviations.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.a.1",
+                "description": "The organization defines authorized prescribers, mandatory prescription elements, approved abbreviation lists, and prohibits dangerous abbreviations.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.b",
+            "description": "Prescriptions are legible or electronically generated with all mandatory elements including patient identification, drug name, dose, route, and frequency.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.b.1",
+                "description": "All medication orders contain patient identifiers, generic drug name, dose, route, frequency, duration, prescriber signature, and are legible or computer-generated.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.c",
+            "description": "Verbal and telephone medication orders follow a defined read-back and verify protocol with timely co-signature.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.c.1",
+                "description": "Verbal and telephone orders follow a read-back verification process and are co-signed by the prescriber within the organizationally defined time frame.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.d",
+            "description": "Patient allergy and adverse reaction history is documented and verified before prescribing any medication.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.d.1",
+                "description": "Allergy status and prior adverse drug reaction history are documented prominently in the medical record and verified before each new prescription.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.e",
+            "description": "Drug-drug interactions and therapeutic duplications are screened at the point of prescribing or order entry.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.e.1",
+                "description": "A mechanism exists to screen for clinically significant drug-drug interactions, drug-food interactions, and therapeutic duplications at the time of prescribing.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.f",
+            "description": "Dose adjustment guidelines are available for special populations including pediatric, geriatric, renal, and hepatic impairment patients.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.f.1",
+                "description": "Dosage adjustment references and guidelines are available for pediatric, geriatric, and organ-impaired patients and are used during prescribing.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-4.g",
+            "description": "Medication order transcription processes include verification steps to prevent transcription errors.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "MOM-4.g.1",
+                "description": "Transcription of medication orders includes a verification step by a second qualified person and any transcription errors are documented and analyzed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-5",
+        "title": "Dispensing of Medications",
+        "description": "Medications are dispensed accurately and safely by qualified personnel with appropriate labeling and patient counseling.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "MOM-5.a",
+            "description": "Medications are dispensed only by qualified and authorized pharmacy personnel following verification of the prescription.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.a.1",
+                "description": "Dispensing is performed only by licensed pharmacists or trained pharmacy technicians under pharmacist supervision with prescription verification before dispensing.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-5.b",
+            "description": "Dispensed medications are labeled accurately with patient name, drug name, strength, dose, route, frequency, and expiry information.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.b.1",
+                "description": "Each dispensed medication carries a label with patient identification, drug name and strength, dose instructions, route, frequency, quantity, and expiry date.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-5.c",
+            "description": "Patient counseling on medication use, precautions, and potential side effects is provided at the time of dispensing.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.c.1",
+                "description": "Pharmacists provide patient counseling at the point of dispensing covering proper use, storage, common side effects, and when to seek medical advice.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-5.d",
+            "description": "After-hours and emergency medication dispensing processes ensure safe and timely access to essential medications.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.d.1",
+                "description": "Defined processes for after-hours medication dispensing include night pharmacy services, floor stock management, or on-call pharmacist availability.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-5.e",
+            "description": "Unit dose or patient-specific dispensing systems are implemented to reduce medication errors.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.e.1",
+                "description": "The organization implements unit dose dispensing or individualized patient medication systems to reduce handling errors and facilitate accurate administration.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-5.f",
+            "description": "Barcode verification or technology-assisted dispensing is used to enhance accuracy of the dispensing process.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-5.f.1",
+                "description": "Technology-assisted dispensing such as barcode scanning or automated dispensing cabinets is used to verify correct medication, dose, and patient match.",
+                "applicability_default": "conditional",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-6",
+        "title": "Administration of Medications",
+        "description": "Medications are administered safely to patients by qualified personnel following established verification and documentation protocols.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "MOM-6.a",
+            "description": "Medications are administered following verification of the five rights: right patient, right drug, right dose, right route, and right time.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.a.1",
+                "description": "Staff administering medications verify the five rights (patient, drug, dose, route, time) before every administration, with documentation of compliance.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.b",
+            "description": "Medication administration is documented in the patient record immediately after administration, including time, dose, and route.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.b.1",
+                "description": "Each medication administration is documented in the patient medication administration record with the time, dose, route, and administering staff signature.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.c",
+            "description": "Intravenous medication preparation and administration follows defined protocols for dilution, rate, and compatibility.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.c.1",
+                "description": "Protocols for IV medication preparation specify dilution standards, infusion rates, compatibility checks, and labeling requirements for prepared IV admixtures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.d",
+            "description": "Self-administration of medications by patients is permitted only after competency assessment and under defined conditions.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.d.1",
+                "description": "A policy governs patient self-administration of medications with competency assessment criteria, physician approval, and nursing oversight requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.e",
+            "description": "Timeliness of medication administration is monitored, with critical and time-sensitive medications identified and prioritized.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.e.1",
+                "description": "The organization monitors timely medication administration, defines acceptable time windows, and identifies time-critical medications requiring strict scheduling.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.f",
+            "description": "Infusion pump programming and smart pump technology safeguards are utilized for high-risk intravenous medications.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.f.1",
+                "description": "Smart infusion pumps with dose error reduction software and drug libraries are used for high-risk IV medications with compliance data monitored.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-6.g",
+            "description": "Medication administration competency of nursing staff is assessed and documented periodically.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "MOM-6.g.1",
+                "description": "Nursing staff competency in medication administration including IV admixture, high-risk drugs, and pediatric dosing is assessed at orientation and periodically thereafter.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-7",
+        "title": "Monitoring of Medication Effects and Adverse Drug Reactions",
+        "description": "The organization monitors patient responses to medications and has a system for reporting and analyzing adverse drug reactions and medication errors.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "MOM-7.a",
+            "description": "An adverse drug reaction reporting and monitoring system is established and operational across the organization.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.a.1",
+                "description": "The organization has a formal ADR reporting system with standardized forms, defined reporting timelines, and a process for regulatory notification.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-7.b",
+            "description": "Patients on high-risk medications, narrow therapeutic index drugs, and new medications are monitored with defined clinical parameters.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.b.1",
+                "description": "Clinical monitoring parameters are defined for high-risk medications, narrow therapeutic index drugs, and newly introduced medications with documentation of monitoring outcomes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-7.c",
+            "description": "A medication error reporting system encourages voluntary and non-punitive reporting of errors and near-misses.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.c.1",
+                "description": "A non-punitive medication error and near-miss reporting system is in place that encourages voluntary reporting with documented analysis and corrective actions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-7.d",
+            "description": "Reported adverse drug reactions and medication errors are analyzed for trends, contributing factors, and system improvements.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.d.1",
+                "description": "ADR and medication error data are analyzed periodically for trends, root causes, and contributing factors with improvement actions tracked to completion.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-7.e",
+            "description": "Staff are trained and aware of adverse drug reaction identification, documentation, and reporting procedures.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.e.1",
+                "description": "All clinical staff receive training on ADR identification, classification, documentation, and reporting procedures with training records maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-7.f",
+            "description": "A pharmacovigilance program links internal ADR data to national pharmacovigilance databases and regulatory reporting.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-7.f.1",
+                "description": "The organization participates in the national pharmacovigilance program with documented submission of serious ADRs to regulatory authorities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-8",
+        "title": "High-Alert Medication Safety",
+        "description": "The organization identifies high-alert medications and implements additional safeguards to prevent errors associated with their use.",
+        "display_order": 8,
+        "objective_elements": [
+          {
+            "code": "MOM-8.a",
+            "description": "A list of high-alert medications is defined, approved, and disseminated across the organization.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.a.1",
+                "description": "The organization maintains an approved, current list of high-alert medications based on published evidence and internal incident data, accessible to all clinical staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-8.b",
+            "description": "High-alert medications are stored separately with distinctive labeling, warning signs, and restricted access where appropriate.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.b.1",
+                "description": "High-alert medications are stored in designated locations with prominent warning labels, color-coded alerts, and separated from regular stock to prevent selection errors.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-8.c",
+            "description": "An independent double-check process is mandated before administration of high-alert medications.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.c.1",
+                "description": "An independent double-check by two qualified staff members is required before dispensing or administering high-alert medications with documentation of both verifiers.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-8.d",
+            "description": "Concentrated electrolytes and other high-risk solutions are not kept in patient care areas unless clinically necessary with safeguards.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.d.1",
+                "description": "Concentrated electrolytes are removed from patient care units or, where clinically necessary, stored with prominent warnings and standardized dilution protocols.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-8.e",
+            "description": "Standardized concentrations, dose limits, and infusion rate charts are established for high-alert medications.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.e.1",
+                "description": "Standardized concentration charts, maximum dose limits, and infusion rate references are developed and available at points of prescribing, dispensing, and administration.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-8.f",
+            "description": "Staff competency for handling high-alert medications is assessed at induction and periodically with documented evidence.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "MOM-8.f.1",
+                "description": "Competency assessment for staff handling high-alert medications is conducted at orientation and at defined intervals with remedial training for identified gaps.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-9",
+        "title": "Look-Alike Sound-Alike Medication Safety",
+        "description": "The organization identifies and manages look-alike sound-alike medications to prevent selection and dispensing errors.",
+        "display_order": 9,
+        "objective_elements": [
+          {
+            "code": "MOM-9.a",
+            "description": "A list of look-alike sound-alike medications relevant to the organization is maintained and regularly updated.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-9.a.1",
+                "description": "An organization-specific LASA list is developed based on published references and internal error data, reviewed at least annually, and disseminated to all relevant staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-9.b",
+            "description": "Tall man lettering and other visual differentiation strategies are used for look-alike sound-alike medications.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-9.b.1",
+                "description": "Tall man lettering, color-coded labels, or other visual differentiation methods are applied to LASA medications in storage, dispensing, and electronic systems.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-9.c",
+            "description": "Look-alike sound-alike medications are stored separately or with physical barriers to prevent mix-ups.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-9.c.1",
+                "description": "LASA medications are physically separated in storage areas, stored in non-adjacent locations, or segregated by shelf dividers with alert tags.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-9.d",
+            "description": "Electronic prescribing and dispensing systems include alerts for look-alike sound-alike medication pairs.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-9.d.1",
+                "description": "Computerized prescribing and pharmacy systems incorporate LASA alerts that prompt verification when a LASA pair medication is selected.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-9.e",
+            "description": "Periodic audits and failure mode analyses are conducted for LASA medication processes with improvement actions tracked.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-9.e.1",
+                "description": "Periodic audits of LASA safeguards are conducted with failure mode analysis, and improvement actions are documented and tracked to completion.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-10",
+        "title": "Patient's Own Medications and Sample Medications",
+        "description": "The organization has policies governing the use, verification, storage, and documentation of patient's own medications and pharmaceutical samples.",
+        "display_order": 10,
+        "objective_elements": [
+          {
+            "code": "MOM-10.a",
+            "description": "A policy governs whether and how patient's own medications may be used during hospitalization.",
+            "severity": "major",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-10.a.1",
+                "description": "A documented policy defines conditions under which patient's own medications may be used, including physician authorization and pharmacist verification requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "chief_pharmacist",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "MOM-10.b",
+            "description": "Patient's own medications brought into the hospital are identified, verified for authenticity and integrity, and stored safely.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-10.b.1",
+                "description": "Patient's own medications are identified by the pharmacist, verified for product integrity and expiry, labeled, and stored securely in the patient care area.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-10.c",
+            "description": "Sample medications are managed under a documented policy covering receipt, storage, dispensing, and tracking.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-10.c.1",
+                "description": "A policy defines the management of pharmaceutical samples including authorized receipt, storage conditions, dispensing documentation, and expiry tracking.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-10.d",
+            "description": "Documentation of patient's own medications and sample medications is maintained in the patient medical record.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-10.d.1",
+                "description": "Use of patient's own medications and pharmaceutical samples is documented in the patient record including name, dose, frequency, and duration of use.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-10.e",
+            "description": "Outcome tracking and effectiveness evaluation of sample medication usage is conducted to inform future procurement decisions.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-10.e.1",
+                "description": "The organization tracks outcomes of sample medication use and evaluates effectiveness data to support evidence-based formulary and procurement decisions.",
+                "applicability_default": "conditional",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "clinical_pharmacist",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "MOM-11",
+        "title": "Emergency Medication Management",
+        "description": "Emergency medications and supplies are available, standardized, and maintained for immediate use in life-threatening situations.",
+        "display_order": 11,
+        "objective_elements": [
+          {
+            "code": "MOM-11.a",
+            "description": "Emergency medications are available at defined locations throughout the organization for immediate access during emergencies.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "MOM-11.a.1",
+                "description": "Emergency medications are stocked at all designated resuscitation points and critical care areas with a standardized list approved by the medical staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-11.b",
+            "description": "Crash carts and emergency medication kits are standardized across the organization with uniform contents and layout.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "MOM-11.b.1",
+                "description": "Crash carts are standardized across the organization with a uniform contents list, drawer layout, quantity specifications, and content checklist.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-11.c",
+            "description": "Emergency medication stocks are checked at defined frequencies for completeness, expiry, and integrity with documented logs.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "MOM-11.c.1",
+                "description": "Emergency medication and crash cart checks are performed at defined frequencies, with daily integrity checks and periodic full content verification against the standard list.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-11.d",
+            "description": "Tamper-evident seals or locking mechanisms are used on emergency medication kits to ensure security and integrity.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "MOM-11.d.1",
+                "description": "Emergency medication kits and crash carts use tamper-evident seals with documented seal numbers, and a process ensures replenishment and resealing after each use.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "MOM-11.e",
+            "description": "Simulation-based training and drills are conducted to ensure staff competency in emergency medication retrieval and administration.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "MOM-11.e.1",
+                "description": "Regular simulation drills test staff ability to locate and administer emergency medications with debriefing, gap identification, and corrective training documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.6,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "chapter_code": "PRE",
+    "edition_version": "6.0",
+    "standards": [
+      {
+        "code": "PRE-1",
+        "title": "Patient Rights",
+        "description": "The organization respects and protects patient rights and communicates them effectively to patients, families, and staff.",
+        "display_order": 1,
+        "objective_elements": [
+          {
+            "code": "PRE-1.a",
+            "description": "A patient rights charter is defined, approved by leadership, and displayed prominently throughout the organization.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.a.1",
+                "description": "The organization has an approved patient rights charter displayed in patient care areas, reception, and admissions in the local language and English.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.b",
+            "description": "Patient rights are communicated to patients and families at the time of admission and during the care process.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.b.1",
+                "description": "Patient rights are communicated verbally and in writing to patients and families at admission, with documented acknowledgment of receipt.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "admissions_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.c",
+            "description": "Patient rights information is available in accessible formats including multiple languages and pictorial representations for diverse populations.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.c.1",
+                "description": "Patient rights materials are available in the predominant languages of the community served, with pictorial formats for patients with literacy challenges.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.d",
+            "description": "Patients have the right to receive information about their diagnosis, treatment plan, expected outcomes, and associated costs.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.d.1",
+                "description": "Patients are informed about their diagnosis, proposed treatment options, expected outcomes, associated risks, and estimated costs in a language they understand.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.e",
+            "description": "Patients have the right to refuse treatment or withdraw consent and are informed about the consequences of such decisions.",
+            "severity": "critical",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.e.1",
+                "description": "The organization respects the patient's right to refuse or discontinue treatment, with documented counseling about consequences and patient acknowledgment.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.f",
+            "description": "The organization has mechanisms to protect patients from physical abuse, neglect, and harassment.",
+            "severity": "critical",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.f.1",
+                "description": "Policies and processes protect patients from abuse, neglect, and harassment with defined reporting mechanisms, investigation procedures, and corrective actions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.g",
+            "description": "Cultural, religious, spiritual, and psychosocial values of patients are respected and accommodated in the care process.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.g.1",
+                "description": "Staff are trained to respect and accommodate patients' cultural, religious, spiritual, and psychosocial needs with documented examples of accommodations provided.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-1.h",
+            "description": "Periodic audits assess compliance with patient rights policies and results inform quality improvement initiatives.",
+            "severity": "minor",
+            "display_order": 8,
+            "measurable_elements": [
+              {
+                "code": "PRE-1.h.1",
+                "description": "Periodic audits of patient rights compliance are conducted with findings analyzed, improvement actions planned, and results reported to leadership.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-2",
+        "title": "Informed Consent",
+        "description": "The organization ensures informed consent is obtained from patients or their legal representatives before procedures, treatments, and interventions.",
+        "display_order": 2,
+        "objective_elements": [
+          {
+            "code": "PRE-2.a",
+            "description": "An informed consent policy defines the types of procedures and treatments requiring consent, the consent process, and documentation standards.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.a.1",
+                "description": "A comprehensive informed consent policy specifies procedures requiring consent, elements of valid consent, authorized consent-takers, and documentation requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.b",
+            "description": "Informed consent includes explanation of the procedure, risks, benefits, alternatives, and the right to refuse in a language the patient understands.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.b.1",
+                "description": "The consent process includes explanation of the procedure, expected benefits, potential risks, available alternatives, and right to refuse, communicated in the patient's preferred language.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.c",
+            "description": "Separate informed consent is obtained for surgical procedures, anesthesia, blood and blood product transfusions, and high-risk treatments.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.c.1",
+                "description": "Separate consent forms are obtained for surgery, anesthesia, blood transfusion, and other high-risk procedures with specific risks detailed for each.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.d",
+            "description": "Consent for anesthesia is obtained by the anesthesiologist explaining the type, risks, and alternatives of anesthesia.",
+            "severity": "critical",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.d.1",
+                "description": "Anesthesia consent is obtained by the anesthesiologist during the pre-anesthesia assessment, documenting the type of anesthesia, specific risks, and patient queries addressed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "anesthesiologist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.e",
+            "description": "When the patient is unable to provide consent, consent is obtained from a legally authorized representative as defined by applicable law.",
+            "severity": "critical",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.e.1",
+                "description": "When patients cannot consent, the organization obtains consent from legally authorized representatives with documentation of the relationship and authority.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.f",
+            "description": "General consent at admission covers routine care, and specific consent is obtained for each additional procedure or investigation as required.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.f.1",
+                "description": "A general consent at admission covers routine care activities, while specific informed consent is obtained for each invasive procedure, investigation, or treatment beyond routine care.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "admissions_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-2.g",
+            "description": "The quality of informed consent documentation is audited periodically to ensure completeness and compliance with policy.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PRE-2.g.1",
+                "description": "Periodic audits review informed consent documentation for completeness, legibility, appropriate timing, and presence of all required elements with corrective actions for gaps.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-3",
+        "title": "Privacy and Confidentiality",
+        "description": "The organization ensures the privacy of patients during care and maintains confidentiality of patient health information.",
+        "display_order": 3,
+        "objective_elements": [
+          {
+            "code": "PRE-3.a",
+            "description": "A comprehensive privacy and confidentiality policy governs the protection of patient information across all settings.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.a.1",
+                "description": "The organization has an approved privacy and confidentiality policy that defines the scope of protected health information, access controls, and breach response procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.b",
+            "description": "Physical privacy of patients is maintained during examinations, procedures, and personal care activities.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.b.1",
+                "description": "Physical privacy is ensured through curtains, screens, private consultation rooms, and protocols for maintaining patient modesty during examinations and procedures.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.c",
+            "description": "Patient medical records and health information are accessible only to authorized personnel on a need-to-know basis.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.c.1",
+                "description": "Access to patient medical records is restricted to authorized clinical and administrative staff based on role-based access controls with audit trail monitoring.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_records_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.d",
+            "description": "Protocols govern sharing of patient information with third parties, insurers, and external agencies with patient authorization.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.d.1",
+                "description": "Patient information is shared with third parties, insurers, and external agencies only with documented patient authorization or as required by law, with records of disclosures maintained.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "medical_records_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.e",
+            "description": "Electronic health information is protected through cybersecurity measures, encryption, and access controls.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.e.1",
+                "description": "Electronic patient data is protected by password controls, encryption, firewall protections, and regular security assessments with documented cybersecurity protocols.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "it_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.f",
+            "description": "A privacy breach management process includes detection, notification, investigation, and corrective action procedures.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.f.1",
+                "description": "The organization has a documented privacy breach response plan covering detection, containment, patient notification, investigation, and corrective actions with lessons learned.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.7,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          },
+          {
+            "code": "PRE-3.g",
+            "description": "All staff receive training on patient privacy and confidentiality at induction and through periodic refresher programs.",
+            "severity": "major",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PRE-3.g.1",
+                "description": "Staff training on privacy and confidentiality is conducted at induction and refreshed annually with documentation of attendance and competency verification.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "hr_manager",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-4",
+        "title": "Grievance Redressal",
+        "description": "The organization has a structured mechanism to receive, address, and resolve patient and family complaints and grievances.",
+        "display_order": 4,
+        "objective_elements": [
+          {
+            "code": "PRE-4.a",
+            "description": "A documented grievance redressal mechanism is established with clear processes for complaint registration, investigation, and resolution.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.a.1",
+                "description": "The organization has a documented grievance redressal policy with defined processes for complaint intake, classification, investigation, resolution, and communication of outcomes.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.b",
+            "description": "Multiple channels are available for patients and families to register complaints, including verbal, written, and electronic options.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.b.1",
+                "description": "Complaint registration is facilitated through multiple channels including suggestion boxes, helpline numbers, email, web portals, and direct submission to designated staff.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.c",
+            "description": "Complaints are acknowledged within a defined time frame and resolved within specified turnaround times.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.c.1",
+                "description": "Complaints are acknowledged within a defined time frame, and resolution targets are established with monitoring of compliance against turnaround time benchmarks.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.d",
+            "description": "An escalation matrix ensures unresolved complaints are elevated to appropriate authority levels for resolution.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.d.1",
+                "description": "A defined escalation matrix routes unresolved complaints through progressively higher authority levels with time-bound escalation triggers and documentation.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.e",
+            "description": "Patient and family feedback is actively solicited through structured mechanisms such as rounding and feedback forms.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.e.1",
+                "description": "The organization actively solicits patient feedback through bedside feedback forms, discharge surveys, leadership rounding, and focused group discussions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.f",
+            "description": "Complaint data is analyzed for trends, root causes, and systemic issues to drive quality improvement.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.f.1",
+                "description": "Complaint data is analyzed periodically for trends, recurring issues, and systemic causes with improvement actions planned, implemented, and tracked for effectiveness.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-4.g",
+            "description": "Validated patient satisfaction surveys are conducted periodically with results benchmarked and used for improvement planning.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PRE-4.g.1",
+                "description": "Standardized patient satisfaction surveys are conducted at defined intervals with results analyzed, benchmarked, and used to develop targeted improvement action plans.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-5",
+        "title": "Patient and Family Education",
+        "description": "The organization provides structured health education to patients and families to support informed decision-making and self-management.",
+        "display_order": 5,
+        "objective_elements": [
+          {
+            "code": "PRE-5.a",
+            "description": "A patient and family education program is established with defined processes for assessing education needs and delivering education.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.a.1",
+                "description": "A structured patient education program includes assessment of learning needs, preferred learning methods, literacy level, and barriers to learning for each patient.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.b",
+            "description": "Patients are educated about their diagnosis, disease process, and proposed treatment plan in terms they can understand.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.b.1",
+                "description": "Education on diagnosis, disease process, treatment plan, and expected outcomes is provided to patients and families using clear, jargon-free language with understanding verified.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.c",
+            "description": "Medication education covers drug purpose, dosage, administration technique, side effects, and storage requirements.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.c.1",
+                "description": "Patients receive medication education covering purpose, dose, frequency, administration technique, potential side effects, food interactions, and storage instructions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "pharmacist",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.d",
+            "description": "Dietary guidance, lifestyle modifications, and rehabilitation instructions are provided based on the patient's clinical condition.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.d.1",
+                "description": "Patients receive individualized dietary counseling, activity recommendations, and lifestyle modification guidance relevant to their condition with written materials provided.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "dietitian",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.e",
+            "description": "Discharge education ensures patients understand follow-up care, warning signs, medication regimen, and when to seek emergency care.",
+            "severity": "critical",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.e.1",
+                "description": "Comprehensive discharge education covers medication regimen, follow-up appointments, warning signs, activity restrictions, wound care, and emergency contact information.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "nurse",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.f",
+            "description": "Patient education materials are standardized, evidence-based, and available in accessible formats.",
+            "severity": "major",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.f.1",
+                "description": "Standardized patient education materials are developed based on current evidence, reviewed periodically, and available in multiple formats including print, audio, and visual media.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.6,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-5.g",
+            "description": "The effectiveness of patient education is evaluated through patient feedback, comprehension assessment, and outcome measures.",
+            "severity": "minor",
+            "display_order": 7,
+            "measurable_elements": [
+              {
+                "code": "PRE-5.g.1",
+                "description": "Patient education effectiveness is measured through teach-back assessments, readmission analysis, patient feedback surveys, and self-management outcome tracking.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-6",
+        "title": "Rights of Special and Vulnerable Populations",
+        "description": "The organization identifies and addresses the unique rights and needs of vulnerable and special patient populations.",
+        "display_order": 6,
+        "objective_elements": [
+          {
+            "code": "PRE-6.a",
+            "description": "Vulnerable patient populations are identified including children, elderly, differently-abled, mentally ill, and victims of abuse.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.a.1",
+                "description": "The organization identifies vulnerable populations including pediatric, geriatric, differently-abled, mentally ill, and abuse victims with defined protocols for their protection.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-6.b",
+            "description": "Pediatric patients have age-appropriate rights protections including parental involvement, assent processes, and child-friendly communication.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.b.1",
+                "description": "Pediatric patient rights include parental involvement in care decisions, age-appropriate assent for older children, child-friendly environments, and protection from unwarranted separation.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "pediatrician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-6.c",
+            "description": "Elderly patients receive care that addresses their unique vulnerabilities including fall risk, cognitive decline, and polypharmacy concerns.",
+            "severity": "major",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.c.1",
+                "description": "Geriatric-specific care protocols address fall prevention, cognitive assessment, delirium screening, polypharmacy review, and appropriate discharge planning for elderly patients.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-6.d",
+            "description": "Physical accessibility and reasonable accommodations are provided for patients with disabilities.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.d.1",
+                "description": "The organization provides wheelchair access, assistive devices, sign language interpreters, and other accommodations for patients with physical, sensory, or cognitive disabilities.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "facility_director",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-6.e",
+            "description": "Language interpretation and translation services are available for patients with communication barriers.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.e.1",
+                "description": "Language interpretation services are available for patients who do not speak the predominant language, including access to trained interpreters and translated consent forms.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "patient_rights_officer",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-6.f",
+            "description": "Cultural competency training is provided to staff to ensure equitable and respectful care for diverse patient populations.",
+            "severity": "minor",
+            "display_order": 6,
+            "measurable_elements": [
+              {
+                "code": "PRE-6.f.1",
+                "description": "Staff receive structured cultural competency training covering implicit bias, cross-cultural communication, and equitable care delivery with training effectiveness assessed.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.5,
+                "default_owner_role": "hr_manager",
+                "display_order": 1,
+                "classification": "achievement"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-7",
+        "title": "Research Ethics and Patient Protection in Research",
+        "description": "The organization protects the rights and welfare of patients participating in clinical research through an ethics review process.",
+        "display_order": 7,
+        "objective_elements": [
+          {
+            "code": "PRE-7.a",
+            "description": "An institutional ethics committee reviews and approves all clinical research involving human subjects conducted at the organization.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-7.a.1",
+                "description": "An institutional ethics committee is constituted per regulatory requirements, reviews all research protocols involving human subjects, and provides documented approval before research commencement.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "ethics_committee_chair",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-7.b",
+            "description": "Research-specific informed consent is obtained from participants detailing the nature, risks, benefits, and voluntary nature of participation.",
+            "severity": "critical",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-7.b.1",
+                "description": "Research consent forms include study purpose, procedures, risks, benefits, alternatives, voluntary participation, right to withdraw, confidentiality protections, and investigator contact information.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "principal_investigator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-7.c",
+            "description": "Participants in research are protected from harm with defined safety monitoring, adverse event reporting, and stopping criteria.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-7.c.1",
+                "description": "Research protocols include participant safety monitoring plans, adverse event reporting mechanisms, data safety monitoring boards where required, and predefined stopping criteria.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "principal_investigator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-7.d",
+            "description": "Research data is maintained confidentially with patient identifiers protected and data security measures in place.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-7.d.1",
+                "description": "Research data confidentiality is maintained through de-identification, secure storage, restricted access, and data handling agreements with documented security measures.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "principal_investigator",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-7.e",
+            "description": "The organization does not allow clinical care to be compromised for patients who decline participation in or withdraw from research.",
+            "severity": "major",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-7.e.1",
+                "description": "Policies ensure that patients who decline or withdraw from research continue to receive standard clinical care without discrimination, with staff trained on this principle.",
+                "applicability_default": "conditional",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.8,
+                "default_owner_role": "ethics_committee_chair",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "code": "PRE-8",
+        "title": "Advance Directives and End-of-Life Care Decisions",
+        "description": "The organization respects and facilitates advance directives and supports patients and families in end-of-life care decision-making.",
+        "display_order": 8,
+        "objective_elements": [
+          {
+            "code": "PRE-8.a",
+            "description": "A policy governs the recognition, documentation, and implementation of advance directives in accordance with applicable laws.",
+            "severity": "critical",
+            "display_order": 1,
+            "measurable_elements": [
+              {
+                "code": "PRE-8.a.1",
+                "description": "The organization has a policy on advance directives covering living wills, healthcare power of attorney, and do-not-resuscitate orders aligned with applicable legal requirements.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "medical_superintendent",
+                "display_order": 1,
+                "classification": "core"
+              }
+            ]
+          },
+          {
+            "code": "PRE-8.b",
+            "description": "Advance directives are documented in the patient medical record and communicated to all members of the care team.",
+            "severity": "major",
+            "display_order": 2,
+            "measurable_elements": [
+              {
+                "code": "PRE-8.b.1",
+                "description": "When advance directives exist, they are documented prominently in the medical record with alerts in electronic systems and communicated during handoffs and care transitions.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.9,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-8.c",
+            "description": "Do-not-resuscitate orders follow a defined protocol including physician documentation, patient or family discussion, and periodic review.",
+            "severity": "critical",
+            "display_order": 3,
+            "measurable_elements": [
+              {
+                "code": "PRE-8.c.1",
+                "description": "DNR orders require documented physician assessment, informed family discussion, patient or surrogate consent, and periodic review with continuation or revocation documented.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 1.0,
+                "default_owner_role": "physician",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-8.d",
+            "description": "Staff are trained in end-of-life care communication, ethical decision-making, and palliative care principles.",
+            "severity": "major",
+            "display_order": 4,
+            "measurable_elements": [
+              {
+                "code": "PRE-8.d.1",
+                "description": "Clinical staff receive training in breaking bad news, end-of-life communication, palliative care principles, and ethical considerations in withdrawal or withholding of treatment.",
+                "applicability_default": "applicable",
+                "scoring_weight": 1.0,
+                "risk_weight": 0.7,
+                "default_owner_role": "nursing_superintendent",
+                "display_order": 1,
+                "classification": "commitment"
+              }
+            ]
+          },
+          {
+            "code": "PRE-8.e",
+            "description": "The organization benchmarks its advance directive and end-of-life care practices against national and international best practices.",
+            "severity": "minor",
+            "display_order": 5,
+            "measurable_elements": [
+              {
+                "code": "PRE-8.e.1",
+                "description": "The organization benchmarks advance directive compliance rates, palliative care utilization, and end-of-life care quality indicators against national standards and published best practices.",
+                "applicability_default": "applicable",
+                "scoring_weight": 0.8,
+                "risk_weight": 0.4,
+                "default_owner_role": "quality_officer",
+                "display_order": 1,
+                "classification": "excellence"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
