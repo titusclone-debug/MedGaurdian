@@ -191,7 +191,12 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
     Never pass those flags through this function in production code paths.
     """
     logger.info(f"🌱 Validating ontology seed files under: {data_dir}")
-    loaded_data = validate_ontology_seeds(data_dir, target_version)
+    from app.nabh.validator import ValidationError
+    try:
+        loaded_data = validate_ontology_seeds(data_dir, target_version)
+    except ValidationError as e:
+        logger.warning(f"Seed validation failed or files absent: {e}. Seeding aborted. System will report partial_seed/canonical_complete=false.")
+        return
 
     # WP4: Warn explicitly when the citations file marks itself as non-complete so that
     # production logs make partial citation coverage visible rather than silently passing.

@@ -19,7 +19,8 @@ def validate_ontology_seeds(
     data_dir: str, 
     target_version: str = "6.0", 
     allow_missing_citations: bool = False,
-    allow_bare_citation_array: bool = False
+    allow_bare_citation_array: bool = False,
+    is_fixture: bool = False
 ) -> Dict[str, Any]:
     """
     Validates all ontology seed files under the data_dir directory.
@@ -140,6 +141,10 @@ def validate_ontology_seeds(
 
             if std_code in standard_codes:
                 raise ValidationError(f"Duplicate standard code '{std_code}' in chapter '{chap_code}'.")
+            
+            if not is_fixture and "Synthetic" in std.get("title", ""):
+                raise ValidationError(f"Standard '{std_code}' contains 'Synthetic' title which is forbidden in canonical seed.")
+
             standard_codes.add(std_code)
             seeded_standards_per_chapter[chap_code] += 1
 
@@ -161,6 +166,11 @@ def validate_ontology_seeds(
                     raise ValidationError(f"Duplicate objective element code '{obj_code}' under standard '{std_code}'.")
                 obj_codes.add(obj_code)
 
+                if not is_fixture:
+                    # Enforce official objective element code format (e.g. AAC.1.a)
+                    if not re.match(rf"^{chap_code}\.\d+\.[a-z]+$", obj_code):
+                        raise ValidationError(f"Official Objective Element code '{obj_code}' must follow format 'CHAP.num.letter' (e.g., AAC.1.a).")
+
                 severity = obj["severity"]
                 if severity not in VALID_SEVERITY_LEVELS:
                     raise ValidationError(f"Invalid severity level '{severity}' in objective element '{obj_code}'.")
@@ -178,6 +188,12 @@ def validate_ontology_seeds(
                     meas_code = meas["code"]
                     if not re.match(rf"^{obj_code}\.\d+$", meas_code):
                         raise ValidationError(f"Measurable element code '{meas_code}' under objective element '{obj_code}' must be format '{obj_code}.<number>'.")
+
+                    if not is_fixture:
+                        if "Synthetic" in meas.get("description", ""):
+                            raise ValidationError(f"Measurable element '{meas_code}' contains 'Synthetic' description which is forbidden.")
+                        if re.match(rf"^{chap_code}-\d+\.[a-z]+\.\d+$", meas_code):
+                            raise ValidationError(f"Measurable element code '{meas_code}' uses legacy hyphenated format which is forbidden in canonical seed.")
 
                     if meas_code in meas_codes:
                         raise ValidationError(f"Duplicate measurable element code '{meas_code}' under objective element '{obj_code}'.")
@@ -254,6 +270,10 @@ def validate_ontology_seeds(
         
         if ev_code in evidence_codes_per_element[meas_code]:
             raise ValidationError(f"Duplicate evidence code '{ev_code}' for measurable element '{meas_code}'.")
+        
+        if not is_fixture and "Synthetic" in ev.get("description", ""):
+            raise ValidationError(f"Evidence '{ev_code}' contains 'Synthetic' description which is forbidden in canonical seed.")
+            
         evidence_codes_per_element[meas_code].add(ev_code)
 
         ev_type = ev["evidence_type"]
@@ -427,6 +447,9 @@ def validate_ontology_seeds(
             eff_date_str = cit["effective_date"]
             if not isinstance(eff_date_str, str) or not eff_date_str.strip():
                 raise ValidationError(f"Citation at index {idx} has invalid effective_date.")
+                
+            if not is_fixture and "Synthetic" in cit.get("clause_text_summary", ""):
+                raise ValidationError(f"Citation for '{meas_code}' contains 'Synthetic' text which is forbidden in canonical seed.")
             
             try:
                 datetime.strptime(eff_date_str, "%Y-%m-%d")

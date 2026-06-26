@@ -52,9 +52,22 @@ def check_nabh_seed_health(db: Session, target_version: str = "6.0") -> dict:
         evidence_covered_requirements_count = 0
         citations_count = 0
         verified_citations_count = 0
+        has_synthetic_codes = False
+        has_official_source = False
         
         if edition_exists:
             ensure_canonical_compatibility(db, active_edition.id)
+            has_synthetic_codes = db.query(NABHRequirement).filter(
+                NABHRequirement.edition_id == active_edition.id,
+                NABHRequirement.retired_at.is_(None),
+                NABHRequirement.canonical_code.like('%-%')
+            ).count() > 0
+            has_official_source = db.query(NABHSourceDocument).filter(
+                NABHSourceDocument.edition_id == active_edition.id,
+                NABHSourceDocument.checksum == '0C684E6B71A9D582E50966A13E2BE3859EE5CA50C90D172D4FE57B79315C791A',
+                NABHSourceDocument.retired_at.is_(None)
+            ).count() > 0
+            
             standards_count = db.query(NABHStandard).filter(
                 NABHStandard.edition_id == active_edition.id,
                 NABHStandard.retired_at.is_(None),
@@ -132,7 +145,9 @@ def check_nabh_seed_health(db: Session, target_version: str = "6.0") -> dict:
             standards_count == 100 and
             requirements_count == 639 and
             official_verified_requirements_count == 639 and
-            verified_citations_count == 639
+            verified_citations_count == 639 and
+            not has_synthetic_codes and
+            has_official_source
         )
         partial_operational_seed = (
             requirements_count > 0 and

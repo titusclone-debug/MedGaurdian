@@ -1,14 +1,15 @@
 # NABH Phase 2 Bridge Package
 
+> [!WARNING]
+> Track B (Corpus Completion) is currently PENDING. 
+> The previously pushed 639-element dataset was a synthetic scale/performance fixture, NOT the official canonical governed corpus.
+> Do NOT use the synthetic dataset for production workflows. True canonical data must be sourced directly from the official PDF via the governed extraction package.
+
 This document bridges the governed Phase 1.5 6th Edition knowledge layer to the Phase 2 Beginner Guided Journey.
 
 ## 1. Corpus Readiness
-The canonical corpus is fully seeded and verified:
-- **10 Chapters**: AAC, COP, MOM, PRE, IPC, PSQ, ROM, FMS, HRM, IMS
-- **100 Standards**
-- **639 Objective Elements**
-- **100% Citation Coverage** (citation_complete: true)
-- **100% Evidence Coverage** (is_mandatory: true)
+**STATUS: PENDING TRUE EXTRACTION**
+The local system uses a structural synthetic fixture for performance scaling tests. The official canonical corpus has not yet been published.
 
 ## 2. Transition Plan
 Phase 2 will introduce the **Beginner Guided Journey**.
