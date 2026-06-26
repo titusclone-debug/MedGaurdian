@@ -35,7 +35,7 @@ def main():
         pre_health = check_nabh_seed_health(db, target_version=args.edition)
         print(f"Pre-seed Health check: {'HEALTHY' if pre_health['is_healthy'] else 'UNHEALTHY'}")
         print(f"  - Chapters: {pre_health['chapters_count']}/10")
-        print(f"  - Requirements: {pre_health['measurable_elements_count']}")
+        print(f"  - Requirements (Objective Elements): {pre_health['objective_elements_count']}")
         print(f"  - Citations: {pre_health['citations_count']}")
         print(f"  - Evidence Requirements: {pre_health['evidence_requirements_count']}")
         print(f"  - Missing Chapters: {pre_health['missing_chapters']}")
@@ -51,7 +51,7 @@ def main():
         post_health = check_nabh_seed_health(db, target_version=args.edition)
         print(f"Post-seed Health check: {'HEALTHY' if post_health['is_healthy'] else 'UNHEALTHY'}")
         print(f"  - Chapters: {post_health['chapters_count']}/10")
-        print(f"  - Requirements: {post_health['measurable_elements_count']}")
+        print(f"  - Requirements (Objective Elements): {post_health['objective_elements_count']}")
         print(f"  - Citations: {post_health['citations_count']}")
         print(f"  - Evidence Requirements: {post_health['evidence_requirements_count']}")
         

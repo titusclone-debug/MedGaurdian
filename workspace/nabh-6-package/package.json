@@ -1,0 +1,14 @@
+{
+  "source_id": "NABH-HCO-6-2025-STANDARD",
+  "edition_version": "6.0",
+  "effective_date": "2025-01-01",
+  "sha256": "0C684E6B71A9D582E50966A13E2BE3859EE5CA50C90D172D4FE57B79315C791A",
+  "isbn": "978-81-965264-9-8",
+  "rights_mode": "citation_only",
+  "status": "scaffolded_pending_extraction",
+  "roles": {
+    "extractor": "pending",
+    "reviewer": "pending",
+    "approver": "pending"
+  }
+}

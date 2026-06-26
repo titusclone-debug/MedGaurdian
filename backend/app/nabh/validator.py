@@ -136,8 +136,12 @@ def validate_ontology_seeds(
                 raise ValidationError(f"Standard at index {s_idx} in chapter '{chap_code}' is missing keys: {s_missing}")
 
             std_code = std["code"]
-            if not re.match(rf"^{chap_code}-\d+$", std_code):
-                raise ValidationError(f"Standard code '{std_code}' in chapter '{chap_code}' must be format '{chap_code}-<number>'.")
+            if is_fixture:
+                if not re.match(rf"^{chap_code}-\d+$", std_code):
+                    raise ValidationError(f"Standard code '{std_code}' in chapter '{chap_code}' must be format '{chap_code}-<number>'.")
+            else:
+                if not re.match(rf"^{chap_code}\.\d+$", std_code):
+                    raise ValidationError(f"Standard code '{std_code}' in chapter '{chap_code}' must be format '{chap_code}.<number>'.")
 
             if std_code in standard_codes:
                 raise ValidationError(f"Duplicate standard code '{std_code}' in chapter '{chap_code}'.")
@@ -159,8 +163,14 @@ def validate_ontology_seeds(
                     raise ValidationError(f"Objective element at index {o_idx} under standard '{std_code}' is missing keys: {o_missing}")
 
                 obj_code = obj["code"]
-                if not re.match(rf"^{std_code}\.[a-z]+$", obj_code):
-                    raise ValidationError(f"Objective element code '{obj_code}' under standard '{std_code}' must be format '{std_code}.<letter>'.")
+                if is_fixture:
+                    if not re.match(rf"^{std_code}\.[a-z]+$", obj_code):
+                        raise ValidationError(f"Objective element code '{obj_code}' under standard '{std_code}' must be format '{std_code}.<letter>'.")
+                else:
+                    if not re.match(rf"^{std_code}\.[a-z]+$", obj_code):
+                        raise ValidationError(f"Objective element code '{obj_code}' under standard '{std_code}' must be format '{std_code}.<letter>'.")
+                    if not re.match(rf"^{chap_code}\.\d+\.[a-z]+$", obj_code):
+                        raise ValidationError(f"Official Objective Element code '{obj_code}' must follow format 'CHAP.num.letter' (e.g., AAC.1.a).")
 
                 if obj_code in obj_codes:
                     raise ValidationError(f"Duplicate objective element code '{obj_code}' under standard '{std_code}'.")
@@ -175,7 +185,15 @@ def validate_ontology_seeds(
                 if severity not in VALID_SEVERITY_LEVELS:
                     raise ValidationError(f"Invalid severity level '{severity}' in objective element '{obj_code}'.")
 
-                meas_elements = obj["measurable_elements"]
+                if not is_fixture:
+                    if "measurable_elements" in obj:
+                        raise ValidationError(f"Objective element '{obj_code}' contains 'measurable_elements' which are legacy synthetic constructs and forbidden in canonical schema.")
+                    # In canonical schema, the objective element IS the requirement
+                    defined_measurable_codes.add(obj_code)
+                    seeded_measurable_elements_per_chapter[chap_code] += 1
+                    continue
+
+                meas_elements = obj.get("measurable_elements", [])
                 if not isinstance(meas_elements, list):
                     raise ValidationError(f"Measurable elements for objective element '{obj_code}' must be a list.")
 
