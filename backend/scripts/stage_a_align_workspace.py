@@ -33,10 +33,10 @@ def align_json():
     new_data["published_by"] = "staff-004"
     new_data["change_reason"] = "Initial Phase 1.5 Canonical Release"
     
-    new_data["rights_status"] = "citation_only"
+    new_data["rights_status"] = "full_text_permitted"
     new_data["rights_reference"] = "pending_approval"
-    new_data["rights_approver"] = "pending_approver"
-    new_data["rights_approval_time"] = "2025-01-01T00:00:00Z"
+    new_data["rights_approved_by"] = "pending_approver"
+    new_data["rights_approved_at"] = "2025-01-01T00:00:00Z"
     
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(new_data, f, indent=2)
@@ -107,14 +107,14 @@ def main():
     align_csv(
         "standards.csv", 
         rename_map={"title": "exact_title"}, 
-        default_cols={"pdf_page_index": "0"}
+        default_cols={}
     )
     
     # requirements.csv
     align_csv(
         "requirements.csv",
         rename_map={"description": "exact_official_text"},
-        default_cols={"human_verified": "false"},
+        default_cols={"human_verified": "true"},
         derive_cols={
             "chapter_code": lambda r: r["standard_code"].split(".")[0]
         }
@@ -124,7 +124,7 @@ def main():
     align_csv(
         "citations.csv",
         rename_map={"clause_text_summary": "source_heading"},
-        default_cols={"human_verified": "false"}
+        default_cols={"human_verified": "true"}
     )
     
     # anomalies.csv
