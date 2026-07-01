@@ -161,7 +161,15 @@ def check_nabh_seed_health(db: Session, target_version: str = "6.0") -> dict:
             (canonical_complete or partial_operational_seed)
         )
         
+        if official_verified_requirements_count == 639:
+            corpus_mode = "canonical_published"
+        elif official_verified_requirements_count == 0 and has_synthetic_codes:
+            corpus_mode = "legacy_synthetic"
+        else:
+            corpus_mode = "partial_seed"
+            
         return {
+            "corpus_mode": corpus_mode,
             "is_healthy": is_healthy,
             "edition_exists": edition_exists,
             "chapters_count": chapters_count,
@@ -192,6 +200,7 @@ def check_nabh_seed_health(db: Session, target_version: str = "6.0") -> dict:
     except Exception as e:
         logger.error(f"Failed to check NABH seed health: {e}", exc_info=True)
         return {
+            "corpus_mode": "partial_seed",
             "is_healthy": False,
             "edition_exists": False,
             "chapters_count": 0,

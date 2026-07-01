@@ -12,7 +12,7 @@ from app.models.database import (
     NABHSourceDocument, NABHRequirementCitation,
     EditionStatus, ApplicabilityDefault, EvidenceType,
     KnowledgeAuthorityLevel, KnowledgePublicationStatus, SourceRightsStatus,
-    NABHSourceAnomaly
+    NABHSourceAnomaly, NABHRequirement
 )
 from app.nabh.service import LEGACY_NABH_MODEL_NOTICE
 from app.nabh.validator import validate_ontology_seeds
@@ -190,6 +190,22 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
     call validate_ontology_seeds directly in tests with those flags set.
     Never pass those flags through this function in production code paths.
     """
+    # Stage C Guard: Check if the canonical corpus is already published
+    edition = db.query(NABHEdition).filter(NABHEdition.version == target_version).first()
+    if edition:
+        canonical_count = db.query(NABHRequirement).filter(
+            NABHRequirement.edition_id == edition.id,
+            NABHRequirement.publication_status == KnowledgePublicationStatus.PUBLISHED,
+            NABHRequirement.source_status == "official_verified",
+            NABHRequirement.retired_at.is_(None)
+        ).count()
+        if canonical_count == 639:
+            logger.info("✅ Canonical official corpus is already published (639 verified requirements). Legacy JSON seeding bypassed.")
+            return
+        elif canonical_count > 639:
+            logger.error(f"❌ Database corruption detected: Expected 639 canonical requirements, found {canonical_count}. Legacy seeding bypassed.")
+            return
+
     logger.info(f"🌱 Validating ontology seed files under: {data_dir}")
     from app.nabh.validator import ValidationError
     try:
