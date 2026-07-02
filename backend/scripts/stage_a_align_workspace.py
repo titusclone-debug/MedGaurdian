@@ -34,6 +34,8 @@ def align_json():
     new_data["change_reason"] = "Initial Phase 1.5 Canonical Release"
     
     new_data["rights_status"] = "full_text_permitted"
+    new_data["full_text_storage_permitted"] = True
+    new_data["display_permission_confirmed"] = True
     new_data["rights_reference"] = "pending_approval"
     new_data["rights_approved_by"] = "pending_approver"
     new_data["rights_approved_at"] = "2025-01-01T00:00:00Z"
