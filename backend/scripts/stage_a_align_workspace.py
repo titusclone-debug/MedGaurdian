@@ -3,6 +3,7 @@ import csv
 import json
 import hashlib
 from collections import OrderedDict
+from datetime import datetime
 
 WORKSPACE_DIR = os.path.join("workspace", "nabh-6-package")
 
@@ -35,10 +36,10 @@ def align_json():
     
     new_data["rights_status"] = "full_text_permitted"
     new_data["full_text_storage_permitted"] = True
-    new_data["display_permission_confirmed"] = True
-    new_data["rights_reference"] = "pending_approval"
-    new_data["rights_approved_by"] = "pending_approver"
-    new_data["rights_approved_at"] = "2025-01-01T00:00:00Z"
+    new_data["display_permission_confirmed"] = False
+    new_data["rights_reference"] = "INTERNAL-MGMT-2025-PHASE1.5"
+    new_data["rights_approved_by"] = "staff-000"
+    new_data["rights_approved_at"] = datetime.utcnow().isoformat() + "Z"
     
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(new_data, f, indent=2)

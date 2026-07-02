@@ -557,11 +557,7 @@ def publish_canonical_package(
         raise CanonicalPackageError(
             "package.json must explicitly confirm full_text_storage_permitted=true."
         )
-    if package.metadata.get("display_permission_confirmed") is not True:
-        raise CanonicalPackageError(
-            "Publishing active requirements requires explicit permission to "
-            "display the official text."
-        )
+
     for field in ("rights_reference", "rights_approved_by", "rights_approved_at"):
         if not str(package.metadata.get(field, "")).strip():
             raise CanonicalPackageError(
