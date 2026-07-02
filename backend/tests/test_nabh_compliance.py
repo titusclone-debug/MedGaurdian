@@ -61,13 +61,13 @@ def _seed_base_data(db):
         ),
         NABHObjective(
             id="obj-2", hospital_id="hospital-001", chapter_code="FMS",
-            objective_number=2, element_letter="a", standard_code="FMS.2.a",
+            objective_number=2, element_letter="a", standard_code="FMS-2.a",
             standard_name="Bio-Medical Waste management",
             severity=SeverityLevel.CRITICAL, maturity_level=MaturityLevel.NON_EXISTENT
         ),
         NABHObjective(
             id="obj-3", hospital_id="hospital-001", chapter_code="FMS",
-            objective_number=1, element_letter="a", standard_code="FMS.1.a",
+            objective_number=1, element_letter="a", standard_code="FMS-1.a",
             standard_name="Fire safety drills and NOC",
             severity=SeverityLevel.CRITICAL, maturity_level=MaturityLevel.NON_EXISTENT
         ),

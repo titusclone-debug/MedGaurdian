@@ -119,10 +119,10 @@ def test_readiness_denominator_excludes_not_applicable(client, db_session):
         return staff
     app.dependency_overrides[get_current_user] = get_current_user_override
 
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
-    _, _, _, me2 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.2")
-    _, _, _, me3 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.3")
-    _, _, _, me4 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.4")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
+    _, _, _, me2 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.2")
+    _, _, _, me3 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.3")
+    _, _, _, me4 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.4")
 
     # 1. Scoped row 1: applicable + compliant (ready)
     req1 = HospitalNABHRequirement(
@@ -172,7 +172,7 @@ def test_readiness_score_uses_new_requirement_state(client, db_session):
         return staff
     app.dependency_overrides[get_current_user] = get_current_user_override
 
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
 
     # Mark requirement compliant (ready_count should be 1)
     req = HospitalNABHRequirement(
@@ -215,7 +215,7 @@ def test_readiness_chapter_breakdown_matches_denominator_rules(client, db_sessio
     app.dependency_overrides[get_current_user] = get_current_user_override
 
     # Create elements in two different chapters
-    _, _, _, me_fms = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me_fms = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     _, _, _, me_mom = create_seeded_me(db_session, ed, "MOM", "MOM-1", "MOM-1.a", "MOM-1.a.1")
 
     # FMS requirement: applicable + compliant

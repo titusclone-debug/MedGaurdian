@@ -7,7 +7,6 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
-    KnowledgePublicationStatus,
     ApplicabilityDefault,
     ComplianceStatus,
     EditionStatus,
@@ -18,7 +17,7 @@ from app.models.database import (
     NABHChapter,
     NABHEdition,
     NABHEvidenceRequirement,
-    NABHMeasurableElement, NABHRequirement,
+    NABHMeasurableElement,
     NABHObjectiveElement,
     NABHRequirementCitation,
     NABHSourceDocument,
@@ -42,7 +41,7 @@ def clean_db(db_session):
     db_session.query(NABHRequirementCitation).delete()
     db_session.query(NABHSourceDocument).delete()
     db_session.query(NABHEvidenceRequirement).delete()
-    db_session.query(NABHRequirement).delete()
+    db_session.query(NABHMeasurableElement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -95,7 +94,7 @@ def create_requirement_graph(
         edition_id=edition.id,
         chapter_id=chapter.id,
         code="1",
-        canonical_code="FMS.1",
+        canonical_code="FMS-1",
         title="Fire Safety",
     )
     objective = NABHObjectiveElement(
@@ -103,19 +102,17 @@ def create_requirement_graph(
         edition_id=edition.id,
         standard_id=standard.id,
         code="a",
-        canonical_code="FMS.1.a",
+        canonical_code="FMS-1.a",
         description="Fire safety objective.",
     )
-    requirement = NABHRequirement(
+    requirement = NABHMeasurableElement(
         id="requirement-task18",
         edition_id=edition.id,
-        standard_id=standard.id,
-        official_code="FMS 1.a.1",
-        canonical_code="FMS 1 a 1",
-        display_text="The hospital maintains a valid Fire NOC.",
+        objective_element_id=objective.id,
+        code="1",
+        canonical_code="FMS-1.a.1",
+        description="The hospital maintains a valid Fire NOC.",
         applicability_default=ApplicabilityDefault.APPLICABLE,
-        publication_status=KnowledgePublicationStatus.PUBLISHED,
-        source_status="official_verified"
     )
 
     db_session.add_all([hospital, staff, edition, chapter, standard, objective, requirement])
@@ -125,8 +122,8 @@ def create_requirement_graph(
         db_session.add(
             NABHEvidenceRequirement(
                 id="evidence-task18",
-                requirement_id=requirement.id,
-                evidence_code="FMS.1.a.1.EV.01",
+                measurable_element_id=requirement.id,
+                evidence_code="FMS-1.a.1-EV-01",
                 evidence_type=EvidenceType.LICENSE,
                 description=evidence_description,
                 suggested_documentation="Valid Fire NOC certificate.",
@@ -147,7 +144,7 @@ def create_requirement_graph(
         )
         citation = NABHRequirementCitation(
             id="citation-task18",
-            requirement_id=requirement.id,
+            measurable_element_id=requirement.id,
             document_id=document.id,
             section="FMS",
             page_number="184" if citation_locator else None,

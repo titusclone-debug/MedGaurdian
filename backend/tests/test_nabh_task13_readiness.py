@@ -240,8 +240,8 @@ def test_score_mutations_and_all_not_applicable(client, db_session):
         return staff_h1
     app.dependency_overrides[get_current_user] = get_h1_user
 
-    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
-    _, _, _, me2 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.2")
+    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
+    _, _, _, me2 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.2")
 
     req1 = HospitalNABHRequirement(
         hospital_id=hosp1.id, requirement_id=me1.id,
@@ -309,7 +309,7 @@ def test_per_chapter_breakdown(client, db_session):
     app.dependency_overrides[get_current_user] = get_h1_user
 
     # Chapter FMS
-    _, _, _, me_fms = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me_fms = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     # Chapter MOM
     _, _, _, me_mom = seed_chapter_std_obj_me(db_session, ed, "MOM", "MOM-1", "MOM-1.a", "MOM-1.a.1")
 
@@ -357,12 +357,12 @@ def test_retired_rows_excluded(client, db_session):
     app.dependency_overrides[get_current_user] = get_h1_user
 
     # Seed 6 requirements in FMS
-    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
-    _, _, _, me2 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.2")
-    _, _, _, me3 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.3")
-    _, _, _, me4 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.4")
-    _, _, _, me5 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.5")
-    _, _, _, me6 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.6")
+    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
+    _, _, _, me2 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.2")
+    _, _, _, me3 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.3")
+    _, _, _, me4 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.4")
+    _, _, _, me5 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.5")
+    _, _, _, me6 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.6")
 
     req1 = HospitalNABHRequirement(hospital_id=hosp1.id, requirement_id=me1.id, applicability_status=ApplicabilityDefault.APPLICABLE, readiness_status=ComplianceStatus.COMPLIANT)
     req2 = HospitalNABHRequirement(hospital_id=hosp1.id, requirement_id=me2.id, applicability_status=ApplicabilityDefault.APPLICABLE, readiness_status=ComplianceStatus.COMPLIANT)
@@ -395,10 +395,10 @@ def test_retired_rows_excluded(client, db_session):
 
     # Let's seed fresh separate ones:
     # me4 under standard FMS-2
-    _, _, _, me_fresh_4 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.2", "FMS.2.a", "FMS.2.a.1")
+    _, _, _, me_fresh_4 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-2", "FMS-2.a", "FMS-2.a.1")
     req4.requirement_id = me_fresh_4.id
     # me5 under standard FMS-3
-    _, std5, _, me_fresh_5 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.3", "FMS.3.a", "FMS.3.a.1")
+    _, std5, _, me_fresh_5 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-3", "FMS-3.a", "FMS-3.a.1")
     req5.requirement_id = me_fresh_5.id
     # me6 under chapter MOM
     _, _, _, me_fresh_6 = seed_chapter_std_obj_me(db_session, ed, "MOM", "MOM-1", "MOM-1.a", "MOM-1.a.1")
@@ -407,7 +407,7 @@ def test_retired_rows_excluded(client, db_session):
     db_session.commit()
 
     # Let's retire standard of me4 (FMS-2)
-    std4 = db_session.query(NABHStandard).filter_by(canonical_code="FMS.2").first()
+    std4 = db_session.query(NABHStandard).filter_by(canonical_code="FMS-2").first()
     std4.retired_at = datetime.utcnow()
 
     # Let's retire chapter of me6 (MOM)
@@ -441,7 +441,7 @@ def test_legacy_rows_ignored(client, db_session):
     app.dependency_overrides[get_current_user] = get_h1_user
 
     # Seed 1 active 6.0 requirement
-    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp1.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
@@ -456,7 +456,7 @@ def test_legacy_rows_ignored(client, db_session):
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         maturity_level=MaturityLevel.IMPLEMENTED
     )
@@ -466,7 +466,7 @@ def test_legacy_rows_ignored(client, db_session):
     legacy_record = ComplianceRecord(
         id="legacy-rec-id",
         hospital_id=hosp1.id,
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         status=ComplianceStatus.COMPLIANT
     )
@@ -488,7 +488,7 @@ def test_api_access_control(client, db_session):
     hosp1, hosp2, staff_h1, staff_h2, super_admin, ed = create_base_data(db_session)
 
     # Seed 1 requirement
-    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = seed_chapter_std_obj_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp1.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,

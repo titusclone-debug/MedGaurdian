@@ -3,7 +3,6 @@ from datetime import datetime
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
-    KnowledgePublicationStatus,
     ApplicabilityDefault,
     ComplianceStatus,
     EditionStatus,
@@ -18,7 +17,7 @@ from app.models.database import (
     NABHEdition,
     NABHEvidenceRequirement,
     NABHLegacyMigrationMap,
-    NABHMeasurableElement, NABHRequirement,
+    NABHMeasurableElement,
     NABHObjective,
     NABHObjectiveElement,
     NABHRequirementCitation,
@@ -36,7 +35,7 @@ def _clean(db_session):
     db_session.query(NABHEvidenceRequirement).delete()
     db_session.query(NABHRequirementCitation).delete()
     db_session.query(NABHSourceDocument).delete()
-    db_session.query(NABHRequirement).delete()
+    db_session.query(NABHMeasurableElement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -80,8 +79,8 @@ def _seed_bulk_evidence_fixture(db_session):
         id="standard-fms-task20",
         edition_id=edition.id,
         chapter_id=chapter.id,
-        code="FMS.1",
-        canonical_code="FMS.1",
+        code="FMS-1",
+        canonical_code="FMS-1",
         title="Facility safety",
         display_order=1,
     )
@@ -89,8 +88,8 @@ def _seed_bulk_evidence_fixture(db_session):
         id="objective-fms-task20",
         edition_id=edition.id,
         standard_id=standard.id,
-        code="FMS.1.a",
-        canonical_code="FMS.1.a",
+        code="FMS-1.a",
+        canonical_code="FMS-1.a",
         description="Fire safety records are maintained.",
         display_order=1,
     )
@@ -114,13 +113,11 @@ def _seed_bulk_evidence_fixture(db_session):
         ],
         start=1,
     ):
-        requirement = NABHRequirement(
+        requirement = NABHMeasurableElement(
             id=f"requirement-task20-{index}",
             edition_id=edition.id,
-            standard_id=std.id,
-            code=str(index,
-        publication_status=KnowledgePublicationStatus.PUBLISHED,
-        source_status="official_verified"),
+            objective_element_id=objective.id,
+            code=str(index),
             canonical_code=f"FMS-1.a.{index}",
             description=f"Requirement {index}",
             applicability_default=ApplicabilityDefault.APPLICABLE,
@@ -146,7 +143,7 @@ def _seed_bulk_evidence_fixture(db_session):
         db_session.add(
             NABHEvidenceRequirement(
                 id=f"evidence-task20-{index}",
-                requirement_id=requirement.id,
+                measurable_element_id=requirement.id,
                 evidence_code=f"FMS-1.a.{index}-EV-01",
                 evidence_type=EvidenceType.LICENSE,
                 description=f"Evidence for requirement {index}",
@@ -159,7 +156,7 @@ def _seed_bulk_evidence_fixture(db_session):
         db_session.add(
             NABHRequirementCitation(
                 id=f"citation-task20-{index}",
-                requirement_id=requirement.id,
+                measurable_element_id=requirement.id,
                 document_id=source.id,
                 section="FMS",
                 page_number=str(100 + index),
@@ -190,7 +187,7 @@ def test_bulk_evidence_plan_returns_scoped_evidence_without_per_requirement_expl
     assert payload["total_applicable_requirements"] == 2
     assert payload["returned_requirements"] == 2
     assert payload["evidence_item_count"] == 2
-    assert [item["requirement_code"] for item in payload["items"]] == ["FMS.1.a.1", "FMS.1.a.2"]
+    assert [item["requirement_code"] for item in payload["items"]] == ["FMS-1.a.1", "FMS-1.a.2"]
     assert payload["items"][0]["responsible_owner_name"] == "Task 20 Admin"
     assert payload["items"][0]["confidence"] == "source_cited"
-    assert payload["items"][0]["required_evidence"][0]["evidence_code"] == "FMS.1.a.1.EV.01"
+    assert payload["items"][0]["required_evidence"][0]["evidence_code"] == "FMS-1.a.1-EV-01"

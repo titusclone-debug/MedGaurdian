@@ -120,7 +120,7 @@ def test_legacy_nabh_objectives_do_not_affect_new_readiness(client, db_session):
     app.dependency_overrides[get_current_user] = get_current_user_override
 
     # Create active element and active hospital requirement (not ready)
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
@@ -135,7 +135,7 @@ def test_legacy_nabh_objectives_do_not_affect_new_readiness(client, db_session):
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         maturity_level=MaturityLevel.IMPLEMENTED
     )
@@ -158,7 +158,7 @@ def test_legacy_compliance_records_do_not_affect_new_readiness(client, db_sessio
     app.dependency_overrides[get_current_user] = get_current_user_override
 
     # Create active requirement (not ready)
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
@@ -170,7 +170,7 @@ def test_legacy_compliance_records_do_not_affect_new_readiness(client, db_sessio
     legacy_record = ComplianceRecord(
         id="legacy-rec-id",
         hospital_id=hosp.id,
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         status=ComplianceStatus.COMPLIANT
     )
@@ -191,7 +191,7 @@ def test_new_requirement_state_is_source_of_truth(client, db_session):
     app.dependency_overrides[get_current_user] = get_current_user_override
 
     # Create active requirement (marked compliant / ready)
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
@@ -206,7 +206,7 @@ def test_new_requirement_state_is_source_of_truth(client, db_session):
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         maturity_level=MaturityLevel.NON_EXISTENT
     )
@@ -234,7 +234,7 @@ def test_legacy_compliant_does_not_override_new_state_non_compliant(client, db_s
     app.dependency_overrides[get_current_user] = get_current_user_override
 
     # New state explicitly says NON_COMPLIANT
-    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS.1", "FMS.1.a", "FMS.1.a.1")
+    _, _, _, me1 = create_seeded_me(db_session, ed, "FMS", "FMS-1", "FMS-1.a", "FMS-1.a.1")
     req1 = HospitalNABHRequirement(
         hospital_id=hosp.id, requirement_id=me1.id,
         applicability_status=ApplicabilityDefault.APPLICABLE,
@@ -246,7 +246,7 @@ def test_legacy_compliant_does_not_override_new_state_non_compliant(client, db_s
     legacy_record = ComplianceRecord(
         id="legacy-conflict-id",
         hospital_id=hosp.id,
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         status=ComplianceStatus.COMPLIANT
     )
@@ -259,7 +259,7 @@ def test_legacy_compliant_does_not_override_new_state_non_compliant(client, db_s
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS.1.a",
+        standard_code="FMS-1.a",
         standard_name="Legacy Standard",
         maturity_level=MaturityLevel.IMPLEMENTED
     )

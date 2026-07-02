@@ -85,7 +85,7 @@ def test_ontology_seeding_and_coverage_api_smoke(db_session, client):
     seeded_elements = db_session.query(NABHMeasurableElement).all()
     assert len(seeded_elements) == 3
     element_codes = {el.canonical_code for el in seeded_elements}
-    assert element_codes == {"IPC-1.a.1", "MOM-1.a.1", "FMS.1.a.1"}
+    assert element_codes == {"IPC-1.a.1", "MOM-1.a.1", "FMS-1.a.1"}
     canonical_requirements = db_session.query(NABHRequirement).all()
     assert {item.id for item in canonical_requirements} == {
         item.id for item in seeded_elements

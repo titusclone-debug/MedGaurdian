@@ -107,7 +107,7 @@ def test_roadmap_phase_bucketing(db_session):
             chapter_code="FMS",
             objective_number=1,
             element_letter="a",
-            standard_code="FMS.1.a",
+            standard_code="FMS-1.a",
             standard_name="Fire drills",
             severity=SeverityLevel.MINOR,
             maturity_level=MaturityLevel.NON_EXISTENT
@@ -130,7 +130,7 @@ def test_roadmap_phase_bucketing(db_session):
     assert roadmap["Phase 2 - Remediation"]["standards"][0]["code"] == "PC-1.a"
     
     assert len(roadmap["Phase 3 - Monitoring"]["standards"]) == 1
-    assert roadmap["Phase 3 - Monitoring"]["standards"][0]["code"] == "FMS.1.a"
+    assert roadmap["Phase 3 - Monitoring"]["standards"][0]["code"] == "FMS-1.a"
 
 def test_daily_brief_top3(db_session, client):
     """Test daily-brief endpoint returns exactly top 3 gaps sorted by severity/maturity."""
@@ -173,7 +173,7 @@ def test_daily_brief_top3(db_session, client):
             chapter_code="FMS",
             objective_number=1,
             element_letter="a",
-            standard_code="FMS.1.a",
+            standard_code="FMS-1.a",
             standard_name="Minor 1",
             severity=SeverityLevel.MINOR,
             maturity_level=MaturityLevel.NON_EXISTENT
@@ -248,7 +248,7 @@ def test_activity_feed_format(db_session, client):
     feed = data["feed"]
     assert len(feed) == 2
     
-    assert feed[0]["standard_code"] == "FMS.2.a"
+    assert feed[0]["standard_code"] == "FMS-2.a"
     assert feed[0]["severity"] == "critical"
     assert feed[0]["status"] == "active"
     
@@ -275,7 +275,7 @@ def test_sop_endpoint_200(mock_reg, mock_policy, db_session, client):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     
-    assert data["standard_code"] == "FMS.1.a"
+    assert data["standard_code"] == "FMS-1.a"
     assert "customized_content" in data
     assert len(data["customized_content"]) > 0
     

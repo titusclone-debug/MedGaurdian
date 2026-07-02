@@ -106,8 +106,8 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
         id="std-fms-1",
         edition_id=ed.id,
         chapter_id=chap.id,
-        code="FMS.1",
-        canonical_code="FMS.1",
+        code="FMS-1",
+        canonical_code="FMS-1",
         title="Fire Safety Standard"
     )
     db_session.add(std)
@@ -119,7 +119,7 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
         edition_id=ed.id,
         standard_id=std.id,
         code="a",
-        canonical_code="FMS.1.a",
+        canonical_code="FMS-1.a",
         description="Verify fire clearance and NOC requirements."
     )
     db_session.add(obj)
@@ -131,7 +131,7 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
         edition_id=ed.id,
         objective_element_id=obj.id,
         code="1",
-        canonical_code="FMS.1.a.1",
+        canonical_code="FMS-1.a.1",
         description="Check validity of NOC clearance.",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -140,7 +140,7 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
         edition_id=ed.id,
         objective_element_id=obj.id,
         code="2",
-        canonical_code="FMS.1.a.2",
+        canonical_code="FMS-1.a.2",
         description="Verify fire drills conducted.",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -199,14 +199,14 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     res_req = response.json()
     assert res_req["total"] == 2
     assert len(res_req["items"]) == 2
-    assert res_req["items"][0]["canonical_code"] == "FMS.1.a.1"
+    assert res_req["items"][0]["canonical_code"] == "FMS-1.a.1"
     assert res_req["items"][0]["chapter_code"] == "FMS"
 
     # D. GET /api/nabh/ontology/requirements/{requirement_id}
     response = client.get(f"/api/nabh/ontology/requirements/{me1.id}")
     assert response.status_code == status.HTTP_200_OK
     detail = response.json()
-    assert detail["canonical_code"] == "FMS.1.a.1"
+    assert detail["canonical_code"] == "FMS-1.a.1"
     assert detail["has_citation"] is True
     assert detail["has_evidence_requirements"] is True
     assert len(detail["citations"]) == 1
@@ -310,7 +310,7 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     req_list = response.json()
     assert req_list["total"] == 2
     assert len(req_list["items"]) == 2
-    assert req_list["items"][0]["requirement_code"] == "FMS.1.a.1"
+    assert req_list["items"][0]["requirement_code"] == "FMS-1.a.1"
     assert req_list["items"][0]["maturity_level"] == 0 # default starting value: MaturityLevel.NON_EXISTENT
 
     # Filter by chapter
@@ -328,7 +328,7 @@ def test_nabh_tasks10_12_api_suite(client, db_session):
     req_detail = response.json()
     assert req_detail["requirement_id"] == me1.id
     assert req_detail["applicability_status"] == "applicable"
-    assert req_detail["ontology_requirement"]["canonical_code"] == "FMS.1.a.1"
+    assert req_detail["ontology_requirement"]["canonical_code"] == "FMS-1.a.1"
 
     # Try state details of non-existent requirement for Hosp 1
     response = client.get(f"/api/nabh/requirements/{hosp1.id}/missing-req-id")
