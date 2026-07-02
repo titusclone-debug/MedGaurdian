@@ -29,8 +29,8 @@ def align_json():
     # Placeholders for governance fields (using what canonical_package.py checks for)
     new_data["extracted_by"] = "staff-001"
     new_data["reviewed_by"] = "staff-002"
-    new_data["approved_by"] = "staff-003"
-    new_data["published_by"] = "staff-004"
+    new_data["approved_by"] = "staff-000"
+    new_data["published_by"] = "staff-000"
     new_data["change_reason"] = "Initial Phase 1.5 Canonical Release"
     
     new_data["rights_status"] = "full_text_permitted"
