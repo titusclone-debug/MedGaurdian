@@ -26,6 +26,7 @@ classification_enum = sa.Enum(
     "ACHIEVEMENT",
     "EXCELLENCE",
     name="nabhrequirementclassification",
+    create_type=False,
 )
 authority_enum = sa.Enum(
     "NORMATIVE",
@@ -33,6 +34,7 @@ authority_enum = sa.Enum(
     "MEDGUARDIAN_INTERPRETATION",
     "IMPLEMENTATION_GUIDANCE",
     name="knowledgeauthoritylevel",
+    create_type=False,
 )
 publication_enum = sa.Enum(
     "DISCOVERED",
@@ -45,6 +47,7 @@ publication_enum = sa.Enum(
     "RETIRED",
     "REJECTED",
     name="knowledgepublicationstatus",
+    create_type=False,
 )
 rights_enum = sa.Enum(
     "UNKNOWN",
@@ -54,6 +57,7 @@ rights_enum = sa.Enum(
     "FULL_TEXT_PERMITTED",
     "PERMISSION_REQUIRED",
     name="sourcerightsstatus",
+    create_type=False,
 )
 applicability_enum = sa.Enum(
     "APPLICABLE",
@@ -61,6 +65,7 @@ applicability_enum = sa.Enum(
     "NOT_APPLICABLE",
     "MANUAL_REVIEW",
     name="applicabilitydefault",
+    create_type=False,
 )
 
 
@@ -74,7 +79,18 @@ def _add_column_if_missing(table_name: str, column: sa.Column) -> None:
 
 
 def upgrade() -> None:
-    inspector = sa.inspect(op.get_bind())
+    connection = op.get_bind()
+    if connection.dialect.name == "postgresql":
+        for enum_type in (
+            classification_enum,
+            authority_enum,
+            publication_enum,
+            rights_enum,
+            applicability_enum,
+        ):
+            enum_type.create(connection, checkfirst=True)
+
+    inspector = sa.inspect(connection)
     table_names = set(inspector.get_table_names())
 
     if "nabh_requirements" not in table_names:
@@ -432,7 +448,6 @@ def upgrade() -> None:
             ondelete="SET NULL",
         )
 
-    connection = op.get_bind()
     connection.execute(sa.text("""
         UPDATE nabh_chapters
         SET official_requirements_count = official_measurable_elements_count
