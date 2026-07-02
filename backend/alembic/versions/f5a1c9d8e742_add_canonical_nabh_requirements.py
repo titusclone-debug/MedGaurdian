@@ -12,6 +12,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 revision: str = "f5a1c9d8e742"
@@ -20,7 +21,7 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-classification_enum = sa.Enum(
+classification_enum = postgresql.ENUM(
     "CORE",
     "COMMITMENT",
     "ACHIEVEMENT",
@@ -28,7 +29,7 @@ classification_enum = sa.Enum(
     name="nabhrequirementclassification",
     create_type=False,
 )
-authority_enum = sa.Enum(
+authority_enum = postgresql.ENUM(
     "NORMATIVE",
     "OFFICIAL_INTERPRETATION",
     "MEDGUARDIAN_INTERPRETATION",
@@ -36,7 +37,7 @@ authority_enum = sa.Enum(
     name="knowledgeauthoritylevel",
     create_type=False,
 )
-publication_enum = sa.Enum(
+publication_enum = postgresql.ENUM(
     "DISCOVERED",
     "EXTRACTED",
     "UNDER_REVIEW",
@@ -49,7 +50,7 @@ publication_enum = sa.Enum(
     name="knowledgepublicationstatus",
     create_type=False,
 )
-rights_enum = sa.Enum(
+rights_enum = postgresql.ENUM(
     "UNKNOWN",
     "REFERENCE_ONLY",
     "RESTRICTED_INTERNAL",
@@ -59,7 +60,7 @@ rights_enum = sa.Enum(
     name="sourcerightsstatus",
     create_type=False,
 )
-applicability_enum = sa.Enum(
+applicability_enum = postgresql.ENUM(
     "APPLICABLE",
     "CONDITIONAL",
     "NOT_APPLICABLE",
@@ -78,17 +79,68 @@ def _add_column_if_missing(table_name: str, column: sa.Column) -> None:
         op.add_column(table_name, column)
 
 
+def _create_enum_if_missing(connection, enum_name: str, values: tuple[str, ...]) -> None:
+    labels = ", ".join(f"'{value}'" for value in values)
+    connection.execute(sa.text(f"""
+        DO $$
+        BEGIN
+            CREATE TYPE {enum_name} AS ENUM ({labels});
+        EXCEPTION
+            WHEN duplicate_object THEN NULL;
+        END $$;
+    """))
+
+
 def upgrade() -> None:
     connection = op.get_bind()
     if connection.dialect.name == "postgresql":
-        for enum_type in (
-            classification_enum,
-            authority_enum,
-            publication_enum,
-            rights_enum,
-            applicability_enum,
-        ):
-            enum_type.create(connection, checkfirst=True)
+        _create_enum_if_missing(
+            connection,
+            "nabhrequirementclassification",
+            ("CORE", "COMMITMENT", "ACHIEVEMENT", "EXCELLENCE"),
+        )
+        _create_enum_if_missing(
+            connection,
+            "knowledgeauthoritylevel",
+            (
+                "NORMATIVE",
+                "OFFICIAL_INTERPRETATION",
+                "MEDGUARDIAN_INTERPRETATION",
+                "IMPLEMENTATION_GUIDANCE",
+            ),
+        )
+        _create_enum_if_missing(
+            connection,
+            "knowledgepublicationstatus",
+            (
+                "DISCOVERED",
+                "EXTRACTED",
+                "UNDER_REVIEW",
+                "VERIFIED",
+                "APPROVED",
+                "PUBLISHED",
+                "SUPERSEDED",
+                "RETIRED",
+                "REJECTED",
+            ),
+        )
+        _create_enum_if_missing(
+            connection,
+            "sourcerightsstatus",
+            (
+                "UNKNOWN",
+                "REFERENCE_ONLY",
+                "RESTRICTED_INTERNAL",
+                "EXTRACT_ONLY",
+                "FULL_TEXT_PERMITTED",
+                "PERMISSION_REQUIRED",
+            ),
+        )
+        _create_enum_if_missing(
+            connection,
+            "applicabilitydefault",
+            ("APPLICABLE", "CONDITIONAL", "NOT_APPLICABLE", "MANUAL_REVIEW"),
+        )
 
     inspector = sa.inspect(connection)
     table_names = set(inspector.get_table_names())
