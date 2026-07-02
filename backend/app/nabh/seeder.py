@@ -191,7 +191,11 @@ def seed_versioned_ontology(db: Session, data_dir: str, target_version: str = "6
     Never pass those flags through this function in production code paths.
     """
     # Stage C Guard: Check if the canonical corpus is already published
-    edition = db.query(NABHEdition).filter(NABHEdition.version == target_version).first()
+    edition = db.query(NABHEdition).filter(
+        NABHEdition.version == target_version,
+        NABHEdition.status == EditionStatus.ACTIVE,
+        NABHEdition.retired_at.is_(None)
+    ).first()
     if edition:
         canonical_count = db.query(NABHRequirement).filter(
             NABHRequirement.edition_id == edition.id,

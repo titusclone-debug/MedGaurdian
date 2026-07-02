@@ -83,10 +83,7 @@ def check_nabh_seed_health(db: Session, target_version: str = "6.0") -> dict:
             official_verified_requirements_count = db.query(NABHRequirement).filter(
                 NABHRequirement.edition_id == active_edition.id,
                 NABHRequirement.retired_at.is_(None),
-                NABHRequirement.publication_status.in_([
-                    KnowledgePublicationStatus.APPROVED,
-                    KnowledgePublicationStatus.PUBLISHED,
-                ]),
+                NABHRequirement.publication_status == KnowledgePublicationStatus.PUBLISHED,
                 NABHRequirement.source_status == "official_verified",
             ).count()
             
