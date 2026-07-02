@@ -270,7 +270,7 @@ app.include_router(nabh_explanation.router, prefix="/api/nabh", tags=["NABH Comp
 app.include_router(nabh_operations.router, prefix="/api/nabh", tags=["NABH Compliance Operations"], dependencies=protected_dependencies)
 app.include_router(nabh_ontology.router, prefix="/api/nabh", tags=["NABH Compliance Ontology"], dependencies=protected_dependencies)
 app.include_router(nabh_profile.router, prefix="/api/nabh", tags=["NABH Compliance Profile"], dependencies=protected_dependencies)
-app.include_router(nabh_requirements.router, prefix="/api/nabh", tags=["NABH Compliance Requirements"], dependencies=protected_dependencies)
+app.include_router(nabh_requirements.router, prefix="/api/nabh/requirements", tags=["NABH Compliance Requirements"], dependencies=protected_dependencies)
 app.include_router(nabh_agents.router, prefix="/api/nabh/agent", tags=["NABH Compliance Agents"], dependencies=protected_dependencies)
 app.include_router(licenses.router, prefix="/api/licenses", tags=["License Tracker"], dependencies=protected_dependencies)
 app.include_router(risk.router, prefix="/api/risk", tags=["Risk Intelligence"], dependencies=protected_dependencies)
