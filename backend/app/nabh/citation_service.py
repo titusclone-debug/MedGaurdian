@@ -7,6 +7,7 @@ from app.models.database import (
     NABHStandard, NABHChapter
 )
 from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
+from app.nabh.public_text import redact_source_heading, requirement_public_text
 
 def _map_citation_to_dict(citation: NABHRequirementCitation, doc: Optional[NABHSourceDocument],
                            requirement: NABHRequirement,
@@ -14,6 +15,7 @@ def _map_citation_to_dict(citation: NABHRequirementCitation, doc: Optional[NABHS
     """Helper to construct a fully populated citation dictionary."""
     doc_dict = None
     resolved_effective_date = None
+    may_display = bool(doc and doc.may_display_full_text)
     
     if doc:
         resolved_effective_date = citation.effective_date or doc.effective_date
@@ -37,10 +39,10 @@ def _map_citation_to_dict(citation: NABHRequirementCitation, doc: Optional[NABHS
         "page_number": citation.page_number,
         "printed_page_number": citation.printed_page_number,
         "pdf_page_index": citation.pdf_page_index,
-        "source_heading": citation.source_heading,
-        "clause_text_summary": citation.clause_text_summary,
-        "file_path": citation.file_path,
-        "url": citation.url,
+        "source_heading": redact_source_heading(doc, citation.source_heading),
+        "clause_text_summary": citation.clause_text_summary if may_display else None,
+        "file_path": citation.file_path if may_display else None,
+        "url": citation.url if may_display else None,
         "human_verified": citation.human_verified,
         "effective_date_override": citation.effective_date.strftime('%Y-%m-%d') if citation.effective_date else None,
         "resolved_effective_date": resolved_effective_date.strftime('%Y-%m-%d') if resolved_effective_date else None,
@@ -50,9 +52,9 @@ def _map_citation_to_dict(citation: NABHRequirementCitation, doc: Optional[NABHS
             "standard_code": standard.canonical_code,
             "standard_title": standard.title,
             "objective_element_code": requirement.canonical_code,
-            "objective_element_description": requirement.display_text,
+            "objective_element_description": requirement_public_text(requirement, doc),
             "requirement_code": requirement.canonical_code,
-            "requirement_description": requirement.display_text
+            "requirement_description": requirement_public_text(requirement, doc)
         }
     }
 

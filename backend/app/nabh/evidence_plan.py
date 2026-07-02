@@ -19,6 +19,7 @@ from app.models.database import (
     Staff,
 )
 from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
+from app.nabh.public_text import requirement_public_text
 from app.nabh.quality import citation_has_locator
 
 
@@ -219,7 +220,7 @@ def build_hospital_evidence_plan(
         items.append({
             "requirement_id": requirement.id,
             "requirement_code": requirement.canonical_code,
-            "title": requirement.display_text,
+            "title": requirement_public_text(requirement),
             "chapter_code": chapter.canonical_code,
             "standard_code": standard.canonical_code,
             "applicability_status": _enum_value(hospital_req.applicability_status),

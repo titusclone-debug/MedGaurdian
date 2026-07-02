@@ -12,11 +12,12 @@ from app.api.nabh_helpers import (
 from app.models.database import (
     Hospital, UserRole,
     HospitalNABHRequirement, NABHRequirement, NABHChapter, NABHStandard,
-    NABHRequirementCitation, NABHApplicabilityRule, NABHEvidenceRequirement,
+    NABHRequirementCitation, NABHSourceDocument, NABHApplicabilityRule, NABHEvidenceRequirement,
     HospitalRequirementEvidenceLink, EvidenceStatus, ApplicabilityDefault,
     ComplianceStatus, KnowledgePublicationStatus
 )
 from app.nabh.canonical import ensure_canonical_compatibility, resolve_canonical_requirement_id
+from app.nabh.public_text import redact_source_heading, requirement_public_text
 from app.nabh.quality import assert_compliant_status_allowed, NABHQualityError
 from app.schemas.nabh import (
     PaginatedHospitalRequirementSummary,
@@ -113,7 +114,7 @@ async def get_hospital_requirements(
             last_reviewed_by=req.last_reviewed_by,
             readiness_status=req.readiness_status,
             requirement_code=requirement.canonical_code,
-            requirement_description=requirement.display_text,
+            requirement_description=requirement_public_text(requirement),
             chapter_code=chap.canonical_code,
             standard_code=std.canonical_code,
             objective_element_code=requirement.canonical_code,
@@ -187,10 +188,30 @@ async def get_hospital_requirement_detail(
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
     
-    citations = db.query(NABHRequirementCitation).filter(
+    citations = db.query(NABHRequirementCitation, NABHSourceDocument).outerjoin(
+        NABHSourceDocument, NABHRequirementCitation.document_id == NABHSourceDocument.id
+    ).filter(
         NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
+    citation_schemas = [
+        NABHCitationSchema(
+            id=citation.id,
+            requirement_id=citation.requirement_id,
+            measurable_element_id=citation.measurable_element_id,
+            document_id=citation.document_id,
+            section=citation.section,
+            page_number=citation.page_number,
+            printed_page_number=citation.printed_page_number,
+            pdf_page_index=citation.pdf_page_index,
+            source_heading=redact_source_heading(document, citation.source_heading),
+            clause_text_summary=citation.clause_text_summary if document and document.may_display_full_text else None,
+            file_path=citation.file_path if document and document.may_display_full_text else None,
+            url=citation.url if document and document.may_display_full_text else None,
+            human_verified=citation.human_verified,
+        )
+        for citation, document in citations
+    ]
     
     links = db.query(HospitalRequirementEvidenceLink).filter(
         HospitalRequirementEvidenceLink.hospital_requirement_id == req.id,
@@ -202,14 +223,14 @@ async def get_hospital_requirement_detail(
         id=requirement.id,
         code=requirement.official_code,
         canonical_code=requirement.canonical_code,
-        description=requirement.display_text,
+        description=requirement_public_text(requirement),
         applicability_default=requirement.applicability_default,
         chapter_code=chap.canonical_code,
         chapter_title=chap.title,
         standard_code=std.canonical_code,
         standard_title=std.title,
         objective_element_code=requirement.canonical_code,
-        objective_element_description=requirement.display_text,
+        objective_element_description=requirement_public_text(requirement),
         classification=requirement.classification,
         documentation_required=requirement.documentation_required,
         authority_level=requirement.authority_level,
@@ -217,8 +238,8 @@ async def get_hospital_requirement_detail(
         source_status=requirement.source_status,
         applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
-        citations=[NABHCitationSchema.model_validate(c) for c in citations],
-        has_citation=len(citations) > 0,
+        citations=citation_schemas,
+        has_citation=len(citation_schemas) > 0,
         has_evidence_requirements=len(evidences) > 0,
         **summary_data
     )
@@ -322,10 +343,30 @@ async def patch_hospital_requirement(
         NABHEvidenceRequirement.retired_at.is_(None)
     ).all()
     
-    citations = db.query(NABHRequirementCitation).filter(
+    citations = db.query(NABHRequirementCitation, NABHSourceDocument).outerjoin(
+        NABHSourceDocument, NABHRequirementCitation.document_id == NABHSourceDocument.id
+    ).filter(
         NABHRequirementCitation.requirement_id == requirement.id,
         NABHRequirementCitation.retired_at.is_(None)
     ).all()
+    citation_schemas = [
+        NABHCitationSchema(
+            id=citation.id,
+            requirement_id=citation.requirement_id,
+            measurable_element_id=citation.measurable_element_id,
+            document_id=citation.document_id,
+            section=citation.section,
+            page_number=citation.page_number,
+            printed_page_number=citation.printed_page_number,
+            pdf_page_index=citation.pdf_page_index,
+            source_heading=redact_source_heading(document, citation.source_heading),
+            clause_text_summary=citation.clause_text_summary if document and document.may_display_full_text else None,
+            file_path=citation.file_path if document and document.may_display_full_text else None,
+            url=citation.url if document and document.may_display_full_text else None,
+            human_verified=citation.human_verified,
+        )
+        for citation, document in citations
+    ]
     
     links = db.query(HospitalRequirementEvidenceLink).filter(
         HospitalRequirementEvidenceLink.hospital_requirement_id == req.id,
@@ -337,14 +378,14 @@ async def patch_hospital_requirement(
         id=requirement.id,
         code=requirement.official_code,
         canonical_code=requirement.canonical_code,
-        description=requirement.display_text,
+        description=requirement_public_text(requirement),
         applicability_default=requirement.applicability_default,
         chapter_code=chap.canonical_code,
         chapter_title=chap.title,
         standard_code=std.canonical_code,
         standard_title=std.title,
         objective_element_code=requirement.canonical_code,
-        objective_element_description=requirement.display_text,
+        objective_element_description=requirement_public_text(requirement),
         classification=requirement.classification,
         documentation_required=requirement.documentation_required,
         authority_level=requirement.authority_level,
@@ -352,8 +393,8 @@ async def patch_hospital_requirement(
         source_status=requirement.source_status,
         applicability_rules=[NABHRuleSchema.model_validate(r) for r in rules],
         evidence_requirements=[NABHEvidenceRequirementSchema.model_validate(ev) for ev in evidences],
-        citations=[NABHCitationSchema.model_validate(c) for c in citations],
-        has_citation=len(citations) > 0,
+        citations=citation_schemas,
+        has_citation=len(citation_schemas) > 0,
         has_evidence_requirements=len(evidences) > 0,
         **summary_data
     )

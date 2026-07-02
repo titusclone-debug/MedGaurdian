@@ -11,6 +11,7 @@ from app.models.database import (
     EditionStatus
 )
 from app.nabh.canonical import ACTIVE_PUBLICATION_STATUSES, ensure_canonical_compatibility
+from app.nabh.public_text import requirement_public_text
 from app.nabh.quality import citation_has_locator
 
 def build_requirement_explanation(
@@ -102,9 +103,11 @@ def build_requirement_explanation(
     else:
         confidence = "source_cited"
         plain_language_explanation = (
-            f"This requirement asks the hospital to ensure: {requirement.display_text}. "
+            f"This objective element is identified as {requirement.canonical_code}. "
             f"It belongs to {chapter.code}: {chapter.title}, under standard {std.canonical_code}: {std.title}. "
-            f"For survey readiness, the hospital must be able to show current, reviewable evidence."
+            "MedGuardian stores the official NABH text internally for provenance, but this interface "
+            "does not display it verbatim. For survey readiness, the hospital must be able to show "
+            "current, reviewable evidence for this objective element."
         )
 
         why_it_matters = (
@@ -176,16 +179,17 @@ def build_requirement_explanation(
     # 10. Citations mapping
     citations = []
     for cit, doc in citations_data:
+        may_display = bool(doc and doc.may_display_full_text)
         citations.append({
             "document_title": doc.title,
             "publisher": doc.publisher,
             "edition_version": doc.edition_version,
             "section": cit.section,
             "page_number": cit.page_number,
-            "clause_text_summary": cit.clause_text_summary,
+            "clause_text_summary": cit.clause_text_summary if may_display else None,
             "effective_date": cit.effective_date,
-            "file_path": cit.file_path,
-            "url": cit.url
+            "file_path": cit.file_path if may_display else None,
+            "url": cit.url if may_display else None
         })
 
     # 11. Hospital State context
@@ -217,7 +221,7 @@ def build_requirement_explanation(
     return {
         "requirement_id": requirement.id,
         "requirement_code": requirement.canonical_code,
-        "title": requirement.display_text,
+        "title": requirement_public_text(requirement),
         "plain_language_explanation": plain_language_explanation,
         "why_it_matters": why_it_matters,
         "required_evidence": required_evidence,
