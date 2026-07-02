@@ -57,8 +57,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-std-fms-1",
         edition_id=edition.id,
         chapter_id=chapter.id,
-        code="FMS-1",
-        canonical_code="FMS-1",
+        code="FMS.1",
+        canonical_code="FMS.1",
         title="Fire safety program"
     )
     db_session.add(standard)
@@ -68,8 +68,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-obj-fms-1.a",
         edition_id=edition.id,
         standard_id=standard.id,
-        code="FMS-1.a",
-        canonical_code="FMS-1.a",
+        code="FMS.1.a",
+        canonical_code="FMS.1.a",
         description="Verify fire clearance NOC"
     )
     db_session.add(obj_element)
@@ -81,8 +81,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-1.a.1",
         edition_id=edition.id,
         objective_element_id=obj_element.id,
-        code="FMS-1.a.1",
-        canonical_code="FMS-1.a.1",
+        code="FMS.1.a.1",
+        canonical_code="FMS.1.a.1",
         description="Check validity of NOC",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -91,8 +91,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-1.a.2",
         edition_id=edition.id,
         objective_element_id=obj_element.id,
-        code="FMS-1.a.2",
-        canonical_code="FMS-1.a.2",
+        code="FMS.1.a.2",
+        canonical_code="FMS.1.a.2",
         description="Check OT safety protocols",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -101,8 +101,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-1.a.3",
         edition_id=edition.id,
         objective_element_id=obj_element.id,
-        code="FMS-1.a.3",
-        canonical_code="FMS-1.a.3",
+        code="FMS.1.a.3",
+        canonical_code="FMS.1.a.3",
         description="Check ICU clinical guidelines",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -111,8 +111,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-1.a.4",
         edition_id=edition.id,
         objective_element_id=obj_element.id,
-        code="FMS-1.a.4",
-        canonical_code="FMS-1.a.4",
+        code="FMS.1.a.4",
+        canonical_code="FMS.1.a.4",
         description="Check specific rules for beds threshold",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -210,22 +210,22 @@ def test_applicability_engine_smoke(db_session):
     results_by_code = {r["requirement_code"]: r for r in res["results"]}
 
     # ME 1 (E1) -> Rule on null field ('annual_patient_volume' is None in profile) -> resolves to manual_review
-    assert results_by_code["FMS-1.a.1"]["applicability_status"] == "manual_review"
-    assert "missing or incomplete" in results_by_code["FMS-1.a.1"]["applicability_reason"]
+    assert results_by_code["FMS.1.a.1"]["applicability_status"] == "manual_review"
+    assert "missing or incomplete" in results_by_code["FMS.1.a.1"]["applicability_reason"]
 
     # ME 2 (E2) -> has_operation_theatre is False -> evaluates true -> not_applicable
-    assert results_by_code["FMS-1.a.2"]["applicability_status"] == "not_applicable"
-    assert "operating theatre" in results_by_code["FMS-1.a.2"]["applicability_reason"]
+    assert results_by_code["FMS.1.a.2"]["applicability_status"] == "not_applicable"
+    assert "operating theatre" in results_by_code["FMS.1.a.2"]["applicability_reason"]
 
     # ME 3 (E3) -> Rule 3A evaluates True (cardiology in services_offered) -> conditional
     #              Rule 3B evaluates True (has_icu == False) -> not_applicable
     # Precedence: not_applicable beats conditional -> winning_status must be not_applicable
-    assert results_by_code["FMS-1.a.3"]["applicability_status"] == "not_applicable"
+    assert results_by_code["FMS.1.a.3"]["applicability_status"] == "not_applicable"
 
     # ME 4 (E4) -> bed_count is 30 -> rule 30 >= 50 evaluates False -> action_if_false is 'applicable'
-    assert results_by_code["FMS-1.a.4"]["applicability_status"] == "applicable"
-    assert "High bed count safety standards" in results_by_code["FMS-1.a.4"]["applicability_reason"]
-    assert "applying applicable" in results_by_code["FMS-1.a.4"]["applicability_reason"]
+    assert results_by_code["FMS.1.a.4"]["applicability_status"] == "applicable"
+    assert "High bed count safety standards" in results_by_code["FMS.1.a.4"]["applicability_reason"]
+    assert "applying applicable" in results_by_code["FMS.1.a.4"]["applicability_reason"]
 
     # Clean up the null rule to test clean rerun
     db_session.delete(r_null)
@@ -326,8 +326,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-std-fms-retired",
         edition_id=edition.id,
         chapter_id=chapter.id,
-        code="FMS-99",
-        canonical_code="FMS-99",
+        code="FMS.99",
+        canonical_code="FMS.99",
         title="Retired standard",
         retired_at=datetime.utcnow()
     )
@@ -338,8 +338,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-obj-fms-retired.a",
         edition_id=edition.id,
         standard_id=retired_standard.id,
-        code="FMS-99.a",
-        canonical_code="FMS-99.a",
+        code="FMS.99.a",
+        canonical_code="FMS.99.a",
         description="Retired objective element"
     )
     db_session.add(retired_obj)
@@ -349,8 +349,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-retired.a.1",
         edition_id=edition.id,
         objective_element_id=retired_obj.id,
-        code="FMS-99.a.1",
-        canonical_code="FMS-99.a.1",
+        code="FMS.99.a.1",
+        canonical_code="FMS.99.a.1",
         description="Child under retired standard",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )
@@ -361,8 +361,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-obj-fms-active-standard-retired-objective",
         edition_id=edition.id,
         standard_id=standard.id,
-        code="FMS-1.z",
-        canonical_code="FMS-1.z",
+        code="FMS.1.z",
+        canonical_code="FMS.1.z",
         description="Retired objective under active standard",
         retired_at=datetime.utcnow()
     )
@@ -373,8 +373,8 @@ def test_applicability_engine_smoke(db_session):
         id="test-me-fms-active-standard-retired-objective.1",
         edition_id=edition.id,
         objective_element_id=retired_objective.id,
-        code="FMS-1.z.1",
-        canonical_code="FMS-1.z.1",
+        code="FMS.1.z.1",
+        canonical_code="FMS.1.z.1",
         description="Child under retired objective element",
         applicability_default=ApplicabilityDefault.APPLICABLE
     )

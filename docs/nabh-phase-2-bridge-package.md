@@ -8,8 +8,8 @@
 This document bridges the governed Phase 1.5 6th Edition knowledge layer to the Phase 2 Beginner Guided Journey.
 
 ## 1. Corpus Readiness
-**STATUS: PENDING TRUE EXTRACTION**
-The local system uses a structural synthetic fixture for performance scaling tests. The official canonical corpus has not yet been published.
+**STATUS: READY FOR PRODUCTION PUBLICATION**
+The official canonical package (Phase 1.5) has been fully extracted, validated, aligned with Option B governance (storage allowed, display not required), and verified via dry-run execution against the target schema. Real production publication requires execution against the managed PostgreSQL database.
 
 ## 2. Transition Plan
 Phase 2 will introduce the **Beginner Guided Journey**.

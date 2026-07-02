@@ -65,7 +65,7 @@ def setup_base_data(db_session):
         edition_id=ed.id,
         chapter_id=chap.id,
         code="1",
-        canonical_code="FMS-1",
+        canonical_code="FMS.1",
         title="Standard 1"
     )
     db_session.add(std)
@@ -77,7 +77,7 @@ def setup_base_data(db_session):
         edition_id=ed.id,
         standard_id=std.id,
         code="a",
-        canonical_code="FMS-1.a",
+        canonical_code="FMS.1.a",
         description="Objective a"
     )
     db_session.add(obj)
@@ -101,7 +101,7 @@ def create_me(db_session, ed, obj, code, app_def=ApplicabilityDefault.APPLICABLE
 
 def test_applicability_defaults_create_state_rows(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    me = create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    me = create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     # Compute with no profile saved first (should fall back to manual review with reason)
     res = ApplicabilityEngine.compute_applicability(db_session, hosp.id)
@@ -135,7 +135,7 @@ def test_applicability_defaults_create_state_rows(db_session):
 
 def test_applicability_rule_boolean_match(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    me = create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    me = create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     # Rule: applies (applicable) if has_blood_bank == true, else not_applicable
     rule = NABHApplicabilityRule(
@@ -179,7 +179,7 @@ def test_applicability_rule_boolean_match(db_session):
 
 def test_applicability_rule_list_match(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    me = create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    me = create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     # Rule: applies (applicable) if services_offered contains "ICU"
     rule = NABHApplicabilityRule(
@@ -220,7 +220,7 @@ def test_applicability_rule_list_match(db_session):
 
 def test_applicability_manual_review_when_rule_cannot_be_resolved(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    me = create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    me = create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     # 1. Unknown profile field
     rule_invalid_field = NABHApplicabilityRule(
@@ -276,7 +276,7 @@ def test_applicability_manual_review_when_rule_cannot_be_resolved(db_session):
 
 def test_compute_applicability_is_idempotent(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     profile = HospitalAccreditationProfile(
         hospital_id=hosp.id,
@@ -299,7 +299,7 @@ def test_compute_applicability_is_idempotent(db_session):
 
 def test_recompute_updates_existing_rows_without_losing_user_fields(db_session):
     hosp, ed, chap, std, obj = setup_base_data(db_session)
-    me = create_me(db_session, ed, obj, "FMS-1.a.1", ApplicabilityDefault.APPLICABLE)
+    me = create_me(db_session, ed, obj, "FMS.1.a.1", ApplicabilityDefault.APPLICABLE)
 
     rule = NABHApplicabilityRule(
         id="rule-blood-bank",

@@ -8,8 +8,9 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
+    KnowledgePublicationStatus,
     NABHEdition, NABHChapter, NABHStandard,
-    NABHObjectiveElement, NABHMeasurableElement, NABHObjective,
+    NABHObjectiveElement, NABHMeasurableElement, NABHRequirement, NABHObjective,
     Hospital, Staff, HospitalNABHRequirement, ComplianceRecord,
     EditionStatus, UserRole, ApplicabilityDefault, ComplianceStatus,
     MaturityLevel, EvidenceType, NABHEvidenceRequirement,
@@ -39,17 +40,17 @@ def _write_mock_seeds(tmp_path, *, chapters=None, requirements=None, evidence=No
             "chapter_code": "FMS",
             "edition_version": "6.0",
             "standards": [{
-                "code": "FMS-1",
+                "code": "FMS.1",
                 "title": "Standard 1",
                 "description": "Standard 1 desc",
                 "display_order": 1,
                 "objective_elements": [{
-                    "code": "FMS-1.a",
+                    "code": "FMS.1.a",
                     "description": "Objective element a",
                     "severity": "major",
                     "display_order": 1,
                     "measurable_elements": [{
-                        "code": "FMS-1.a.1",
+                        "code": "FMS.1.a.1",
                         "description": "Measurable element 1",
                         "applicability_default": "applicable",
                         "scoring_weight": 1.0,
@@ -63,9 +64,9 @@ def _write_mock_seeds(tmp_path, *, chapters=None, requirements=None, evidence=No
 
     if evidence is None:
         evidence = [{
-            "measurable_element_code": "FMS-1.a.1",
+            "measurable_element_code": "FMS.1.a.1",
             "edition_version": "6.0",
-            "evidence_code": "FMS-1.a.1-EV-01",
+            "evidence_code": "FMS.1.a.1.EV.01",
             "evidence_type": "sop",
             "description": "SOP description",
             "is_mandatory": True,
@@ -117,9 +118,9 @@ def test_validator_fails_on_no_evidence(tmp_path):
 def test_validator_fails_on_no_mandatory_evidence(tmp_path):
     """Validator fails if evidence exists but none are marked mandatory (is_mandatory is False)."""
     evidence = [{
-        "measurable_element_code": "FMS-1.a.1",
+        "measurable_element_code": "FMS.1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "FMS-1.a.1-EV-01",
+        "evidence_code": "FMS.1.a.1.EV.01",
         "evidence_type": "sop",
         "description": "Optional SOP",
         "is_mandatory": False,
@@ -135,9 +136,9 @@ def test_validator_fails_on_no_mandatory_evidence(tmp_path):
 def test_validator_fails_on_invalid_evidence_type(tmp_path):
     """Validator fails if evidence_type is not in VALID_EVIDENCE_TYPES."""
     evidence = [{
-        "measurable_element_code": "FMS-1.a.1",
+        "measurable_element_code": "FMS.1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "FMS-1.a.1-EV-01",
+        "evidence_code": "FMS.1.a.1.EV.01",
         "evidence_type": "invalid_type_here",
         "description": "SOP",
         "is_mandatory": True,
@@ -154,9 +155,9 @@ def test_validator_fails_on_duplicate_evidence_code(tmp_path):
     """Validator fails if the same evidence_code is defined twice for the same measurable element."""
     evidence = [
         {
-            "measurable_element_code": "FMS-1.a.1",
+            "measurable_element_code": "FMS.1.a.1",
             "edition_version": "6.0",
-            "evidence_code": "FMS-1.a.1-EV-01",
+            "evidence_code": "FMS.1.a.1.EV.01",
             "evidence_type": "sop",
             "description": "SOP 1",
             "is_mandatory": True,
@@ -165,9 +166,9 @@ def test_validator_fails_on_duplicate_evidence_code(tmp_path):
             "default_owner_role": "officer"
         },
         {
-            "measurable_element_code": "FMS-1.a.1",
+            "measurable_element_code": "FMS.1.a.1",
             "edition_version": "6.0",
-            "evidence_code": "FMS-1.a.1-EV-01", # Duplicate evidence_code
+            "evidence_code": "FMS.1.a.1.EV.01", # Duplicate evidence_code
             "evidence_type": "register",
             "description": "Register 1",
             "is_mandatory": False,
@@ -184,9 +185,9 @@ def test_validator_fails_on_duplicate_evidence_code(tmp_path):
 def test_validator_fails_on_invalid_frequency(tmp_path):
     """Validator fails if evidence_frequency is not one of VALID_EVIDENCE_FREQUENCIES."""
     evidence = [{
-        "measurable_element_code": "FMS-1.a.1",
+        "measurable_element_code": "FMS.1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "FMS-1.a.1-EV-01",
+        "evidence_code": "FMS.1.a.1.EV.01",
         "evidence_type": "sop",
         "description": "SOP",
         "is_mandatory": True,
@@ -202,9 +203,9 @@ def test_validator_fails_on_invalid_frequency(tmp_path):
 def test_validator_fails_on_negative_lookback_days(tmp_path):
     """Validator fails if minimum_lookback_days is negative."""
     evidence = [{
-        "measurable_element_code": "FMS-1.a.1",
+        "measurable_element_code": "FMS.1.a.1",
         "edition_version": "6.0",
-        "evidence_code": "FMS-1.a.1-EV-01",
+        "evidence_code": "FMS.1.a.1.EV.01",
         "evidence_type": "sop",
         "description": "SOP",
         "is_mandatory": True,
@@ -228,7 +229,7 @@ def test_validator_fails_on_production_missing_citation(tmp_path):
 def test_validator_passes_on_partial_citation_complete(tmp_path):
     """Validator passes in production if every element has a citation, even if citation_complete=false."""
     citations = [{
-        "measurable_element_code": "FMS-1.a.1",
+        "measurable_element_code": "FMS.1.a.1",
         "edition_version": "6.0",
         "document_title": "Fire NOC Guide",
         "document_publisher": "Local Government",
@@ -258,7 +259,7 @@ def clean_db(db_session):
     db_session.query(NABHEvidenceRequirement).delete()
     db_session.query(NABHRequirementCitation).delete()
     db_session.query(NABHSourceDocument).delete()
-    db_session.query(NABHMeasurableElement).delete()
+    db_session.query(NABHRequirement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -318,7 +319,7 @@ def create_base_test_data(db_session):
         edition_id=ed.id,
         chapter_id=chap.id,
         code="1",
-        canonical_code="FMS-1",
+        canonical_code="FMS.1",
         title="Standard FMS-1"
     )
     db_session.add(std)
@@ -330,30 +331,31 @@ def create_base_test_data(db_session):
         edition_id=ed.id,
         standard_id=std.id,
         code="a",
-        canonical_code="FMS-1.a",
+        canonical_code="FMS.1.a",
         description="Objective FMS-1.a"
     )
     db_session.add(obj)
     db_session.commit()
 
     # Measurable Element
-    me = NABHMeasurableElement(
+    me = NABHRequirement(
         id="me-fms-1-a-1-test",
         edition_id=ed.id,
-        objective_element_id=obj.id,
-        code="1",
-        canonical_code="FMS-1.a.1",
-        description="Measurable FMS-1.a.1",
-        applicability_default=ApplicabilityDefault.APPLICABLE
-    )
+        standard_id=std.id,
+        official_code="FMS 1.a.1",
+        canonical_code="FMS.1.a.1",
+        display_text="Measurable FMS-1.a.1",
+        applicability_default=ApplicabilityDefault.APPLICABLE,
+        publication_status=KnowledgePublicationStatus.PUBLISHED,
+        source_status="official_verified")
     db_session.add(me)
     db_session.commit()
 
     # Evidence Requirements: 1 mandatory, 1 optional
     ev_mand = NABHEvidenceRequirement(
         id="ev-mand-id",
-        measurable_element_id=me.id,
-        evidence_code="FMS-1.a.1-EV-01",
+        requirement_id=me.id,
+        evidence_code="FMS.1.a.1.EV.01",
         evidence_type=EvidenceType.SOP,
         description="Mandatory SOP for Fire NOC",
         suggested_documentation="Original NOC certificate.",
@@ -364,8 +366,8 @@ def create_base_test_data(db_session):
     )
     ev_opt = NABHEvidenceRequirement(
         id="ev-opt-id",
-        measurable_element_id=me.id,
-        evidence_code="FMS-1.a.1-EV-02",
+        requirement_id=me.id,
+        evidence_code="FMS.1.a.1.EV.02",
         evidence_type=EvidenceType.TRAINING_RECORD,
         description="Optional staff training logs",
         suggested_documentation="Sign-in sheets for fire drills.",
@@ -390,7 +392,7 @@ def create_base_test_data(db_session):
 
     citation = NABHRequirementCitation(
         id="cit-test",
-        measurable_element_id=me.id,
+        requirement_id=me.id,
         document_id=source_doc.id,
         section="Section 5",
         page_number="12",
@@ -446,7 +448,7 @@ def test_ontology_requirement_detail_endpoint(client, db_session):
     assert len(evidence_list) == 2
     
     mand_res = next(e for e in evidence_list if e["id"] == ev_mand.id)
-    assert mand_res["evidence_code"] == "FMS-1.a.1-EV-01"
+    assert mand_res["evidence_code"] == "FMS.1.a.1.EV.01"
     assert mand_res["evidence_type"] == "sop"
     assert mand_res["is_mandatory"] is True
     assert mand_res["suggested_documentation"] == "Original NOC certificate."
@@ -455,7 +457,7 @@ def test_ontology_requirement_detail_endpoint(client, db_session):
     assert mand_res["default_owner_role"] == "facility_director"
 
     opt_res = next(e for e in evidence_list if e["id"] == ev_opt.id)
-    assert opt_res["evidence_code"] == "FMS-1.a.1-EV-02"
+    assert opt_res["evidence_code"] == "FMS.1.a.1.EV.02"
     assert opt_res["evidence_type"] == "training_record"
     assert opt_res["is_mandatory"] is False
     assert opt_res["suggested_documentation"] == "Sign-in sheets for fire drills."
@@ -541,7 +543,7 @@ def test_legacy_rows_ignored_in_detail(client, db_session):
     legacy_rec = ComplianceRecord(
         id="legacy-rec-id-14",
         hospital_id=hosp.id,
-        standard_code="FMS-1.a",
+        standard_code="FMS.1.a",
         standard_name="Legacy Standard",
         status=ComplianceStatus.COMPLIANT
     )
@@ -554,7 +556,7 @@ def test_legacy_rows_ignored_in_detail(client, db_session):
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS-1.a",
+        standard_code="FMS.1.a",
         standard_name="Legacy Standard Name",
         maturity_level=MaturityLevel.IMPLEMENTED
     )

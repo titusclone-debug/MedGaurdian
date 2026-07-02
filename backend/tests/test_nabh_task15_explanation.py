@@ -6,8 +6,9 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
+    KnowledgePublicationStatus,
     NABHEdition, NABHChapter, NABHStandard,
-    NABHObjectiveElement, NABHMeasurableElement, NABHObjective,
+    NABHObjectiveElement, NABHMeasurableElement, NABHRequirement, NABHObjective,
     Hospital, Staff, HospitalNABHRequirement, ComplianceRecord,
     EditionStatus, UserRole, ApplicabilityDefault, ComplianceStatus,
     MaturityLevel, EvidenceType, NABHEvidenceRequirement,
@@ -22,7 +23,7 @@ def clean_db(db_session):
     db_session.query(NABHEvidenceRequirement).delete()
     db_session.query(NABHRequirementCitation).delete()
     db_session.query(NABHSourceDocument).delete()
-    db_session.query(NABHMeasurableElement).delete()
+    db_session.query(NABHRequirement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -81,7 +82,7 @@ def create_setup_data(db_session, severity=SeverityLevel.MAJOR, default_owner_ro
         edition_id=ed.id,
         chapter_id=chap.id,
         code="1",
-        canonical_code="FMS-1",
+        canonical_code="FMS.1",
         title="Standard FMS-1"
     )
     db_session.add(std)
@@ -93,7 +94,7 @@ def create_setup_data(db_session, severity=SeverityLevel.MAJOR, default_owner_ro
         edition_id=ed.id,
         standard_id=std.id,
         code="a",
-        canonical_code="FMS-1.a",
+        canonical_code="FMS.1.a",
         description="Objective FMS-1.a",
         severity=severity
     )
@@ -101,24 +102,25 @@ def create_setup_data(db_session, severity=SeverityLevel.MAJOR, default_owner_ro
     db_session.commit()
 
     # Measurable Element
-    me = NABHMeasurableElement(
+    me = NABHRequirement(
         id="me-fms-1-a-1-test15",
         edition_id=ed.id,
-        objective_element_id=obj.id,
-        code="1",
-        canonical_code="FMS-1.a.1",
-        description=me_desc,
+        standard_id=std.id,
+        official_code="FMS 1.a.1",
+        canonical_code="FMS.1.a.1",
+        display_text=me_desc,
         applicability_default=ApplicabilityDefault.APPLICABLE,
-        default_owner_role=default_owner_role
-    )
+        default_owner_role=default_owner_role,
+        publication_status=KnowledgePublicationStatus.PUBLISHED,
+        source_status="official_verified")
     db_session.add(me)
     db_session.commit()
 
     # Evidence Requirements
     ev = NABHEvidenceRequirement(
         id="ev-id-15",
-        measurable_element_id=me.id,
-        evidence_code="FMS-1.a.1-EV-01",
+        requirement_id=me.id,
+        evidence_code="FMS.1.a.1.EV.01",
         evidence_type=EvidenceType.LICENSE,
         description="Fire safety license.",
         suggested_documentation="Original NOC certificate.",
@@ -143,7 +145,7 @@ def create_setup_data(db_session, severity=SeverityLevel.MAJOR, default_owner_ro
 
     citation = NABHRequirementCitation(
         id="cit-test15",
-        measurable_element_id=me.id,
+        requirement_id=me.id,
         document_id=source_doc.id,
         section="Sec A",
         page_number="45",
@@ -323,8 +325,8 @@ def test_explanation_multiple_evidence_roles(client, db_session):
     # Seed a second evidence requirement with different default role
     ev2 = NABHEvidenceRequirement(
         id="ev-id-15-second",
-        measurable_element_id=me.id,
-        evidence_code="FMS-1.a.1-EV-02",
+        requirement_id=me.id,
+        evidence_code="FMS.1.a.1.EV.02",
         evidence_type=EvidenceType.PHOTO,
         description="Fire safety photo proof.",
         is_mandatory=False,
@@ -408,7 +410,7 @@ def test_legacy_rows_ignored_in_explanation(client, db_session):
     legacy_rec = ComplianceRecord(
         id="legacy-rec-id-15",
         hospital_id=hosp.id,
-        standard_code="FMS-1.a",
+        standard_code="FMS.1.a",
         standard_name="Legacy Standard",
         status=ComplianceStatus.COMPLIANT
     )
@@ -420,7 +422,7 @@ def test_legacy_rows_ignored_in_explanation(client, db_session):
         chapter_code="FMS",
         objective_number=1,
         element_letter="a",
-        standard_code="FMS-1.a",
+        standard_code="FMS.1.a",
         standard_name="Legacy Objective Standard",
         maturity_level=MaturityLevel.IMPLEMENTED
     )

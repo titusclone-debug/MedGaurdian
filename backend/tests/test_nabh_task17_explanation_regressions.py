@@ -5,8 +5,9 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
+    KnowledgePublicationStatus,
     NABHEdition, NABHChapter, NABHStandard,
-    NABHObjectiveElement, NABHMeasurableElement, Hospital, Staff,
+    NABHObjectiveElement, NABHMeasurableElement, NABHRequirement, Hospital, Staff,
     HospitalNABHRequirement, EditionStatus, UserRole, ApplicabilityDefault,
     ComplianceStatus, MaturityLevel, EvidenceType, NABHEvidenceRequirement,
     NABHRequirementCitation, NABHSourceDocument, SeverityLevel, EvidenceStatus
@@ -20,7 +21,7 @@ def clean_db(db_session):
     db_session.query(NABHEvidenceRequirement).delete()
     db_session.query(NABHRequirementCitation).delete()
     db_session.query(NABHSourceDocument).delete()
-    db_session.query(NABHMeasurableElement).delete()
+    db_session.query(NABHRequirement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -80,7 +81,7 @@ def setup_base_data(db_session, severity=SeverityLevel.MAJOR, default_owner_role
         edition_id=ed.id,
         chapter_id=chap.id,
         code="1",
-        canonical_code="FMS-1",
+        canonical_code="FMS.1",
         title="Standard FMS-1"
     )
     db_session.add(std)
@@ -92,7 +93,7 @@ def setup_base_data(db_session, severity=SeverityLevel.MAJOR, default_owner_role
         edition_id=ed.id,
         standard_id=std.id,
         code="a",
-        canonical_code="FMS-1.a",
+        canonical_code="FMS.1.a",
         description="Objective FMS-1.a",
         severity=severity
     )
@@ -100,24 +101,25 @@ def setup_base_data(db_session, severity=SeverityLevel.MAJOR, default_owner_role
     db_session.commit()
 
     # Measurable Element
-    me = NABHMeasurableElement(
+    me = NABHRequirement(
         id="me-fms-1-a-1",
         edition_id=ed.id,
-        objective_element_id=obj.id,
-        code="1",
-        canonical_code="FMS-1.a.1",
-        description=me_desc,
+        standard_id=std.id,
+        official_code="FMS 1.a.1",
+        canonical_code="FMS.1.a.1",
+        display_text=me_desc,
         applicability_default=ApplicabilityDefault.APPLICABLE,
-        default_owner_role=default_owner_role
-    )
+        default_owner_role=default_owner_role,
+        publication_status=KnowledgePublicationStatus.PUBLISHED,
+        source_status="official_verified")
     db_session.add(me)
     db_session.commit()
 
     # Evidence Requirements
     ev = NABHEvidenceRequirement(
         id="ev-fms-1",
-        measurable_element_id=me.id,
-        evidence_code="FMS-1.a.1-EV-01",
+        requirement_id=me.id,
+        evidence_code="FMS.1.a.1.EV.01",
         evidence_type=EvidenceType.LICENSE,
         description="Fire safety license.",
         suggested_documentation="Original NOC certificate.",
@@ -142,7 +144,7 @@ def setup_base_data(db_session, severity=SeverityLevel.MAJOR, default_owner_role
 
     citation = NABHRequirementCitation(
         id="cit-fms",
-        measurable_element_id=me.id,
+        requirement_id=me.id,
         document_id=source_doc.id,
         section="Sec A",
         page_number="45",

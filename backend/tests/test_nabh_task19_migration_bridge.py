@@ -7,6 +7,7 @@ from sqlalchemy import text
 from app.api.auth import get_current_user
 from app.main import app
 from app.models.database import (
+    KnowledgePublicationStatus,
     ApplicabilityDefault,
     ComplianceStatus,
     EditionStatus,
@@ -19,7 +20,7 @@ from app.models.database import (
     NABHEdition,
     NABHEvidenceRequirement,
     NABHLegacyMigrationMap,
-    NABHMeasurableElement,
+    NABHMeasurableElement, NABHRequirement,
     NABHObjective,
     NABHObjectiveElement,
     NABHStandard,
@@ -35,7 +36,7 @@ def clean_db(db_session):
     db_session.query(NABHLegacyMigrationMap).delete()
     db_session.query(HospitalNABHRequirement).delete()
     db_session.query(NABHEvidenceRequirement).delete()
-    db_session.query(NABHMeasurableElement).delete()
+    db_session.query(NABHRequirement).delete()
     db_session.query(NABHObjectiveElement).delete()
     db_session.query(NABHStandard).delete()
     db_session.query(NABHChapter).delete()
@@ -91,7 +92,7 @@ def setup_base_data(db_session):
         edition_id=edition.id,
         chapter_id=chapter.id,
         code="1",
-        canonical_code="FMS-1",
+        canonical_code="FMS.1",
         title="Fire Safety",
         display_order=1,
     )
@@ -100,17 +101,19 @@ def setup_base_data(db_session):
         edition_id=edition.id,
         standard_id=standard.id,
         code="a",
-        canonical_code="FMS-1.a",
+        canonical_code="FMS.1.a",
         description="Fire safety objective.",
         display_order=1,
     )
     requirements = []
     for number in [1, 2, 3]:
-        requirement = NABHMeasurableElement(
+        requirement = NABHRequirement(
             id=f"requirement-fms-1-a-{number}",
             edition_id=edition.id,
-            objective_element_id=objective.id,
-            code=str(number),
+            standard_id=std.id,
+            code=str(number,
+        publication_status=KnowledgePublicationStatus.PUBLISHED,
+        source_status="official_verified"),
             canonical_code=f"FMS-1.a.{number}",
             description=f"Fire safety requirement {number}.",
             applicability_default=ApplicabilityDefault.APPLICABLE,
@@ -122,7 +125,7 @@ def setup_base_data(db_session):
     db_session.flush()
     for requirement in requirements:
         db_session.add(NABHEvidenceRequirement(
-            measurable_element_id=requirement.id,
+            requirement_id=requirement.id,
             evidence_code=f"{requirement.canonical_code}-EV-01",
             evidence_type=EvidenceType.LICENSE,
             description="Valid evidence definition.",
@@ -166,7 +169,7 @@ def test_maps_legacy_objective_by_exact_measurable_element_code(db_session):
     legacy = add_legacy_objective(
         db_session,
         hospital.id,
-        "FMS-1.a.1",
+        "FMS.1.a.1",
         remediation_owner=staff.id,
         assessed_by=staff.id,
     )
@@ -192,7 +195,7 @@ def test_maps_legacy_objective_by_exact_measurable_element_code(db_session):
 
 def test_maps_legacy_objective_by_objective_element_code(db_session):
     hospital, *_rest = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1.a", maturity=MaturityLevel.DEFINED)
+    add_legacy_objective(db_session, hospital.id, "FMS.1.a", maturity=MaturityLevel.DEFINED)
 
     report = migrate_hospital_legacy_nabh_state(db_session, hospital.id)
     db_session.commit()
@@ -206,7 +209,7 @@ def test_maps_legacy_objective_by_objective_element_code(db_session):
 
 def test_maps_legacy_objective_by_standard_code(db_session):
     hospital, *_rest = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1", maturity=MaturityLevel.NON_EXISTENT)
+    add_legacy_objective(db_session, hospital.id, "FMS.1", maturity=MaturityLevel.NON_EXISTENT)
 
     report = migrate_hospital_legacy_nabh_state(db_session, hospital.id)
     db_session.commit()
@@ -234,7 +237,7 @@ def test_unmapped_legacy_objective_is_recorded_without_creating_state(db_session
 
 def test_migration_preserves_existing_new_requirement_state(db_session):
     hospital, *_prefix, requirements = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1.a.1", maturity=MaturityLevel.IMPLEMENTED)
+    add_legacy_objective(db_session, hospital.id, "FMS.1.a.1", maturity=MaturityLevel.IMPLEMENTED)
     existing = HospitalNABHRequirement(
         hospital_id=hospital.id,
         requirement_id=requirements[0].id,
@@ -256,7 +259,7 @@ def test_migration_preserves_existing_new_requirement_state(db_session):
 
 def test_migration_is_idempotent(db_session):
     hospital, *_rest = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1.a.1")
+    add_legacy_objective(db_session, hospital.id, "FMS.1.a.1")
 
     first = migrate_hospital_legacy_nabh_state(db_session, hospital.id)
     db_session.commit()
@@ -272,7 +275,7 @@ def test_migration_is_idempotent(db_session):
 
 def test_dry_run_reports_without_writing_rows(db_session):
     hospital, *_rest = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1.a.1")
+    add_legacy_objective(db_session, hospital.id, "FMS.1.a.1")
 
     report = migrate_hospital_legacy_nabh_state(db_session, hospital.id, dry_run=True)
 
@@ -287,7 +290,7 @@ def test_cross_hospital_review_staff_is_not_copied(db_session):
     add_legacy_objective(
         db_session,
         hospital.id,
-        "FMS-1.a.1",
+        "FMS.1.a.1",
         assessed_by=other_staff.id,
         remediation_owner=other_staff.id,
     )
@@ -303,7 +306,7 @@ def test_cross_hospital_review_staff_is_not_copied(db_session):
 
 def test_migration_endpoint_returns_report(client, db_session):
     hospital, _other_hospital, staff, _other_staff, _edition, _requirements = setup_base_data(db_session)
-    add_legacy_objective(db_session, hospital.id, "FMS-1.a.1")
+    add_legacy_objective(db_session, hospital.id, "FMS.1.a.1")
 
     async def get_mock_user():
         return staff
