@@ -440,19 +440,19 @@ def upgrade() -> None:
             ["authority_level"],
         )
 
-    dependent_columns = {
-        "nabh_evidence_requirements": "requirement_id",
-        "nabh_requirement_citations": "requirement_id",
-        "nabh_applicability_rules": "requirement_id",
-        "hospital_nabh_requirements": "canonical_requirement_id",
-        "nabh_legacy_migration_maps": "canonical_requirement_id",
-    }
-    for table_name, column_name in dependent_columns.items():
+    dependent_columns = (
+        ("nabh_evidence_requirements", "requirement_id", "fk_evidence_req_requirement"),
+        ("nabh_requirement_citations", "requirement_id", "fk_citation_requirement"),
+        ("nabh_applicability_rules", "requirement_id", "fk_app_rule_requirement"),
+        ("hospital_nabh_requirements", "canonical_requirement_id", "fk_hosp_req_canonical_req"),
+        ("nabh_legacy_migration_maps", "canonical_requirement_id", "fk_legacy_map_canonical_req"),
+    )
+    for table_name, column_name, fk_name in dependent_columns:
         if column_name not in _columns(table_name):
             with op.batch_alter_table(table_name) as batch_op:
                 batch_op.add_column(sa.Column(column_name, sa.String(), nullable=True))
                 batch_op.create_foreign_key(
-                    f"fk_{table_name}_{column_name}_nabh_requirements",
+                    fk_name,
                     "nabh_requirements",
                     [column_name],
                     ["id"],
